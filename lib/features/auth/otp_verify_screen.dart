@@ -62,6 +62,9 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
             name: user['name'] as String? ?? 'Parent',
             phone: user['phone'] as String? ?? widget.phone,
           );
+      // The root-level auth listener (main.dart) handles clearing the
+      // navigation stack automatically whenever auth status changes -
+      // no manual pop needed here.
     } on ApiException catch (e) {
       setState(() => _error = e.message);
     } finally {
