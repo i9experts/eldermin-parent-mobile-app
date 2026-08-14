@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/auth/auth_providers.dart';
 import '../../core/models/student.dart';
 import '../../core/theme/app_theme.dart';
 import '../students/student_selector_screen.dart';
