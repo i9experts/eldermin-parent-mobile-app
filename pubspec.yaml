@@ -1,0 +1,62 @@
+name: eldermin_parent_app
+description: "Eldermin Parent App — Stay connected, stay informed."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # State management
+  flutter_riverpod: ^2.5.1
+
+  # Networking
+  dio: ^5.4.3+1
+
+  # Secure local storage (JWT, selected student id)
+  flutter_secure_storage: ^9.2.2
+
+  # Routing
+  go_router: ^14.2.0
+
+  # Formatting
+  intl: ^0.19.0
+
+  # UI
+  google_fonts: ^6.2.1
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  table_calendar: ^3.1.2
+  pin_code_fields: ^8.0.1
+  fl_chart: ^0.68.0
+  flutter_svg: ^2.0.10+1
+  url_launcher: ^6.3.0
+  share_plus: ^9.0.0
+  file_picker: ^8.0.6
+  open_filex: ^4.5.0
+  package_info_plus: ^8.0.0
+  connectivity_plus: ^6.0.5
+  flutter_local_notifications: ^17.2.2
+  badges: ^3.1.2
+  shared_preferences: ^2.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+  # fonts:
+  #   - family: EldeminSans
+  #     fonts:
+  #       - asset: assets/fonts/EldeminSans-Regular.ttf
+  #       - asset: assets/fonts/EldeminSans-Bold.ttf
+  #         weight: 700
