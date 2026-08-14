@@ -31,7 +31,7 @@ class AppCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(color: AppColors.line),
-        boxShadow: [BoxShadow(color: AppColors.navy.withValues(alpha: 0.035), blurRadius: 14, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: AppColors.navy.withOpacity(0.035), blurRadius: 14, offset: const Offset(0, 4))],
       ),
       child: onTap == null
           ? Padding(padding: padding, child: child)
@@ -116,7 +116,7 @@ class ListCardRow extends StatelessWidget {
         children: [
           Container(
             width: 38, height: 38,
-            decoration: BoxDecoration(color: iconColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(13)),
+            decoration: BoxDecoration(color: iconColor.withOpacity(0.1), borderRadius: BorderRadius.circular(13)),
             child: Icon(icon, color: iconColor, size: 18),
           ),
           const SizedBox(width: 11),
@@ -208,7 +208,7 @@ class SegmentedControl extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: selected ? Colors.white : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: selected ? [BoxShadow(color: AppColors.navy.withValues(alpha: 0.09), blurRadius: 8, offset: const Offset(0, 2))] : null,
+                  boxShadow: selected ? [BoxShadow(color: AppColors.navy.withOpacity(0.09), blurRadius: 8, offset: const Offset(0, 2))] : null,
                 ),
                 child: Text(e.value, textAlign: TextAlign.center, style: TextStyle(color: selected ? AppColors.navy : AppColors.muted, fontSize: 9.5, fontWeight: FontWeight.w800)),
               ),

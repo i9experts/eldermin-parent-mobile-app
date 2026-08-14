@@ -101,7 +101,7 @@ class AppTheme {
         titleTextStyle: textTheme.headlineSmall?.copyWith(color: Colors.white),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(

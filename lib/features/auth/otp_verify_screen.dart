@@ -95,16 +95,16 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
               const SizedBox(height: AppSpacing.md),
               Text('Enter the code', style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: AppSpacing.xs),
-              Text('We sent a 6-digit code via WhatsApp to ${widget.phone}', style: const TextStyle(color: AppColors.textSecondary)),
+              Text('We sent a 6-digit code via WhatsApp to ${widget.phone}', style: const TextStyle(color: AppColors.muted)),
               if (widget.devCode != null) ...[
                 const SizedBox(height: AppSpacing.md),
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.md),
-                  decoration: BoxDecoration(color: AppColors.warningLight, borderRadius: BorderRadius.circular(AppRadius.md)),
+                  decoration: BoxDecoration(color: AppColors.amberBg, borderRadius: BorderRadius.circular(AppRadius.md)),
                   child: Row(children: [
-                    const Icon(Icons.science_outlined, color: AppColors.warning, size: 20),
+                    const Icon(Icons.science_outlined, color: AppColors.amberText, size: 20),
                     const SizedBox(width: AppSpacing.sm),
-                    Expanded(child: Text('Dev mode code: ${widget.devCode}', style: const TextStyle(color: AppColors.warning, fontWeight: FontWeight.w600))),
+                    Expanded(child: Text('Dev mode code: ${widget.devCode}', style: const TextStyle(color: AppColors.amberText, fontWeight: FontWeight.w600))),
                   ]),
                 ),
               ],
@@ -123,7 +123,7 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
                   fieldWidth: 44,
                   activeColor: AppColors.navy,
                   selectedColor: AppColors.navy,
-                  inactiveColor: AppColors.border,
+                  inactiveColor: AppColors.line,
                   activeFillColor: AppColors.background,
                   inactiveFillColor: AppColors.background,
                   selectedFillColor: AppColors.background,
@@ -131,7 +131,7 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
               ),
               if (_error != null) ...[
                 const SizedBox(height: AppSpacing.sm),
-                Text(_error!, style: const TextStyle(color: AppColors.danger, fontSize: 13)),
+                Text(_error!, style: const TextStyle(color: AppColors.red, fontSize: 13)),
               ],
               const SizedBox(height: AppSpacing.lg),
               ElevatedButton(
@@ -143,7 +143,7 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
               const SizedBox(height: AppSpacing.md),
               Center(
                 child: _resendSeconds > 0
-                    ? Text('Resend code in $_resendSeconds s', style: const TextStyle(color: AppColors.textMuted))
+                    ? Text('Resend code in $_resendSeconds s', style: const TextStyle(color: AppColors.faint))
                     : TextButton(onPressed: _resend, child: const Text('Resend Code')),
               ),
             ],

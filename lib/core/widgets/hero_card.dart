@@ -31,7 +31,7 @@ class HeroCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: const LinearGradient(colors: AppColors.heroGradient, begin: Alignment.topLeft, end: Alignment.bottomRight),
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        boxShadow: [BoxShadow(color: AppColors.navy.withValues(alpha: 0.2), blurRadius: 30, offset: const Offset(0, 15))],
+        boxShadow: [BoxShadow(color: AppColors.navy.withOpacity(0.2), blurRadius: 30, offset: const Offset(0, 15))],
       ),
       child: Stack(
         clipBehavior: Clip.none,
@@ -40,7 +40,7 @@ class HeroCard extends StatelessWidget {
             right: -70, top: -70,
             child: Container(
               width: 170, height: 170,
-              decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white.withValues(alpha: 0.06), width: 38)),
+              decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white.withOpacity(0.06), width: 38)),
             ),
           ),
           Column(
@@ -53,7 +53,7 @@ class HeroCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(kicker.toUpperCase(), style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1)),
+                        Text(kicker.toUpperCase(), style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1)),
                         const SizedBox(height: 4),
                         Text(value, style: const TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -1)),
                         const SizedBox(height: 2),
@@ -68,20 +68,20 @@ class HeroCard extends StatelessWidget {
                 const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.only(top: 12),
-                  decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.14)))),
+                  decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.white.withOpacity(0.14)))),
                   child: Row(
                     children: metrics.asMap().entries.map((entry) {
                       final isFirst = entry.key == 0;
                       return Expanded(
                         child: Container(
                           padding: const EdgeInsets.only(left: 12),
-                          decoration: isFirst ? null : BoxDecoration(border: Border(left: BorderSide(color: Colors.white.withValues(alpha: 0.12)))),
+                          decoration: isFirst ? null : BoxDecoration(border: Border(left: BorderSide(color: Colors.white.withOpacity(0.12)))),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(entry.value.$1, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700)),
                               const SizedBox(height: 2),
-                              Text(entry.value.$2, style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 9)),
+                              Text(entry.value.$2, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 9)),
                             ],
                           ),
                         ),
@@ -130,7 +130,7 @@ class _RingPainter extends CustomPainter {
     const strokeWidth = 8.0;
 
     final bgPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.14)
+      ..color = Colors.white.withOpacity(0.14)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth;
     canvas.drawCircle(center, radius - strokeWidth / 2, bgPaint);

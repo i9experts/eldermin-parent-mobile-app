@@ -69,13 +69,13 @@ class _PhoneEntryScreenState extends ConsumerState<PhoneEntryScreen> {
               const SizedBox(height: AppSpacing.lg),
               Text('Eldermin', textAlign: TextAlign.center, style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 28)),
               const SizedBox(height: AppSpacing.xs),
-              const Text('Parent App', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textMuted, fontSize: 15)),
+              const Text('Parent App', textAlign: TextAlign.center, style: TextStyle(color: AppColors.faint, fontSize: 15)),
               const Spacer(flex: 2),
               Text('Log in with WhatsApp', style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: AppSpacing.xs),
               const Text(
                 "Enter the WhatsApp number registered with your child's school. We'll send a verification code — no password needed.",
-                style: TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: AppColors.muted),
               ),
               const SizedBox(height: AppSpacing.lg),
               TextField(
@@ -103,7 +103,7 @@ class _PhoneEntryScreenState extends ConsumerState<PhoneEntryScreen> {
               const Text(
                 "Haven't registered this number with your school yet? Contact the school office to link it to your child's profile.",
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                style: TextStyle(color: AppColors.faint, fontSize: 12),
               ),
               const SizedBox(height: AppSpacing.sm),
             ],
