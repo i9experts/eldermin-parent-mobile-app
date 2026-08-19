@@ -12,16 +12,13 @@ dependencies:
   cupertino_icons: ^1.0.6
 
   # State management
-  flutter_riverpod: ^2.5.1
+  get: ^4.6.6
 
   # Networking
   dio: ^5.4.3+1
 
   # Secure local storage (JWT, selected student id)
   flutter_secure_storage: ^9.2.2
-
-  # Routing
-  go_router: ^14.2.0
 
   # Formatting
   intl: ^0.19.0
@@ -38,6 +35,8 @@ dependencies:
   share_plus: ^9.0.0
   file_picker: ^8.0.6
   open_filex: ^4.5.0
+  image_picker: ^1.1.2
+  permission_handler: ^11.3.1
   package_info_plus: ^8.0.0
   connectivity_plus: ^6.0.5
   flutter_local_notifications: ^17.2.2
@@ -48,6 +47,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
@@ -60,3 +60,13 @@ flutter:
   #       - asset: assets/fonts/EldeminSans-Regular.ttf
   #       - asset: assets/fonts/EldeminSans-Bold.ttf
   #         weight: 700
+
+# Generates the app launcher icon for iOS/Android from the Eldermin
+# logomark - run `dart run flutter_launcher_icons` after changing this.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/launcher_icon/icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/launcher_icon/icon_foreground.png"

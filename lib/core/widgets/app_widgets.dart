@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../../app/components/custom_text.dart';
 
 class AppTag extends StatelessWidget {
   final String label;
@@ -9,9 +10,9 @@ class AppTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4.5),
       decoration: BoxDecoration(color: style.bg, borderRadius: BorderRadius.circular(AppRadius.pill)),
-      child: Text(label, style: TextStyle(color: style.fg, fontSize: 9.5, fontWeight: FontWeight.w800)),
+      child: CustomText(text: label, color: style.fg, fontSize: 9.5, fontWeight: FontWeight.w800, letterSpacing: 0.1),
     );
   }
 }
@@ -31,14 +32,14 @@ class AppCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(color: AppColors.line),
-        boxShadow: [BoxShadow(color: AppColors.navy.withOpacity(0.035), blurRadius: 14, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: AppColors.primaryColor.withOpacity(0.05), blurRadius: 16, offset: const Offset(0, 6))],
       ),
       child: onTap == null
           ? Padding(padding: padding, child: child)
           : Material(
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(AppRadius.lg),
-              child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(AppRadius.lg), child: Padding(padding: padding, child: child)),
+              child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(AppRadius.lg), splashColor: AppColors.primaryColor.withOpacity(0.05), highlightColor: AppColors.primaryColor.withOpacity(0.03), child: Padding(padding: padding, child: child)),
             ),
     );
   }
@@ -61,12 +62,12 @@ class StatsRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(e.value.$1, style: const TextStyle(color: AppColors.navy, fontSize: 16, fontWeight: FontWeight.w800, letterSpacing: -0.4)),
+                CustomText(text: e.value.$1, color: AppColors.primaryColor, fontSize: 16, fontWeight: FontWeight.w800, letterSpacing: -0.4, maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 2),
-                Text(e.value.$2, style: const TextStyle(color: AppColors.muted, fontSize: 8.5)),
+                CustomText(text: e.value.$2, color: AppColors.muted, fontSize: 8.5, maxLines: 1, overflow: TextOverflow.ellipsis),
                 if (e.value.$3 != null) ...[
                   const SizedBox(height: 3),
-                  Text(e.value.$3!, style: const TextStyle(color: AppColors.green, fontSize: 8)),
+                  CustomText(text: e.value.$3!, color: AppColors.secondryColor, fontSize: 8, maxLines: 1, overflow: TextOverflow.ellipsis),
                 ],
               ],
             ),
@@ -126,12 +127,12 @@ class ListCardRow extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: AppColors.navy))),
-                    if (trailing != null) trailing!,
+                    Expanded(child: CustomText(text: title, fontWeight: FontWeight.w800, fontSize: 12, color: AppColors.primaryColor, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                    if (trailing != null) ...[const SizedBox(width: 6), trailing!],
                   ],
                 ),
                 const SizedBox(height: 3),
-                Text(subtitle, style: const TextStyle(color: AppColors.muted, fontSize: 9.5)),
+                CustomText(text: subtitle, color: AppColors.muted, fontSize: 9.5, maxLines: 2, overflow: TextOverflow.ellipsis),
               ],
             ),
           ),
@@ -170,10 +171,10 @@ class AppTimeline extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(e.value.$1, style: const TextStyle(color: AppColors.muted, fontSize: 9, fontWeight: FontWeight.w700)),
+                      CustomText(text: e.value.$1, color: AppColors.muted, fontSize: 9, fontWeight: FontWeight.w700),
                       const SizedBox(height: 2),
-                      Text(e.value.$2, style: const TextStyle(color: AppColors.navy, fontSize: 11, fontWeight: FontWeight.w700)),
-                      Text(e.value.$3, style: const TextStyle(color: AppColors.muted, fontSize: 9)),
+                      CustomText(text: e.value.$2, color: AppColors.primaryColor, fontSize: 11, fontWeight: FontWeight.w700),
+                      CustomText(text: e.value.$3, color: AppColors.muted, fontSize: 9),
                     ],
                   ),
                 ),
@@ -201,16 +202,23 @@ class SegmentedControl extends StatelessWidget {
         children: options.asMap().entries.map((e) {
           final selected = e.key == selectedIndex;
           return Expanded(
-            child: GestureDetector(
-              onTap: () => onChanged(e.key),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: selected ? Colors.white : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: selected ? [BoxShadow(color: AppColors.navy.withOpacity(0.09), blurRadius: 8, offset: const Offset(0, 2))] : null,
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+              child: InkWell(
+                onTap: () => onChanged(e.key),
+                borderRadius: BorderRadius.circular(10),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  curve: Curves.easeOut,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: selected ? Colors.white : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: selected ? [BoxShadow(color: AppColors.primaryColor.withOpacity(0.09), blurRadius: 8, offset: const Offset(0, 2))] : null,
+                  ),
+                  child: CustomText(text: e.value, textAlign: TextAlign.center, color: selected ? AppColors.primaryColor : AppColors.muted, fontSize: 9.5, fontWeight: FontWeight.w800, maxLines: 1, overflow: TextOverflow.ellipsis),
                 ),
-                child: Text(e.value, textAlign: TextAlign.center, style: TextStyle(color: selected ? AppColors.navy : AppColors.muted, fontSize: 9.5, fontWeight: FontWeight.w800)),
               ),
             ),
           );
@@ -235,25 +243,37 @@ class DateStripWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: AppColors.line)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.line),
+        boxShadow: [BoxShadow(color: AppColors.primaryColor.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3))],
+      ),
       child: Row(
         children: days.map((d) {
           final isSelected = _isSameDay(d, selected);
           final hasEvent = highlighted.any((h) => _isSameDay(h, d));
           return Expanded(
-            child: GestureDetector(
-              onTap: () => onSelect(d),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 7),
-                margin: const EdgeInsets.symmetric(horizontal: 2),
-                decoration: BoxDecoration(color: isSelected ? AppColors.navy : Colors.transparent, borderRadius: BorderRadius.circular(12)),
-                child: Column(
-                  children: [
-                    Text(_dayLetters[(d.weekday - 1) % 7], style: TextStyle(color: isSelected ? const Color(0xFFBFD8ED) : AppColors.muted, fontSize: 9, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 4),
-                    Text('${d.day}', style: TextStyle(color: isSelected ? Colors.white : AppColors.ink, fontSize: 12, fontWeight: FontWeight.w700)),
-                    if (hasEvent && !isSelected) Container(margin: const EdgeInsets.only(top: 3), width: 4, height: 4, decoration: const BoxDecoration(color: AppColors.amber, shape: BoxShape.circle)),
-                  ],
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                onTap: () => onSelect(d),
+                borderRadius: BorderRadius.circular(12),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  curve: Curves.easeOut,
+                  padding: const EdgeInsets.symmetric(vertical: 7),
+                  margin: const EdgeInsets.symmetric(horizontal: 2),
+                  decoration: BoxDecoration(color: isSelected ? AppColors.primaryColor : Colors.transparent, borderRadius: BorderRadius.circular(12)),
+                  child: Column(
+                    children: [
+                      CustomText(text: _dayLetters[(d.weekday - 1) % 7], color: isSelected ? const Color(0xFFBFD8ED) : AppColors.muted, fontSize: 9, fontWeight: FontWeight.w700),
+                      const SizedBox(height: 4),
+                      CustomText(text: '${d.day}', color: isSelected ? Colors.white : AppColors.ink, fontSize: 12, fontWeight: FontWeight.w700),
+                      if (hasEvent && !isSelected) Container(margin: const EdgeInsets.only(top: 3), width: 4, height: 4, decoration: const BoxDecoration(color: AppColors.amber, shape: BoxShape.circle)),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -278,7 +298,7 @@ class DonutRing extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           CustomPaint(size: Size(size, size), painter: _DonutPainter(percent: percent, color: color)),
-          Text('$percent%', style: const TextStyle(color: AppColors.navy, fontSize: 18, fontWeight: FontWeight.w800)),
+          CustomText(text: '$percent%', color: AppColors.primaryColor, fontSize: 18, fontWeight: FontWeight.w800),
         ],
       ),
     );
@@ -315,7 +335,7 @@ class _DonutPainter extends CustomPainter {
 class AppLoader extends StatelessWidget {
   const AppLoader({super.key});
   @override
-  Widget build(BuildContext context) => const Center(child: SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 3, color: AppColors.navy)));
+  Widget build(BuildContext context) => const Center(child: SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 3, color: AppColors.primaryColor)));
 }
 
 class AppErrorView extends StatelessWidget {
@@ -331,8 +351,11 @@ class AppErrorView extends StatelessWidget {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Container(width: 52, height: 52, decoration: BoxDecoration(color: AppColors.redBg, borderRadius: BorderRadius.circular(16)), child: const Icon(Icons.error_outline_rounded, color: AppColors.red)),
           const SizedBox(height: 12),
-          Text(message, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.muted)),
-          if (onRetry != null) ...[const SizedBox(height: 12), OutlinedButton(onPressed: onRetry, child: const Text('Try again'))],
+          CustomText(text: message, textAlign: TextAlign.center, color: AppColors.muted),
+          if (onRetry != null) ...[
+            const SizedBox(height: 12),
+            OutlinedButton(onPressed: onRetry, child: const CustomText(text: 'Try again')),
+          ],
         ]),
       ),
     );
@@ -353,8 +376,11 @@ class AppEmptyView extends StatelessWidget {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Container(width: 60, height: 60, decoration: const BoxDecoration(color: AppColors.background, shape: BoxShape.circle), child: Icon(icon, color: AppColors.faint, size: 28)),
           const SizedBox(height: 12),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy), textAlign: TextAlign.center),
-          if (subtitle != null) ...[const SizedBox(height: 4), Text(subtitle!, style: const TextStyle(color: AppColors.faint, fontSize: 12), textAlign: TextAlign.center)],
+          CustomText(text: title, fontWeight: FontWeight.w700, color: AppColors.primaryColor, textAlign: TextAlign.center),
+          if (subtitle != null) ...[
+            const SizedBox(height: 4),
+            CustomText(text: subtitle!, color: AppColors.faint, fontSize: 12, textAlign: TextAlign.center),
+          ],
         ]),
       ),
     );
@@ -371,9 +397,128 @@ class SectionRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(title, style: const TextStyle(color: AppColors.navy, fontSize: 13, fontWeight: FontWeight.w800)),
-        if (onSeeAll != null) GestureDetector(onTap: onSeeAll, child: const Text('See all', style: TextStyle(color: AppColors.blue, fontSize: 10, fontWeight: FontWeight.w700))),
+        CustomText(text: title, color: AppColors.primaryColor, fontSize: 13, fontWeight: FontWeight.w800),
+        if (onSeeAll != null)
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onSeeAll,
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: CustomText(text: 'See all', color: AppColors.blue, fontSize: 10, fontWeight: FontWeight.w700),
+              ),
+            ),
+          ),
       ]),
+    );
+  }
+}
+
+/// Matches the mockup's `.screen-head` — the big in-body title + caption
+/// that appears at the top of every screen's scrollable content (distinct
+/// from the Scaffold's own AppBar, which the mockup doesn't have per-screen
+/// at all since its single persistent top bar only shows the avatar and
+/// notification bell).
+class ScreenHeader extends StatelessWidget {
+  final String title;
+  final String? caption;
+  final String? selectLabel;
+  final VoidCallback? onSelectTap;
+  const ScreenHeader({super.key, required this.title, this.caption, this.selectLabel, this.onSelectTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 13),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomText(text: title, fontSize: 23, fontWeight: FontWeight.w800, color: AppColors.primaryColor, letterSpacing: -0.75, maxLines: 2, overflow: TextOverflow.ellipsis),
+                if (caption != null) ...[
+                  const SizedBox(height: 5),
+                  CustomText(text: caption!, fontSize: 11, color: AppColors.muted, maxLines: 1, overflow: TextOverflow.ellipsis),
+                ],
+              ],
+            ),
+          ),
+          if (selectLabel != null) ...[
+            const SizedBox(width: 10),
+            if (onSelectTap != null)
+              // A real, working selector (a callback is wired) — styled as
+              // an interactive pill with a chevron affordance.
+              Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(11),
+                child: InkWell(
+                  onTap: onSelectTap,
+                  borderRadius: BorderRadius.circular(11),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(11), border: Border.all(color: AppColors.line)),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      CustomText(text: selectLabel!, fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.primaryColor),
+                      const Icon(Icons.expand_more_rounded, size: 14, color: AppColors.primaryColor),
+                    ]),
+                  ),
+                ),
+              )
+            else
+              // No callback wired — this is informational context, not a
+              // control. Rendered as a plain tinted badge (no chevron, no
+              // tap ripple) so it never reads as a broken/dead dropdown.
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(color: AppColors.pale, borderRadius: BorderRadius.circular(11)),
+                child: CustomText(text: selectLabel!, fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.primaryColor),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Matches the mockup's `.date-strip` / `dateStrip()` — a self-contained
+/// current-week strip that manages its own selected day, so screens can
+/// drop it in with zero controller plumbing (the mockup's own date chips
+/// aren't wired to real data filtering either, just a toast).
+class AppWeekDateStrip extends StatefulWidget {
+  final Set<DateTime> highlighted;
+  final ValueChanged<DateTime>? onSelect;
+  const AppWeekDateStrip({super.key, this.highlighted = const {}, this.onSelect});
+
+  @override
+  State<AppWeekDateStrip> createState() => _AppWeekDateStripState();
+}
+
+class _AppWeekDateStripState extends State<AppWeekDateStrip> {
+  late DateTime _selected;
+  late List<DateTime> _days;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    final monday = now.subtract(Duration(days: now.weekday - 1));
+    _days = List.generate(7, (i) => DateTime(monday.year, monday.month, monday.day + i));
+    _selected = DateTime(now.year, now.month, now.day);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DateStripWidget(
+      days: _days,
+      selected: _selected,
+      highlighted: widget.highlighted,
+      onSelect: (d) {
+        setState(() => _selected = d);
+        widget.onSelect?.call(d);
+      },
     );
   }
 }

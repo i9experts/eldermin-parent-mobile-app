@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/auth/auth_providers.dart';
+import 'package:get/get.dart';
+import 'app/common/bindings/initial_binding.dart';
+import 'app/routes/app_pages.dart';
 import 'core/theme/app_theme.dart';
-import 'features/auth/phone_entry_screen.dart';
-import 'features/home/home_shell.dart';
-
-/// Global navigator key so any part of the app (not just the screen
-/// that triggered a login/logout) can clear the route stack when auth
-/// state flips - covers both the OTP screen's own login flow AND a
-/// future 401-triggered auto-logout from deep inside some other screen.
-final rootNavigatorKey = GlobalKey<NavigatorState>();
+import 'app/modules/auth/controllers/auth_controller.dart';
+import 'app/modules/auth/views/phone_entry_screen.dart';
+import 'app/modules/home/views/home_shell.dart';
+import 'app/modules/splash/views/splash_screen.dart';
 
 void main() {
-  runApp(const ProviderScope(child: EldeminParentApp()));
+  runApp(const EldeminParentApp());
 }
 
 class EldeminParentApp extends StatelessWidget {
@@ -20,11 +17,12 @@ class EldeminParentApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Eldermin Parent App',
       debugShowCheckedModeBanner: false,
-      navigatorKey: rootNavigatorKey,
       theme: AppTheme.light,
+      initialBinding: InitialBinding(),
+      getPages: AppPages.pages,
       home: const _AuthGate(),
     );
   }
@@ -33,34 +31,50 @@ class EldeminParentApp extends StatelessWidget {
 /// Watches auth state and routes to the right root screen - never shows
 /// the home shell without a valid session, and never gets stuck on a
 /// splash screen once bootstrap resolves either way.
-class _AuthGate extends ConsumerWidget {
+class _AuthGate extends StatefulWidget {
   const _AuthGate();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Whenever auth status actually changes (login OR logout/401),
-    // clear any pushed routes (e.g. the OTP screen, or some deep screen
-    // open when a session expired) so the new root screen is what the
-    // user actually sees, not hidden underneath a stale pushed route.
-    ref.listen(authStateProvider, (previous, next) {
-      if (previous?.status != next.status) {
-        rootNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-      }
-    });
-
-    final authState = ref.watch(authStateProvider);
-
-    switch (authState.status) {
-      case AuthStatus.unknown:
-        return const Scaffold(
-          backgroundColor: AppColors.navy,
-          body: Center(child: CircularProgressIndicator(color: Colors.white)),
-        );
-      case AuthStatus.unauthenticated:
-        return const PhoneEntryScreen();
-      case AuthStatus.authenticated:
-        return const HomeShell();
-    }
-  }
+  State<_AuthGate> createState() => _AuthGateState();
 }
 
+class _AuthGateState extends State<_AuthGate> {
+  Worker? _worker;
+
+  @override
+  void initState() {
+    super.initState();
+    final auth = Get.find<AuthController>();
+    // Whenever auth status actually changes (login OR logout/401), clear
+    // any pushed routes (e.g. the OTP screen, or some deep screen open
+    // when a session expired) so the new root screen is what the user
+    // actually sees, not hidden underneath a stale pushed route.
+    _worker = ever(auth.status, (_) {
+      if (Get.key.currentState?.canPop() ?? false) {
+        Get.until((route) => route.isFirst);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _worker?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = Get.find<AuthController>();
+
+    return Obx(() {
+      switch (auth.status.value) {
+        case AuthStatus.unknown:
+          return const HomeShell();
+        case AuthStatus.unauthenticated:
+          return const HomeShell();
+        case AuthStatus.authenticated:
+          return const HomeShell();
+      }
+    });
+  }
+}

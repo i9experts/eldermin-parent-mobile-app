@@ -1,6 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../auth/auth_providers.dart';
-
 class Student {
   final String id;
   final String firstName;
@@ -41,25 +38,3 @@ class Student {
         status: json['status'] as String?,
       );
 }
-
-final myStudentsProvider = FutureProvider<List<Student>>((ref) async {
-  final api = ref.watch(parentApiProvider);
-  final raw = await api.getMyStudents();
-  return raw.map((e) => Student.fromJson(Map<String, dynamic>.from(e))).toList();
-});
-
-/// The full Student object for whichever id is currently selected -
-/// every screen that needs "the current child's name/grade" reads this
-/// instead of re-fetching the list itself.
-final selectedStudentProvider = Provider<Student?>((ref) {
-  final studentsAsync = ref.watch(myStudentsProvider);
-  final selectedId = ref.watch(selectedStudentIdProvider);
-  return studentsAsync.maybeWhen(
-    data: (students) {
-      if (students.isEmpty) return null;
-      if (selectedId == null) return students.first;
-      return students.firstWhere((s) => s.id == selectedId, orElse: () => students.first);
-    },
-    orElse: () => null,
-  );
-});

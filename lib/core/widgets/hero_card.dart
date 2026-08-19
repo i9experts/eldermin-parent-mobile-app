@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../../app/components/custom_text.dart';
 
 /// Matches the mockup's `.hero-card` — navy gradient, decorative ring
 /// cutout, a kicker/value/trend on the left and a progress ring on the
@@ -31,7 +32,7 @@ class HeroCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: const LinearGradient(colors: AppColors.heroGradient, begin: Alignment.topLeft, end: Alignment.bottomRight),
         borderRadius: BorderRadius.circular(AppRadius.xl),
-        boxShadow: [BoxShadow(color: AppColors.navy.withOpacity(0.2), blurRadius: 30, offset: const Offset(0, 15))],
+        boxShadow: [BoxShadow(color: AppColors.primaryColor.withOpacity(0.2), blurRadius: 30, offset: const Offset(0, 15))],
       ),
       child: Stack(
         clipBehavior: Clip.none,
@@ -53,11 +54,11 @@ class HeroCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(kicker.toUpperCase(), style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1)),
+                        CustomText(text: kicker.toUpperCase(), color: Colors.white.withOpacity(0.75), fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1, maxLines: 1, overflow: TextOverflow.ellipsis),
                         const SizedBox(height: 4),
-                        Text(value, style: const TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -1)),
+                        CustomText(text: value, color: Colors.white, fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -1, maxLines: 1, overflow: TextOverflow.ellipsis),
                         const SizedBox(height: 2),
-                        Text(trend, style: TextStyle(color: trendWarn ? const Color(0xFFFFDCA2) : const Color(0xFFC8F1DF), fontSize: 11)),
+                        CustomText(text: trend, color: trendWarn ? const Color(0xFFFFDCA2) : const Color(0xFFC8F1DF), fontSize: 11, maxLines: 2, overflow: TextOverflow.ellipsis),
                       ],
                     ),
                   ),
@@ -79,9 +80,9 @@ class HeroCard extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(entry.value.$1, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700)),
+                              CustomText(text: entry.value.$1, color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700, maxLines: 1, overflow: TextOverflow.ellipsis),
                               const SizedBox(height: 2),
-                              Text(entry.value.$2, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 9)),
+                              CustomText(text: entry.value.$2, color: Colors.white.withOpacity(0.7), fontSize: 9, maxLines: 1, overflow: TextOverflow.ellipsis),
                             ],
                           ),
                         ),
@@ -111,7 +112,7 @@ class _ProgressRing extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           CustomPaint(size: const Size(76, 76), painter: _RingPainter(percent: percent, color: ringColor)),
-          Text('$percent%', style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800)),
+          CustomText(text: '$percent%', color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800),
         ],
       ),
     );
