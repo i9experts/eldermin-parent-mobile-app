@@ -20,4 +20,8 @@ abstract class Routes {
   static const datesheet = '/datesheet';
   static const ptm = '/ptm';
   static const feedback = '/feedback';
+  static const courses = '/courses';
+  static const courseDetail = '/courses/detail';
+  static const quizzes = '/quizzes';
+  static const quizAttempt = '/quizzes/attempt';
 }

@@ -18,6 +18,16 @@ class MoreScreen extends StatelessWidget {
 
     final modules = <(Widget, String, VoidCallback)>[
       (
+        const Icon(Icons.menu_book_rounded, color: AppColors.blue),
+        'My courses',
+        () => Get.toNamed(Routes.courses)
+      ),
+      (
+        const Icon(Icons.quiz_outlined, color: AppColors.blue),
+        'My quizzes',
+        () => Get.toNamed(Routes.quizzes)
+      ),
+      (
         const Icon(Icons.folder_outlined, color: AppColors.blue),
         'Learning resources',
         () => Get.toNamed(Routes.learningResources)
@@ -106,7 +116,9 @@ class MoreScreen extends StatelessWidget {
 
     final quickAccessTiles = <(IconData, String, Color, VoidCallback)>[
       (Icons.check_circle_outline_rounded, 'Attendance', AppColors.blue, () => Get.toNamed(Routes.attendance)),
-      (Icons.menu_book_rounded, 'Homework', AppColors.amber, () => Get.toNamed(Routes.homework)),
+      (Icons.menu_book_rounded, 'Courses', AppColors.secondryColor, () => Get.toNamed(Routes.courses)),
+      (Icons.quiz_outlined, 'Quizzes', AppColors.purple, () => Get.toNamed(Routes.quizzes)),
+      (Icons.assignment_outlined, 'Homework', AppColors.amber, () => Get.toNamed(Routes.homework)),
       (Icons.account_balance_wallet_outlined, 'Dues', AppColors.secondryColor, () => Get.toNamed(Routes.dues)),
       (Icons.schedule_rounded, 'Timetable', AppColors.purple, () => Get.toNamed(Routes.timetable)),
     ];

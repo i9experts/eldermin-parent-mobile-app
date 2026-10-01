@@ -41,6 +41,16 @@ class ApiConstants {
   static String studentLeaves(String id) => '$parentPortal/students/$id/leaves';
   static String ptmHistory(String id) => '$parentPortal/students/$id/ptm';
 
+  // ── LMS: My Courses ─────────────────────────────────────────
+  static String myCourses(String id) => '$parentPortal/students/$id/courses';
+  static String lessonProgress(String id) => '$parentPortal/students/$id/lessons/progress';
+
+  // ── LMS: My Quizzes ──────────────────────────────────────────
+  static String myQuizzes(String id) => '$parentPortal/students/$id/quizzes';
+  static String startQuiz(String id) => '$parentPortal/students/$id/quizzes/start';
+  static String submitQuiz(String id, String attemptId) =>
+      '$parentPortal/students/$id/quizzes/$attemptId/submit';
+
   // ── School-wide ──────────────────────────────────────────────
   static const String circulars = '$parentPortal/circulars';
   static const String events = '$parentPortal/events';

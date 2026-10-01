@@ -7,6 +7,10 @@ import '../modules/circulars/bindings/circulars_binding.dart';
 import '../modules/circulars/views/circulars_screen.dart';
 import '../modules/consent/bindings/consent_binding.dart';
 import '../modules/consent/views/consent_screen.dart';
+import '../modules/courses/bindings/courses_binding.dart';
+import '../modules/courses/bindings/course_detail_binding.dart';
+import '../modules/courses/views/courses_screen.dart';
+import '../modules/courses/views/course_detail_screen.dart';
 import '../modules/datesheet/bindings/datesheet_binding.dart';
 import '../modules/datesheet/views/datesheet_screen.dart';
 import '../modules/documents/bindings/documents_binding.dart';
@@ -31,6 +35,10 @@ import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_screen.dart';
 import '../modules/ptm/bindings/ptm_binding.dart';
 import '../modules/ptm/views/ptm_screen.dart';
+import '../modules/quizzes/bindings/quizzes_binding.dart';
+import '../modules/quizzes/bindings/quiz_attempt_binding.dart';
+import '../modules/quizzes/views/quizzes_screen.dart';
+import '../modules/quizzes/views/quiz_attempt_screen.dart';
 import '../modules/students/views/student_selector_screen.dart';
 import '../modules/tarbiyah/bindings/tarbiyah_binding.dart';
 import '../modules/tarbiyah/views/tarbiyah_screen.dart';
@@ -117,5 +125,21 @@ class AppPages {
         name: Routes.feedback,
         page: () => const FeedbackScreen(),
         binding: FeedbackBinding()),
+    GetPage(
+        name: Routes.courses,
+        page: () => const CoursesScreen(),
+        binding: CoursesBinding()),
+    GetPage(
+        name: Routes.courseDetail,
+        page: () => const CourseDetailScreen(),
+        binding: CourseDetailBinding()),
+    GetPage(
+        name: Routes.quizzes,
+        page: () => const QuizzesScreen(),
+        binding: QuizzesBinding()),
+    GetPage(
+        name: Routes.quizAttempt,
+        page: () => const QuizAttemptScreen(),
+        binding: QuizAttemptBinding()),
   ];
 }

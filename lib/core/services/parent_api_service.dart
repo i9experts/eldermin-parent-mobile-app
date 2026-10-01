@@ -115,6 +115,41 @@ class ParentApiService {
   Future<List<dynamic>> getPTMHistory(String studentId) async =>
       await _get(ApiConstants.ptmHistory(studentId)) as List<dynamic>;
 
+  // ── LMS: My Courses ─────────────────────────────────────────
+  Future<List<dynamic>> getMyCourses(String studentId) async =>
+      await _get(ApiConstants.myCourses(studentId)) as List<dynamic>;
+
+  Future<void> markLessonProgress(
+    String studentId, {
+    required String syllabusId,
+    required int unitNo,
+    required int topicNo,
+    required int lessonNo,
+    required String status,
+  }) =>
+      _post(ApiConstants.lessonProgress(studentId), data: {
+        'syllabusId': syllabusId, 'unitNo': unitNo, 'topicNo': topicNo,
+        'lessonNo': lessonNo, 'status': status,
+      });
+
+  // ── LMS: My Quizzes ──────────────────────────────────────────
+  Future<List<dynamic>> getMyQuizzes(String studentId) async =>
+      await _get(ApiConstants.myQuizzes(studentId)) as List<dynamic>;
+
+  Future<Map<String, dynamic>> startQuiz(String studentId,
+          {required String assessmentId, required String subject}) async =>
+      Map<String, dynamic>.from(await _post(ApiConstants.startQuiz(studentId),
+          data: {'assessmentId': assessmentId, 'subject': subject}));
+
+  Future<Map<String, dynamic>> submitQuiz(
+    String studentId,
+    String attemptId,
+    List<Map<String, dynamic>> answers,
+  ) async =>
+      Map<String, dynamic>.from(await _post(
+          ApiConstants.submitQuiz(studentId, attemptId),
+          data: {'answers': answers}));
+
   // ── Messages ────────────────────────────────────────────────
   Future<List<dynamic>> getThreads() async => await _get(ApiConstants.threads) as List<dynamic>;
 
