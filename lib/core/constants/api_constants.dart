@@ -22,6 +22,9 @@ class ApiConstants {
   // ── My Students ──────────────────────────────────────────────
   static const String myStudents = '$parentPortal/my-students';
 
+  // ── Device activation ping ───────────────────────────────────
+  static const String devicePing = '$parentPortal/device-ping';
+
   // ── Per-student ──────────────────────────────────────────────
   static String studentProfile(String id) => '$parentPortal/students/$id/profile';
   static String medical(String id) => '$parentPortal/students/$id/medical';

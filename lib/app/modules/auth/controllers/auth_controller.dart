@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../../../../core/services/app_preferences.dart';
+import '../../../../core/services/device_activation_service.dart';
 import '../../students/controllers/student_controller.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
@@ -35,6 +36,9 @@ class AuthController extends GetxController {
     await minSplashDuration;
     status.value = AuthStatus.authenticated;
     Get.find<StudentController>().fetchMyStudents();
+    // Returning user, cold start - counts as "the app was actually
+    // opened", not just "the app was once logged into".
+    Get.find<DeviceActivationService>().pingNow();
   }
 
   Future<void> loginSuccess(
@@ -47,6 +51,7 @@ class AuthController extends GetxController {
     userPhone.value = phone;
     status.value = AuthStatus.authenticated;
     Get.find<StudentController>().fetchMyStudents();
+    Get.find<DeviceActivationService>().pingNow();
   }
 
   /// Full logout AND "Switch User" both call this - there's no partial
