@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'secure_storage_service.dart';
 
@@ -11,6 +12,7 @@ class AppPreferences {
   static const _keyUserName = 'eldermin_user_name';
   static const _keyUserPhone = 'eldermin_user_phone';
   static const _keySelectedStudentId = 'eldermin_selected_student_id';
+  static const _keyDeviceId = 'eldermin_device_id';
 
   static final _secureStorage = SecureStorageService();
 
@@ -61,5 +63,27 @@ class AppPreferences {
     await prefs.remove(_keyUserName);
     await prefs.remove(_keyUserPhone);
     await prefs.remove(_keySelectedStudentId);
+    // Deliberately NOT removing _keyDeviceId - it identifies the physical
+    // device, not the logged-in account, so it should survive a sign-out
+    // (if a different guardian logs in on this same phone next, that's a
+    // genuinely new (user, device) pairing server-side - see
+    // DeviceActivationService).
+  }
+
+  // ── Device id ────────────────────────────────────────────────
+  // A random id generated once per install and persisted locally - no
+  // Firebase/push setup, no platform APIs, nothing to request from
+  // Google/Apple. Used only to tell the backend "this is the same
+  // device pinging again" so it can count real distinct installs
+  // instead of relying on a single overwritten login timestamp.
+  static Future<String> getOrCreateDeviceId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final existing = prefs.getString(_keyDeviceId);
+    if (existing != null && existing.isNotEmpty) return existing;
+
+    final random = Random.secure();
+    final id = List.generate(32, (_) => random.nextInt(16).toRadixString(16)).join();
+    await prefs.setString(_keyDeviceId, id);
+    return id;
   }
 }

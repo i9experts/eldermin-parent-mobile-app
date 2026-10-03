@@ -38,6 +38,15 @@ class ParentApiService {
   // ── My Students ─────────────────────────────────────────────
   Future<List<dynamic>> getMyStudents() async => await _get(ApiConstants.myStudents) as List<dynamic>;
 
+  // ── Device activation ping ──────────────────────────────────
+  // Fire-and-forget: a failed ping (offline, server hiccup) should never
+  // block login or app startup, so callers don't await/surface errors
+  // from this - see DeviceActivationService.
+  Future<void> pingDevice({required String deviceId, required String platform, String? appVersion}) =>
+      _post(ApiConstants.devicePing, data: {
+        'deviceId': deviceId, 'platform': platform, if (appVersion != null) 'appVersion': appVersion,
+      });
+
   // ── Per-student ─────────────────────────────────────────────
   Future<Map<String, dynamic>> getStudentProfile(String studentId) async =>
       Map<String, dynamic>.from(await _get(ApiConstants.studentProfile(studentId)));
