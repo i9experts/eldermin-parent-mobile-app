@@ -191,6 +191,18 @@ class _QuickAccessGrid extends StatelessWidget {
       ),
       (
         Icons.menu_book_rounded,
+        'Courses',
+        AppColors.secondryColor,
+        () => Get.toNamed(Routes.courses)
+      ),
+      (
+        Icons.quiz_outlined,
+        'Quizzes',
+        AppColors.purple,
+        () => Get.toNamed(Routes.quizzes)
+      ),
+      (
+        Icons.assignment_outlined,
         'Homework',
         AppColors.amber,
         () => Get.toNamed(Routes.homework)
