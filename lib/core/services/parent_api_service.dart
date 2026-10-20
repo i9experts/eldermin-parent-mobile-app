@@ -35,13 +35,6 @@ class ParentApiService {
   Future<Map<String, dynamic>> verifyOtp(String phone, String code) async => Map<String, dynamic>.from(
       await _post(ApiConstants.verifyOtp, data: {'phone': phone, 'code': code}, requiresAuth: false));
 
-  Future<Map<String, dynamic>> registerLead(Map<String, dynamic> data) async =>
-      Map<String, dynamic>.from(await _post(ApiConstants.registerLead, data: data, requiresAuth: false));
-
-  Future<Map<String, dynamic>> loginLead(String email, String password) async =>
-      Map<String, dynamic>.from(await _post(ApiConstants.loginLead,
-          data: {'email': email, 'password': password}, requiresAuth: false));
-
   // ── My Students ─────────────────────────────────────────────
   Future<List<dynamic>> getMyStudents() async => await _get(ApiConstants.myStudents) as List<dynamic>;
 

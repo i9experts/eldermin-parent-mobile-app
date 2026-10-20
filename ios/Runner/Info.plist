@@ -45,7 +45,5 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Used once when you create your account to tag your city/country so we know where parents are waiting for SmartVan.</string>
 </dict>
 </plist>

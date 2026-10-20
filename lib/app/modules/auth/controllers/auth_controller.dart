@@ -12,12 +12,6 @@ class AuthController extends GetxController {
   final status = AuthStatus.unknown.obs;
   final userName = RxnString();
   final userPhone = RxnString();
-  // A self-serve ParentLead account (see loginSuccess) - its token isn't
-  // recognized by the real-guardian endpoints (my-students, device-ping),
-  // so those calls must be skipped entirely rather than 401 and trigger
-  // the global "session died" logout right after a fresh signup.
-  final isParentLead = false.obs;
-  final schoolOnboarded = false.obs;
 
   @override
   void onInit() {
@@ -39,42 +33,25 @@ class AuthController extends GetxController {
     }
     userName.value = await AppPreferences.getUserName();
     userPhone.value = await AppPreferences.getUserPhone();
-    isParentLead.value = await AppPreferences.getIsParentLead();
-    schoolOnboarded.value = await AppPreferences.getSchoolOnboarded();
     await minSplashDuration;
     status.value = AuthStatus.authenticated;
-    if (!isParentLead.value) {
-      Get.find<StudentController>().fetchMyStudents();
-      // Returning user, cold start - counts as "the app was actually
-      // opened", not just "the app was once logged into".
-      Get.find<DeviceActivationService>().pingNow();
-    }
+    Get.find<StudentController>().fetchMyStudents();
+    // Returning user, cold start - counts as "the app was actually
+    // opened", not just "the app was once logged into".
+    Get.find<DeviceActivationService>().pingNow();
   }
 
-  /// [isParentLead] / [schoolOnboarded] are only meaningful for the
-  /// self-serve email+password signup (see CreateAccountController /
-  /// EmailSignInController) - a real guardian logging in via phone+OTP
-  /// always passes isParentLead: false, since fetchMyStudents/pingNow are
-  /// exactly the calls that account type's endpoints answer correctly.
-  Future<void> loginSuccess({
-    required String token,
-    required String name,
-    required String phone,
-    bool isParentLead = false,
-    bool schoolOnboarded = false,
-  }) async {
+  Future<void> loginSuccess(
+      {required String token,
+      required String name,
+      required String phone}) async {
     await AppPreferences.setAccessToken(token);
     await AppPreferences.saveUserInfo(name: name, phone: phone);
-    await AppPreferences.saveLeadStatus(isParentLead: isParentLead, schoolOnboarded: schoolOnboarded);
     userName.value = name;
     userPhone.value = phone;
-    this.isParentLead.value = isParentLead;
-    this.schoolOnboarded.value = schoolOnboarded;
     status.value = AuthStatus.authenticated;
-    if (!isParentLead) {
-      Get.find<StudentController>().fetchMyStudents();
-      Get.find<DeviceActivationService>().pingNow();
-    }
+    Get.find<StudentController>().fetchMyStudents();
+    Get.find<DeviceActivationService>().pingNow();
   }
 
   /// Full logout AND "Switch User" both call this - there's no partial
@@ -84,8 +61,6 @@ class AuthController extends GetxController {
     await AppPreferences.clearPreference();
     userName.value = null;
     userPhone.value = null;
-    isParentLead.value = false;
-    schoolOnboarded.value = false;
     Get.find<StudentController>().reset();
     status.value = AuthStatus.unauthenticated;
   }
