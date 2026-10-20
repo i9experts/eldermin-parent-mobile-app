@@ -2,6 +2,8 @@ abstract class Routes {
   Routes._();
 
   static const otpVerify = '/otp-verify';
+  static const createAccount = '/create-account';
+  static const emailSignIn = '/email-sign-in';
   static const studentSelector = '/student-selector';
   static const notifications = '/notifications';
   static const dues = '/dues';

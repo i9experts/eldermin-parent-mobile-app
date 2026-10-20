@@ -7,6 +7,7 @@ import '../../../components/custom_text.dart';
 import '../../../components/custom_button.dart';
 import '../../../components/custom_text_field.dart';
 import '../../../config/app_images.dart';
+import '../../../routes/app_routes.dart';
 import '../controllers/phone_entry_controller.dart';
 
 class PhoneEntryScreen extends StatelessWidget {
@@ -160,6 +161,18 @@ class PhoneEntryScreen extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 color: AppColors.faint,
                                 fontSize: 12,
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                              Center(
+                                child: TextButton(
+                                  onPressed: () => Get.toNamed(Routes.createAccount),
+                                  child: Text.rich(
+                                    TextSpan(children: [
+                                      const TextSpan(text: "Your school isn't on Eldermin yet? ", style: TextStyle(color: AppColors.faint, fontSize: 12)),
+                                      TextSpan(text: 'Create an account', style: TextStyle(color: AppColors.accentColor, fontWeight: FontWeight.w700, fontSize: 12)),
+                                    ]),
+                                  ),
+                                ),
                               ),
                               const SizedBox(height: AppSpacing.sm),
                             ],
