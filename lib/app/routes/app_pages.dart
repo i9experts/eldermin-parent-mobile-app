@@ -3,6 +3,10 @@ import '../modules/attendance/bindings/attendance_binding.dart';
 import '../modules/attendance/views/attendance_screen.dart';
 import '../modules/auth/bindings/otp_verify_binding.dart';
 import '../modules/auth/views/otp_verify_screen.dart';
+import '../modules/auth/bindings/create_account_binding.dart';
+import '../modules/auth/views/create_account_screen.dart';
+import '../modules/auth/bindings/email_sign_in_binding.dart';
+import '../modules/auth/views/email_sign_in_screen.dart';
 import '../modules/circulars/bindings/circulars_binding.dart';
 import '../modules/circulars/views/circulars_screen.dart';
 import '../modules/consent/bindings/consent_binding.dart';
@@ -49,6 +53,14 @@ class AppPages {
         name: Routes.otpVerify,
         page: () => const OtpVerifyScreen(),
         binding: OtpVerifyBinding()),
+    GetPage(
+        name: Routes.createAccount,
+        page: () => const CreateAccountScreen(),
+        binding: CreateAccountBinding()),
+    GetPage(
+        name: Routes.emailSignIn,
+        page: () => const EmailSignInScreen(),
+        binding: EmailSignInBinding()),
     GetPage(
         name: Routes.studentSelector,
         page: () => const StudentSelectorScreen()),
