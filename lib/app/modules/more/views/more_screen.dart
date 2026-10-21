@@ -58,6 +58,11 @@ class MoreScreen extends StatelessWidget {
         () => Get.toNamed(Routes.leaves)
       ),
       (
+        const Icon(Icons.favorite_outline, color: AppColors.blue),
+        'Home tasks',
+        () => Get.toNamed(Routes.homeTasks)
+      ),
+      (
         const SvgIcon(assetName: AppIcons.calenderIcon, size: 22, color: AppColors.blue),
         'Datesheet',
         () => Get.toNamed(Routes.datesheet)

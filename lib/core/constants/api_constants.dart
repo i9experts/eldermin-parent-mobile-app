@@ -48,6 +48,9 @@ class ApiConstants {
       '$parentPortal/students/$id/consent/$consentRequestId/respond';
   static String studentLeaves(String id) => '$parentPortal/students/$id/leaves';
   static String ptmHistory(String id) => '$parentPortal/students/$id/ptm';
+  static String homeTasks(String id) => '$parentPortal/students/$id/home-tasks';
+  static String completeHomeTask(String id, String taskId) =>
+      '$parentPortal/students/$id/home-tasks/$taskId/complete';
 
   // ── School-wide ──────────────────────────────────────────────
   static const String circulars = '$parentPortal/circulars';

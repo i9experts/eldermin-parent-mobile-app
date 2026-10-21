@@ -110,6 +110,14 @@ class ParentApiService {
       _post(ApiConstants.studentLeaves(studentId),
           data: {'fromDate': fromDate, 'toDate': toDate, 'reason': reason, 'leaveType': leaveType});
 
+  // ── Home Tasks (Tarbiyah-at-home) ───────────────────────────
+  Future<List<dynamic>> getHomeTasks(String studentId) async =>
+      await _get(ApiConstants.homeTasks(studentId)) as List<dynamic>;
+
+  Future<void> completeHomeTask(String studentId, String taskId, {String? parentNotes}) =>
+      _post(ApiConstants.completeHomeTask(studentId, taskId),
+          data: {if (parentNotes != null) 'parentNotes': parentNotes});
+
   // ── School-wide ─────────────────────────────────────────────
   Future<List<dynamic>> getCirculars() async => await _get(ApiConstants.circulars) as List<dynamic>;
 
