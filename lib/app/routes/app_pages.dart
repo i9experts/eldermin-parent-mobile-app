@@ -19,6 +19,8 @@ import '../modules/dues/bindings/dues_binding.dart';
 import '../modules/dues/views/dues_screen.dart';
 import '../modules/feedback/bindings/feedback_binding.dart';
 import '../modules/feedback/views/feedback_screen.dart';
+import '../modules/home_tasks/bindings/home_tasks_binding.dart';
+import '../modules/home_tasks/views/home_tasks_screen.dart';
 import '../modules/homework/bindings/homework_binding.dart';
 import '../modules/homework/views/homework_screen.dart';
 import '../modules/leaves/bindings/leaves_binding.dart';
@@ -96,6 +98,10 @@ class AppPages {
         name: Routes.leaves,
         page: () => const LeavesScreen(),
         binding: LeavesBinding()),
+    GetPage(
+        name: Routes.homeTasks,
+        page: () => const HomeTasksScreen(),
+        binding: HomeTasksBinding()),
     GetPage(
         name: Routes.circulars,
         page: () => const CircularsScreen(),

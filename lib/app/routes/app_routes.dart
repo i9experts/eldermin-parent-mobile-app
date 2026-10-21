@@ -13,6 +13,7 @@ abstract class Routes {
   static const tarbiyah = '/tarbiyah';
   static const library = '/library';
   static const leaves = '/leaves';
+  static const homeTasks = '/home-tasks';
   static const circulars = '/circulars';
   static const consent = '/consent';
   static const profile = '/profile';
