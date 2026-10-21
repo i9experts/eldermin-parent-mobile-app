@@ -21,22 +21,6 @@ class HomeDashboardScreen extends StatelessWidget {
     final auth = Get.find<AuthController>();
 
     return Obx(() {
-      // A self-serve ParentLead account (Create Account without a school
-      // already on Eldermin) never has a linked student to select - show
-      // why, not the generic "pick a child" copy meant for a real guardian
-      // account that simply hasn't chosen one yet.
-      if (auth.isParentLead.value) {
-        return AppEmptyView(
-          icon: auth.schoolOnboarded.value ? Icons.hourglass_top_rounded : Icons.directions_bus_filled_outlined,
-          title: auth.schoolOnboarded.value
-              ? "You're almost there!"
-              : "Your school isn't on SmartVan yet",
-          subtitle: auth.schoolOnboarded.value
-              ? 'Your school is on Eldermin - ask the school office to link your account to your child\'s profile to unlock van tracking and everything else here.'
-              : "We've got you on the list. As soon as your child's school joins SmartVan, you'll be notified and can start tracking the van right from here.",
-        );
-      }
-
       final student = students.selectedStudent;
       if (student == null) {
         return const AppEmptyView(

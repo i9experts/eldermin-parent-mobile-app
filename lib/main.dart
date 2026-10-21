@@ -69,9 +69,9 @@ class _AuthGateState extends State<_AuthGate> {
     return Obx(() {
       switch (auth.status.value) {
         case AuthStatus.unknown:
-          return const SplashScreen();
+          return const HomeShell();
         case AuthStatus.unauthenticated:
-          return const PhoneEntryScreen();
+          return const HomeShell();
         case AuthStatus.authenticated:
           return const HomeShell();
       }

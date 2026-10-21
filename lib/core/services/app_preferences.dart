@@ -13,13 +13,6 @@ class AppPreferences {
   static const _keyUserPhone = 'eldermin_user_phone';
   static const _keySelectedStudentId = 'eldermin_selected_student_id';
   static const _keyDeviceId = 'eldermin_device_id';
-  // Set for a self-serve ParentLead account (email+password, Create
-  // Account screen) - distinct from a real guardian account linked by a
-  // school. A lead's token isn't recognized by the main parent-portal
-  // endpoints (my-students, device-ping, …), so the app must skip those
-  // calls entirely for this account type rather than let them 401.
-  static const _keyIsParentLead = 'eldermin_is_parent_lead';
-  static const _keySchoolOnboarded = 'eldermin_school_onboarded';
 
   static final _secureStorage = SecureStorageService();
 
@@ -50,23 +43,6 @@ class AppPreferences {
     return prefs.getString(_keyUserPhone);
   }
 
-  // ── Parent-lead account type ────────────────────────────────────
-  static Future<void> saveLeadStatus({required bool isParentLead, required bool schoolOnboarded}) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keyIsParentLead, isParentLead);
-    await prefs.setBool(_keySchoolOnboarded, schoolOnboarded);
-  }
-
-  static Future<bool> getIsParentLead() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keyIsParentLead) ?? false;
-  }
-
-  static Future<bool> getSchoolOnboarded() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keySchoolOnboarded) ?? false;
-  }
-
   // ── Selected student ─────────────────────────────────────────
   static Future<void> saveSelectedStudentId(String id) async {
     final prefs = await SharedPreferences.getInstance();
@@ -87,8 +63,6 @@ class AppPreferences {
     await prefs.remove(_keyUserName);
     await prefs.remove(_keyUserPhone);
     await prefs.remove(_keySelectedStudentId);
-    await prefs.remove(_keyIsParentLead);
-    await prefs.remove(_keySchoolOnboarded);
     // Deliberately NOT removing _keyDeviceId - it identifies the physical
     // device, not the logged-in account, so it should survive a sign-out
     // (if a different guardian logs in on this same phone next, that's a
