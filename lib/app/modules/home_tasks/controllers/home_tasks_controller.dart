@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/services/parent_api_service.dart';
 import '../../students/controllers/student_controller.dart';
 
@@ -10,6 +11,7 @@ class HomeTasksController extends GetxController {
   final completingId = RxnString();
   final tasks = <dynamic>[].obs;
   final RxnString error = RxnString();
+  String? lastError;
 
   @override
   void onInit() {
@@ -23,7 +25,20 @@ class HomeTasksController extends GetxController {
     loading.value = true;
     error.value = null;
     try {
-      tasks.value = await _api.getHomeTasks(studentId);
+      final list = await _api.getHomeTasks(studentId);
+      // To-do first (soonest due date on top), completed after.
+      int rank(dynamic t) => t['status'] == 'completed' ? 1 : 0;
+      DateTime? due(dynamic t) => DateTime.tryParse(t['dueDate']?.toString() ?? '');
+      list.sort((a, b) {
+        final r = rank(a).compareTo(rank(b));
+        if (r != 0) return r;
+        final da = due(a), db = due(b);
+        if (da == null || db == null) return da == null ? (db == null ? 0 : 1) : -1;
+        return rank(a) == 0 ? da.compareTo(db) : db.compareTo(da);
+      });
+      tasks.value = list;
+    } on ApiException catch (e) {
+      error.value = e.message;
     } catch (_) {
       error.value = 'Could not load home tasks';
     } finally {
@@ -39,7 +54,11 @@ class HomeTasksController extends GetxController {
       await _api.completeHomeTask(studentId, taskId, parentNotes: parentNotes);
       await fetch();
       return true;
+    } on ApiException catch (e) {
+      lastError = e.message;
+      return false;
     } catch (_) {
+      lastError = null;
       return false;
     } finally {
       completingId.value = null;
