@@ -9,15 +9,16 @@ class HomeDashboardController extends GetxController {
   final ParentApiService _api = Get.find<ParentApiService>();
   final StudentController _students = Get.find<StudentController>();
 
-  final attendanceLoading = false.obs;
+  // Start as loading so the first frame shows shimmer, not an empty state, before the first fetch begins.
+  final attendanceLoading = true.obs;
   final attendance = <dynamic>[].obs;
   final RxnString attendanceError = RxnString();
 
-  final homeworkLoading = false.obs;
+  final homeworkLoading = true.obs;
   final homework = <dynamic>[].obs;
   final RxnString homeworkError = RxnString();
 
-  final duesLoading = false.obs;
+  final duesLoading = true.obs;
   final dues = <dynamic>[].obs;
 
   final eventsLoading = false.obs;
@@ -29,6 +30,10 @@ class HomeDashboardController extends GetxController {
   void onInit() {
     super.onInit();
     ever(_students.selectedId, (_) => _loadIfStudentChanged());
+    // The children list arrives over the network, usually after this controller
+    // is created; selectedId stays null (first child is the default), so also
+    // react to the list itself or the first load never happens.
+    ever(_students.students, (_) => _loadIfStudentChanged());
     _loadIfStudentChanged();
   }
 

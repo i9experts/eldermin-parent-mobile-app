@@ -37,19 +37,22 @@ class PhoneEntryScreen extends StatelessWidget {
                         curve: Curves.easeOutBack,
                         builder: (context, t, child) => Opacity(
                           opacity: t.clamp(0, 1),
-                          child: Transform.scale(scale: 0.7 + 0.3 * t, child: child),
+                          child: Transform.scale(
+                              scale: 0.7 + 0.3 * t, child: child),
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
-                              width: 92,
-                              height: 92,
-                              padding: const EdgeInsets.all(16),
+                              width: 80,
+                              height: 80,
+                              padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.14),
-                                shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white.withOpacity(0.22)),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                    color: AppColors.primaryColor
+                                        .withOpacity(0.8)),
                               ),
                               child: const CommonImageView(
                                 imagePath: AppImages.fullLogo,
@@ -64,12 +67,12 @@ class PhoneEntryScreen extends StatelessWidget {
                               fontWeight: FontWeight.w800,
                               letterSpacing: -0.8,
                             ),
-                            const SizedBox(height: 3),
-                            CustomText(
-                              text: 'Parent App',
-                              color: Colors.white.withOpacity(0.75),
-                              fontSize: 13.5,
-                            ),
+                            // const SizedBox(height: 3),
+                            // CustomText(
+                            //   text: 'Parent App',
+                            //   color: Colors.white.withOpacity(0.75),
+                            //   fontSize: 13.5,
+                            // ),
                           ],
                         ),
                       ),
@@ -93,12 +96,15 @@ class PhoneEntryScreen extends StatelessWidget {
                             topRight: Radius.circular(32),
                           ),
                           boxShadow: [
-                            BoxShadow(color: Color(0x1F0A3158), blurRadius: 30, offset: Offset(0, -10)),
+                            BoxShadow(
+                                color: Color(0x1F0A3158),
+                                blurRadius: 30,
+                                offset: Offset(0, -10)),
                           ],
                         ),
                         child: SingleChildScrollView(
-                          padding: const EdgeInsets.fromLTRB(
-                              AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.lg),
+                          padding: const EdgeInsets.fromLTRB(AppSpacing.lg,
+                              AppSpacing.lg, AppSpacing.lg, AppSpacing.lg),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
@@ -130,17 +136,22 @@ class PhoneEntryScreen extends StatelessWidget {
                                     controller: controller.phoneController,
                                     keyboardType: TextInputType.phone,
                                     inputFormatters: [
-                                      FilteringTextInputFormatter.allow(RegExp(r'[\d\+\s]'))
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'[\d\+\s]'))
                                     ],
                                     isborder: true,
                                     fillColor: AppColors.background,
-                                    hintText: '+92 300 1234567',
-                                    prefixIcon: const Icon(Icons.phone_iphone_rounded, color: AppColors.primaryColor),
+                                    hintText: '3001234567',
+                                    prefixIcon: const Icon(
+                                        Icons.phone_iphone_rounded,
+                                        color: AppColors.primaryColor),
                                     errorText: controller.error.value,
                                   )),
                               const SizedBox(height: AppSpacing.lg),
                               Obx(() => CustomButton(
-                                    label: controller.loading.value ? '' : 'Send Verification Code',
+                                    label: controller.loading.value
+                                        ? ''
+                                        : 'Send Verification Code',
                                     height: 54,
                                     color: AppColors.primaryColor,
                                     borderRadius: 16,
@@ -150,7 +161,9 @@ class PhoneEntryScreen extends StatelessWidget {
                                         ? const SizedBox(
                                             width: 20,
                                             height: 20,
-                                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                                            child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                color: Colors.white))
                                         : null,
                                   )),
                               const SizedBox(height: AppSpacing.lg),
@@ -183,7 +196,8 @@ class PhoneEntryScreen extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white.withOpacity(0.06), width: size * 0.22),
+        border: Border.all(
+            color: Colors.white.withOpacity(0.06), width: size * 0.22),
       ),
     );
   }
@@ -197,18 +211,21 @@ class _AnimatedGradientBackground extends StatefulWidget {
   const _AnimatedGradientBackground({required this.child});
 
   @override
-  State<_AnimatedGradientBackground> createState() => _AnimatedGradientBackgroundState();
+  State<_AnimatedGradientBackground> createState() =>
+      _AnimatedGradientBackgroundState();
 }
 
-class _AnimatedGradientBackgroundState extends State<_AnimatedGradientBackground>
+class _AnimatedGradientBackgroundState
+    extends State<_AnimatedGradientBackground>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 10))
-      ..repeat(reverse: true);
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 10))
+          ..repeat(reverse: true);
   }
 
   @override
@@ -228,7 +245,12 @@ class _AnimatedGradientBackgroundState extends State<_AnimatedGradientBackground
             gradient: LinearGradient(
               begin: Alignment(-1 + 2 * t, -1 + 0.6 * t),
               end: Alignment(1 - 2 * t, 1 - 0.6 * t),
-              colors: const [AppColors.primaryColor, Color(0xFF155D96), Color(0xFF237FBD), AppColors.sky],
+              colors: const [
+                AppColors.primaryColor,
+                Color(0xFF155D96),
+                Color(0xFF237FBD),
+                AppColors.sky
+              ],
             ),
           ),
           child: child,

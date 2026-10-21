@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../utils/toast_util.dart';
 import '../../students/controllers/student_controller.dart';
 
 class ProfileController extends GetxController {
@@ -23,8 +25,9 @@ class ProfileController extends GetxController {
     error.value = null;
     try {
       profile.value = await _api.getStudentProfile(studentId);
-    } catch (_) {
-      error.value = 'Could not load student profile';
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }

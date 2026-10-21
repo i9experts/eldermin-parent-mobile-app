@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import '../../../../core/models/student.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../utils/toast_util.dart';
 
 /// The list of children linked to this account, plus which one is
 /// currently selected - every per-student screen reads [selectedStudent]
@@ -30,8 +32,9 @@ class StudentController extends GetxController {
       students.value = raw
           .map((e) => Student.fromJson(Map<String, dynamic>.from(e)))
           .toList();
-    } catch (e) {
-      error.value = e.toString().replaceFirst('ApiException: ', '');
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }

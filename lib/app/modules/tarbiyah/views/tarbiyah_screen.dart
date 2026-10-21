@@ -10,6 +10,13 @@ import '../controllers/tarbiyah_controller.dart';
 class TarbiyahScreen extends GetView<TarbiyahController> {
   const TarbiyahScreen({super.key});
 
+  /// Server-computed 0-100 percentage for a trait (the school's rating scale
+  /// can be anything, e.g. 1-5, so the raw score is never a percentage).
+  int _traitPct(Map<String, dynamic> t) => (t['percentage'] as num?)?.round() ?? 0;
+
+  String _traitName(Map<String, dynamic> t) =>
+      (t['traitName'] ?? _titleCase((t['traitKey'] ?? 'Trait').toString())).toString();
+
   String _titleCase(String key) {
     final spaced =
         key.replaceAllMapped(RegExp(r'([A-Z])'), (m) => ' ${m.group(1)}');
@@ -112,10 +119,8 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                 StatsRow(items: [
                   for (final t in traits.take(3))
                     (
-                      '${((Map<String, dynamic>.from(t as Map))['score'] as num?)?.round() ?? 0}%',
-                      _titleCase((Map<String, dynamic>.from(t)['traitKey'] ??
-                              'Trait')
-                          .toString()),
+                      '${_traitPct(Map<String, dynamic>.from(t as Map))}%',
+                      _traitName(Map<String, dynamic>.from(t)),
                       null,
                     ),
                 ]),
@@ -126,8 +131,8 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: traits.asMap().entries.map((e) {
                       final t = Map<String, dynamic>.from(e.value as Map);
-                      final score = (t['score'] as num?)?.round() ?? 0;
-                      final key = t['traitKey']?.toString() ?? 'Trait';
+                      final score = _traitPct(t);
+                      final key = _traitName(t);
                       return Padding(
                         padding: EdgeInsets.only(top: e.key == 0 ? 0 : 10),
                         child: Column(
@@ -138,7 +143,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                               children: [
                                 Expanded(
                                   child: CustomText(
-                                      text: _titleCase(key),
+                                      text: key,
                                       color: AppColors.muted,
                                       fontSize: 9.5,
                                       maxLines: 1,
@@ -175,16 +180,22 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                 ...records.map((r) {
                   final rec = Map<String, dynamic>.from(r as Map);
                   final points = (rec['points'] as num?) ?? 0;
-                  final positive = points >= 0;
+                  final type = rec['type']?.toString();
+                  final neutral = type == 'neutral' || (type == null && points == 0);
+                  final positive = !neutral && (type == 'positive' || (type == null && points > 0));
                   return ListCardRow(
                     icon: Icons.favorite_rounded,
-                    iconColor: positive ? AppColors.secondryColor : AppColors.red,
+                    iconColor: neutral
+                        ? AppColors.muted
+                        : (positive ? AppColors.secondryColor : AppColors.red),
                     title: rec['title']?.toString() ??
                         rec['category']?.toString() ??
                         'Observation',
                     subtitle: rec['description']?.toString() ?? '',
-                    trailing: AppTag(positive ? 'Merit' : 'Follow-up',
-                        style: positive ? TagStyle.green : TagStyle.amber),
+                    trailing: AppTag(neutral ? 'Note' : (positive ? 'Merit' : 'Follow-up'),
+                        style: neutral
+                            ? TagStyle.neutral
+                            : (positive ? TagStyle.green : TagStyle.amber)),
                   );
                 }),
             ],

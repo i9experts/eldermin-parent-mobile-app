@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import '../constants/api_constants.dart';
+import '../network/api_exception.dart';
 import '../network/base_client.dart';
 import '../network/dio_exception_handler.dart';
 
@@ -28,11 +31,26 @@ class ParentApiService {
     }
   }
 
+  /// Some responses arrive as an already-decoded [Map] and some (e.g. a
+  /// body dio didn't auto-parse) arrive as a raw JSON [String]; normalize
+  /// either into a Map instead of letting `Map.from` throw a TypeError.
+  Map<String, dynamic> _asMap(dynamic x) {
+    if (x is Map) return Map<String, dynamic>.from(x);
+    if (x is String) {
+      try {
+        return Map<String, dynamic>.from(jsonDecode(x) as Map);
+      } on FormatException {
+        throw ApiException('Unexpected response format from server.');
+      }
+    }
+    throw ApiException('Unexpected response format from server.');
+  }
+
   // ── Auth ────────────────────────────────────────────────────
-  Future<Map<String, dynamic>> requestOtp(String phone) async => Map<String, dynamic>.from(
+  Future<Map<String, dynamic>> requestOtp(String phone) async => _asMap(
       await _post(ApiConstants.requestOtp, data: {'phone': phone}, requiresAuth: false));
 
-  Future<Map<String, dynamic>> verifyOtp(String phone, String code) async => Map<String, dynamic>.from(
+  Future<Map<String, dynamic>> verifyOtp(String phone, String code) async => _asMap(
       await _post(ApiConstants.verifyOtp, data: {'phone': phone, 'code': code}, requiresAuth: false));
 
   // ── My Students ─────────────────────────────────────────────
@@ -49,10 +67,10 @@ class ParentApiService {
 
   // ── Per-student ─────────────────────────────────────────────
   Future<Map<String, dynamic>> getStudentProfile(String studentId) async =>
-      Map<String, dynamic>.from(await _get(ApiConstants.studentProfile(studentId)));
+      _asMap(await _get(ApiConstants.studentProfile(studentId)));
 
   Future<Map<String, dynamic>> getMedical(String studentId) async =>
-      Map<String, dynamic>.from(await _get(ApiConstants.medical(studentId)));
+      _asMap(await _get(ApiConstants.medical(studentId)));
 
   Future<List<dynamic>> getAcademicDocuments(String studentId) async =>
       await _get(ApiConstants.academicDocuments(studentId)) as List<dynamic>;
@@ -65,6 +83,40 @@ class ParentApiService {
   Future<List<dynamic>> getHomework(String studentId) async =>
       await _get(ApiConstants.homework(studentId)) as List<dynamic>;
 
+  Future<void> submitHomework(String studentId, String assignmentId, {required String textResponse}) =>
+      _post(ApiConstants.submitHomework(studentId, assignmentId), data: {'textResponse': textResponse});
+
+  // ── LMS: courses + quizzes ──────────────────────────────────
+  Future<List<dynamic>> getCourses(String studentId) async =>
+      await _get(ApiConstants.courses(studentId)) as List<dynamic>;
+
+  Future<void> markLessonProgress(String studentId, {
+    required String syllabusId, required int unitNo, required int topicNo, required int lessonNo, required String status,
+  }) => _post(ApiConstants.lessonProgress(studentId), data: {
+        'syllabusId': syllabusId, 'unitNo': unitNo, 'topicNo': topicNo, 'lessonNo': lessonNo, 'status': status,
+      });
+
+  Future<List<dynamic>> getQuizzes(String studentId) async =>
+      await _get(ApiConstants.quizzes(studentId)) as List<dynamic>;
+
+  Future<Map<String, dynamic>> startQuiz(String studentId, {required String assessmentId, required String subject}) async =>
+      _asMap(await _post(ApiConstants.startQuiz(studentId), data: {'assessmentId': assessmentId, 'subject': subject}));
+
+  Future<Map<String, dynamic>> submitQuiz(String studentId, String attemptId, List<Map<String, dynamic>> answers) async =>
+      _asMap(await _post(ApiConstants.submitQuiz(studentId, attemptId), data: {'answers': answers}));
+
+  Future<List<dynamic>> getClassDiary(String studentId) async =>
+      await _get(ApiConstants.classDiary(studentId)) as List<dynamic>;
+
+  Future<List<int>> downloadClassDiaryPdf(String studentId, String diaryId) async {
+    try {
+      final res = await _client.getBytes(ApiConstants.classDiaryPdf(studentId, diaryId));
+      return res.data ?? const <int>[];
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    }
+  }
+
   Future<List<dynamic>> getLearningResources(String studentId) async =>
       await _get(ApiConstants.learningResources(studentId)) as List<dynamic>;
 
@@ -75,11 +127,12 @@ class ParentApiService {
       await _get(ApiConstants.dues(studentId)) as List<dynamic>;
 
   Future<Map<String, dynamic>> getBehaviourAndTarbiyah(String studentId) async =>
-      Map<String, dynamic>.from(await _get(ApiConstants.behaviourAndTarbiyah(studentId)));
+      _asMap(await _get(ApiConstants.behaviourAndTarbiyah(studentId)));
 
   Future<Map<String, dynamic>?> getTimetable(String studentId) async {
     final data = await _get(ApiConstants.timetable(studentId));
-    return data == null ? null : Map<String, dynamic>.from(data);
+    if (data == null || (data is String && data.trim().isEmpty)) return null;
+    return _asMap(data);
   }
 
   Future<List<dynamic>> getDatesheet(String studentId) async =>
@@ -103,6 +156,14 @@ class ParentApiService {
       _post(ApiConstants.studentLeaves(studentId),
           data: {'fromDate': fromDate, 'toDate': toDate, 'reason': reason, 'leaveType': leaveType});
 
+  // ── Home Tasks (Tarbiyah-at-home) ───────────────────────────
+  Future<List<dynamic>> getHomeTasks(String studentId) async =>
+      await _get(ApiConstants.homeTasks(studentId)) as List<dynamic>;
+
+  Future<void> completeHomeTask(String studentId, String taskId, {String? parentNotes}) =>
+      _post(ApiConstants.completeHomeTask(studentId, taskId),
+          data: {if (parentNotes != null) 'parentNotes': parentNotes});
+
   // ── School-wide ─────────────────────────────────────────────
   Future<List<dynamic>> getCirculars() async => await _get(ApiConstants.circulars) as List<dynamic>;
 
@@ -124,13 +185,29 @@ class ParentApiService {
   Future<List<dynamic>> getPTMHistory(String studentId) async =>
       await _get(ApiConstants.ptmHistory(studentId)) as List<dynamic>;
 
+  Future<List<dynamic>> getPTMTeachers(String studentId) async =>
+      await _get(ApiConstants.ptmTeachers(studentId)) as List<dynamic>;
+
+  Future<void> requestPTM(String studentId,
+          {required String teacherId, required String scheduledDate, String? startTime, String? reason}) =>
+      _post(ApiConstants.ptmHistory(studentId), data: {
+        'teacherId': teacherId, 'scheduledDate': scheduledDate,
+        if (startTime != null) 'startTime': startTime,
+        if (reason != null && reason.isNotEmpty) 'reason': reason,
+      });
+
+  Future<void> cancelPTM(String studentId, String meetingId) =>
+      _post(ApiConstants.ptmCancel(studentId, meetingId));
+
+  Future<void> acknowledgeCircular(String id) => _post(ApiConstants.acknowledgeCircular(id));
+
   // ── Messages ────────────────────────────────────────────────
   Future<List<dynamic>> getThreads() async => await _get(ApiConstants.threads) as List<dynamic>;
 
   Future<Map<String, dynamic>> createThread({
     required String subject, String? studentId, String? studentName,
     required String staffId, required String staffName, required String firstMessage,
-  }) async => Map<String, dynamic>.from(await _post(ApiConstants.threads, data: {
+  }) async => _asMap(await _post(ApiConstants.threads, data: {
         'subject': subject, if (studentId != null) 'studentId': studentId, if (studentName != null) 'studentName': studentName,
         'staffId': staffId, 'staffName': staffName, 'firstMessage': firstMessage,
       }));

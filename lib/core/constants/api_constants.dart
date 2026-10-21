@@ -32,6 +32,16 @@ class ApiConstants {
   static String attendance(String id) => '$parentPortal/students/$id/attendance';
   static String homework(String id) => '$parentPortal/students/$id/homework';
   static String learningResources(String id) => '$parentPortal/students/$id/learning-resources';
+  static String submitHomework(String id, String assignmentId) =>
+      '$parentPortal/students/$id/homework/$assignmentId/submit';
+  static String courses(String id) => '$parentPortal/students/$id/courses';
+  static String lessonProgress(String id) => '$parentPortal/students/$id/lessons/progress';
+  static String quizzes(String id) => '$parentPortal/students/$id/quizzes';
+  static String startQuiz(String id) => '$parentPortal/students/$id/quizzes/start';
+  static String submitQuiz(String id, String attemptId) =>
+      '$parentPortal/students/$id/quizzes/$attemptId/submit';
+  static String classDiary(String id) => '$parentPortal/students/$id/class-diary';
+  static String classDiaryPdf(String id, String diaryId) => '$parentPortal/students/$id/class-diary/$diaryId/pdf';
   static String results(String id) => '$parentPortal/students/$id/results';
   static String dues(String id) => '$parentPortal/students/$id/dues';
   static String behaviourAndTarbiyah(String id) => '$parentPortal/students/$id/behaviour';
@@ -43,10 +53,16 @@ class ApiConstants {
       '$parentPortal/students/$id/consent/$consentRequestId/respond';
   static String studentLeaves(String id) => '$parentPortal/students/$id/leaves';
   static String ptmHistory(String id) => '$parentPortal/students/$id/ptm';
+  static String ptmTeachers(String id) => '$parentPortal/students/$id/ptm/teachers';
+  static String ptmCancel(String id, String meetingId) => '$parentPortal/students/$id/ptm/$meetingId/cancel';
+  static String homeTasks(String id) => '$parentPortal/students/$id/home-tasks';
+  static String completeHomeTask(String id, String taskId) =>
+      '$parentPortal/students/$id/home-tasks/$taskId/complete';
 
   // ── School-wide ──────────────────────────────────────────────
   static const String circulars = '$parentPortal/circulars';
   static const String events = '$parentPortal/events';
+  static String acknowledgeCircular(String id) => '$parentPortal/circulars/$id/acknowledge';
 
   // ── Notifications / Inbox ───────────────────────────────────
   static const String notifications = '$parentPortal/notifications';

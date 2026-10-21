@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../utils/toast_util.dart';
 import '../../students/controllers/student_controller.dart';
 
 class LeavesController extends GetxController {
@@ -24,8 +26,9 @@ class LeavesController extends GetxController {
     error.value = null;
     try {
       leaves.value = await _api.getStudentLeaves(studentId);
-    } catch (_) {
-      error.value = 'Could not load leave requests';
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }
@@ -49,7 +52,8 @@ class LeavesController extends GetxController {
       );
       await fetch();
       return true;
-    } catch (_) {
+    } on ApiException catch (e) {
+      error.value = e.message;
       return false;
     } finally {
       submitting.value = false;

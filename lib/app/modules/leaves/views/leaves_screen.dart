@@ -132,7 +132,7 @@ class LeavesScreen extends GetView<LeavesController> {
                       DateTime.tryParse(l['fromDate']?.toString() ?? '');
                   final to = DateTime.tryParse(l['toDate']?.toString() ?? '');
                   final range = from != null && to != null
-                      ? (from.day == to.day && from.month == to.month
+                      ? (from.year == to.year && from.month == to.month && from.day == to.day
                           ? '${from.day}/${from.month}/${from.year}'
                           : '${from.day}/${from.month} – ${to.day}/${to.month}/${to.year}')
                       : '';
@@ -158,6 +158,16 @@ class LeavesScreen extends GetView<LeavesController> {
                                   fontSize: 9.5,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis),
+                              if (status != 'pending' &&
+                                  (l['approverNote']?.toString().isNotEmpty ?? false)) ...[
+                                const SizedBox(height: 3),
+                                CustomText(
+                                    text: '${l['approverName'] ?? 'School'}: ${l['approverNote']}',
+                                    color: AppColors.ink,
+                                    fontSize: 10,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis),
+                              ],
                             ],
                           ),
                         ),
@@ -299,7 +309,8 @@ class LeavesScreen extends GetView<LeavesController> {
                             CustomAppSnackbar.success(
                                 'Your leave request has been submitted.');
                           } else {
-                            CustomAppSnackbar.error('Please try again.');
+                            CustomAppSnackbar.error(
+                                controller.error.value ?? 'Please try again.');
                           }
                         },
                       )),

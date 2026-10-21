@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Eldermin Parent uses your camera to let you take a photo for your profile picture or to attach to messages and documents shared with your child's school.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Eldermin Parent needs access to your photo library so you can choose a photo for your profile picture or attach images to messages and documents shared with your child's school.</string>
+	<key>UIStatusBarHidden</key>
+	<false/>
 </dict>
 </plist>

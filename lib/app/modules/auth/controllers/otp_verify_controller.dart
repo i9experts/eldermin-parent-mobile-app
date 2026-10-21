@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/services/parent_api_service.dart';
 import '../../../components/custom_app_snack_bar.dart';
+import '../../../utils/toast_util.dart';
 import 'auth_controller.dart';
 
 class OtpVerifyController extends GetxController {
@@ -65,6 +66,7 @@ class OtpVerifyController extends GetxController {
       // stack whenever that happens - no manual pop needed here.
     } on ApiException catch (e) {
       error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }

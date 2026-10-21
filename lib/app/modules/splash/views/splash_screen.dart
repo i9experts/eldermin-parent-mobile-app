@@ -18,10 +18,10 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   late final AnimationController _entrance;
   late final AnimationController _loop;
-
   late final Animation<double> _ringFade;
   late final Animation<double> _ringScale;
   late final Animation<double> _logoFade;
@@ -35,23 +35,40 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   void initState() {
     super.initState();
 
-    _entrance = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..forward();
-    _loop = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))..repeat();
+    _entrance = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1200))
+      ..forward();
+    _loop = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1400))
+      ..repeat();
+    _ringFade = CurvedAnimation(
+        parent: _entrance,
+        curve: const Interval(0.0, 0.45, curve: Curves.easeOut));
+    _ringScale = Tween(begin: 0.5, end: 1.0).animate(CurvedAnimation(
+        parent: _entrance,
+        curve: const Interval(0.0, 0.55, curve: Curves.easeOutCubic)));
 
-    _ringFade = CurvedAnimation(parent: _entrance, curve: const Interval(0.0, 0.45, curve: Curves.easeOut));
-    _ringScale = Tween(begin: 0.5, end: 1.0)
-        .animate(CurvedAnimation(parent: _entrance, curve: const Interval(0.0, 0.55, curve: Curves.easeOutCubic)));
+    _logoFade = CurvedAnimation(
+        parent: _entrance,
+        curve: const Interval(0.05, 0.5, curve: Curves.easeOut));
+    _logoScale = Tween(begin: 0.55, end: 1.0).animate(CurvedAnimation(
+        parent: _entrance,
+        curve: const Interval(0.05, 0.6, curve: Curves.easeOutBack)));
 
-    _logoFade = CurvedAnimation(parent: _entrance, curve: const Interval(0.05, 0.5, curve: Curves.easeOut));
-    _logoScale = Tween(begin: 0.55, end: 1.0)
-        .animate(CurvedAnimation(parent: _entrance, curve: const Interval(0.05, 0.6, curve: Curves.easeOutBack)));
+    _titleFade = CurvedAnimation(
+        parent: _entrance,
+        curve: const Interval(0.4, 0.75, curve: Curves.easeOut));
+    _titleSlide = Tween(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+        CurvedAnimation(
+            parent: _entrance,
+            curve: const Interval(0.4, 0.8, curve: Curves.easeOutCubic)));
 
-    _titleFade = CurvedAnimation(parent: _entrance, curve: const Interval(0.4, 0.75, curve: Curves.easeOut));
-    _titleSlide = Tween(begin: const Offset(0, 0.3), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _entrance, curve: const Interval(0.4, 0.8, curve: Curves.easeOutCubic)));
-
-    _taglineFade = CurvedAnimation(parent: _entrance, curve: const Interval(0.6, 0.95, curve: Curves.easeOut));
-    _loaderFade = CurvedAnimation(parent: _entrance, curve: const Interval(0.75, 1.0, curve: Curves.easeOut));
+    _taglineFade = CurvedAnimation(
+        parent: _entrance,
+        curve: const Interval(0.6, 0.95, curve: Curves.easeOut));
+    _loaderFade = CurvedAnimation(
+        parent: _entrance,
+        curve: const Interval(0.75, 1.0, curve: Curves.easeOut));
   }
 
   @override
@@ -89,7 +106,8 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     height: 200,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withOpacity(0.07), width: 42),
+                      border: Border.all(
+                          color: Colors.white.withOpacity(0.07), width: 42),
                     ),
                   ),
                 ),
@@ -107,7 +125,8 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     height: 220,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withOpacity(0.05), width: 46),
+                      border: Border.all(
+                          color: Colors.white.withOpacity(0.05), width: 46),
                     ),
                   ),
                 ),
@@ -119,63 +138,65 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                  const Spacer(flex: 3),
-                  FadeTransition(
-                    opacity: _logoFade,
-                    child: ScaleTransition(
-                      scale: _logoScale,
-                      child: Container(
-                        width: 128,
-                        height: 128,
-                        padding: const EdgeInsets.all(22),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.12),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white.withOpacity(0.18)),
+                    const Spacer(flex: 3),
+                    FadeTransition(
+                      opacity: _logoFade,
+                      child: ScaleTransition(
+                        scale: _logoScale,
+                        child: Container(
+                          width: 128,
+                          height: 128,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: AppColors.primaryColor.withOpacity(0.8)),
+                          ),
+                          child: const CommonImageView(
+                            imagePath: AppImages.fullLogo,
+                            fit: BoxFit.contain,
+                          ),
                         ),
-                        child: const CommonImageView(
-                          imagePath: AppImages.fullLogo,
-                          fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    FadeTransition(
+                      opacity: _titleFade,
+                      child: SlideTransition(
+                        position: _titleSlide,
+                        child: const CustomText(
+                          text: 'Eldermin',
+                          textAlign: TextAlign.center,
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -1,
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  FadeTransition(
-                    opacity: _titleFade,
-                    child: SlideTransition(
-                      position: _titleSlide,
-                      child: const CustomText(
-                        text: 'Eldermin',
-                        textAlign: TextAlign.center,
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -1,
+                    const SizedBox(height: 6),
+                    FadeTransition(
+                      opacity: _taglineFade,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.xl),
+                        child: CustomText(
+                          text: 'Stay connected, stay informed.',
+                          textAlign: TextAlign.center,
+                          color: Colors.white.withOpacity(0.75),
+                          fontSize: 13.5,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  FadeTransition(
-                    opacity: _taglineFade,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                      child: CustomText(
-                        text: 'Stay connected, stay informed.',
-                        textAlign: TextAlign.center,
-                        color: Colors.white.withOpacity(0.75),
-                        fontSize: 13.5,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    const Spacer(flex: 4),
+                    FadeTransition(
+                      opacity: _loaderFade,
+                      child: _LoadingDots(loop: _loop),
                     ),
-                  ),
-                  const Spacer(flex: 4),
-                  FadeTransition(
-                    opacity: _loaderFade,
-                    child: _LoadingDots(loop: _loop),
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
+                    const SizedBox(height: AppSpacing.xl),
                   ],
                 ),
               ),

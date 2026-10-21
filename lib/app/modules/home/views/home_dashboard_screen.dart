@@ -61,7 +61,7 @@ class HomeDashboardScreen extends StatelessWidget {
               final records = controller.attendance;
               final total = records.length;
               final present =
-                  records.where((r) => r['status'] == 'present').length;
+                  records.where((r) => r['status'] == 'present' || r['status'] == 'late').length;
               final pct = total == 0 ? 0 : ((present / total) * 100).round();
               return HeroCard(
                 kicker: "${student.firstName}'s day at a glance",
@@ -103,7 +103,7 @@ class HomeDashboardScreen extends StatelessWidget {
                 return const SizedBox.shrink();
               final pending = controller.homework
                   .where((h) =>
-                      h['status'] != 'graded' && h['status'] != 'submitted')
+                      !['submitted', 'late', 'graded'].contains((h['mySubmission'] is Map ? h['mySubmission']['status'] : null)))
                   .take(3)
                   .toList();
               if (pending.isEmpty) {
@@ -197,7 +197,7 @@ class _QuickAccessGrid extends StatelessWidget {
       ),
       (
         Icons.account_balance_wallet_outlined,
-        'Pay fees',
+        'Fees & dues',
         AppColors.secondryColor,
         () => Get.toNamed(Routes.dues)
       ),

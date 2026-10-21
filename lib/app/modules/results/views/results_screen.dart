@@ -48,11 +48,23 @@ class ResultsScreen extends StatelessWidget {
 
       final reportCards = controller.reportCards;
       if (reportCards.isEmpty) {
-        return const AppEmptyView(
-            icon: Icons.bar_chart_rounded,
-            title: 'No results published yet',
-            subtitle:
-                "Results will appear here once your child's school publishes them.");
+        // Scrollable so pull-to-refresh works even with nothing to show.
+        return RefreshIndicator(
+          onRefresh: controller.fetch,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.6,
+                child: const AppEmptyView(
+                    icon: Icons.bar_chart_rounded,
+                    title: 'No results published yet',
+                    subtitle:
+                        "Results will appear here once your child's school publishes them. Pull down to refresh."),
+              ),
+            ],
+          ),
+        );
       }
       final latest = reportCards.first;
       final subjects = (latest['subjects'] as List<dynamic>? ?? []);
@@ -65,7 +77,7 @@ class ResultsScreen extends StatelessWidget {
         for (final rc in chronological)
           if ((rc['overallPercentage'] as num?) != null)
             (
-              (rc['term'] ?? rc['examType'] ?? '').toString(),
+              (rc['assessmentTitle'] ?? rc['term'] ?? '').toString(),
               (rc['overallPercentage'] as num).toDouble(),
             ),
       ];
@@ -94,7 +106,7 @@ class ResultsScreen extends StatelessWidget {
               title: 'Learning progress',
               caption: 'Academic performance and growth',
               selectLabel:
-                  (latest['term'] ?? latest['examType'] ?? 'Latest')
+                  (latest['assessmentTitle'] ?? latest['term'] ?? 'Latest')
                       .toString(),
             ),
             const AppWeekDateStrip(),

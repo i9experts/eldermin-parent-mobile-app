@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
+import '../../../../core/widgets/student_avatar.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_text.dart';
 import '../controllers/profile_controller.dart';
@@ -129,22 +130,20 @@ class ProfileScreen extends GetView<ProfileController> {
               AppCard(
                 child: Column(
                   children: [
-                    Container(
-                      width: 66,
-                      height: 66,
-                      decoration: BoxDecoration(
+                    StudentAvatar(
+                      photoUrl: (p['photoUrl'] ?? p['photo'])?.toString(),
+                      initials: initials,
+                      size: 66,
+                      radius: 23,
+                      fontSize: 18,
+                      initialsColor: AppColors.primaryColor,
+                      fallbackDecoration: BoxDecoration(
                         gradient: const LinearGradient(
                             colors: [Colors.white, Color(0xFFD9EAFA)]),
                         borderRadius: BorderRadius.circular(23),
                         border: Border.all(
                             color: AppColors.primaryColor.withOpacity(0.12), width: 2),
                       ),
-                      child: Center(
-                          child: CustomText(
-                              text: initials.isEmpty ? '—' : initials,
-                              color: AppColors.primaryColor,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 18)),
                     ),
                     const SizedBox(height: 10),
                     CustomText(

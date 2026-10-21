@@ -81,12 +81,13 @@ class TimetableScreen extends GetView<TimetableController> {
               title: 'No timetable published yet',
               subtitle: "Your school hasn't set up this class's timetable.");
         }
-        final today = controller.selectedDay.value;
+        // UI index is Monday-first (0..6); backend `day` is 0=Sunday.
+        final today = (controller.selectedDay.value + 1) % 7;
         final allToday = (timetable['periods'] as List<dynamic>? ?? [])
             .where((p) => p['day'] == today)
             .toList();
         final periods = allToday
-            .where((p) => p['type'] == 'regular')
+            .where((p) => p['type'] != 'break' && p['type'] != 'free')
             .toList()
           ..sort(
               (a, b) => (a['periodNo'] as num).compareTo(b['periodNo'] as num));

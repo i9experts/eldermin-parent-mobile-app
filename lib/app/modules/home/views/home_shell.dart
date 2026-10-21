@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/widgets/student_avatar.dart';
 import '../../../routes/app_routes.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../components/svg_icon.dart';
@@ -38,22 +39,20 @@ class HomeShell extends StatelessWidget {
             final student = students.selectedStudent;
             return Row(
               children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
+                StudentAvatar(
+                  photoUrl: student?.photoUrl,
+                  initials: student?.initials ?? '--',
+                  size: 38,
+                  radius: 14,
+                  fontSize: 12,
+                  initialsColor: AppColors.primaryColor,
+                  fallbackDecoration: BoxDecoration(
                     gradient: const LinearGradient(
                         colors: [Colors.white, Color(0xFFD9EAFA)]),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                         color: Colors.white.withOpacity(0.35), width: 2),
                   ),
-                  child: Center(
-                      child: CustomText(
-                          text: student?.initials ?? '--',
-                          color: AppColors.primaryColor,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 12)),
                 ),
                 const SizedBox(width: 10),
                 Expanded(

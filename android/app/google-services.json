@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "79203133506",
+    "project_id": "eldermin-489ea",
+    "storage_bucket": "eldermin-489ea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79203133506:android:781a47eb2499938dfbe5db",
+        "android_client_info": {
+          "package_name": "com.eldermin.eldermin_parent_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9KP1mxzzlPiYeCifvMIx7IZuuc0DmBPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

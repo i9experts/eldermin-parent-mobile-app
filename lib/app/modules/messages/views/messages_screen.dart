@@ -4,6 +4,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_text.dart';
+import '../../../routes/app_routes.dart';
 import '../controllers/messages_controller.dart';
 
 class MessagesScreen extends StatelessWidget {
@@ -84,80 +85,94 @@ class MessagesScreen extends StatelessWidget {
                         color: AppColors.muted,
                         fontSize: 10),
                     const SizedBox(height: 8),
-                    AppProgressBar(percent: healthPercent, color: AppColors.secondryColor),
+                    AppProgressBar(
+                        percent: healthPercent, color: AppColors.secondryColor),
                   ],
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
               ...threads.map((t) {
-            final lastAt = t['lastMessageAt'] != null
-                ? DateTime.tryParse(t['lastMessageAt'].toString())
-                : null;
-            final unread = t['guardianHasUnread'] == true;
-            return AppCard(
-              child: Row(children: [
-                Container(
-                  width: 39,
-                  height: 39,
-                  decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                          colors: [AppColors.blue, AppColors.sky]),
-                      borderRadius: BorderRadius.circular(14)),
-                  child: Center(
-                      child: CustomText(
-                          text: (t['staffName'] ?? '?')
-                              .toString()
-                              .substring(0, 2)
-                              .toUpperCase(),
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 11,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis)),
-                ),
-                const SizedBox(width: 11),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(children: [
-                        Expanded(
+                final lastAt = t['lastMessageAt'] != null
+                    ? DateTime.tryParse(t['lastMessageAt'].toString())
+                    : null;
+                final unread = t['guardianHasUnread'] == true;
+                return GestureDetector(
+                  onTap: () async {
+                    await Get.toNamed(Routes.messageThread, arguments: {
+                    'threadId': t['_id']?.toString() ?? '',
+                    'subject': t['subject']?.toString() ?? 'Conversation',
+                    'staffName': t['staffName']?.toString() ?? 'Staff',
+                    'studentName': t['studentName']?.toString(),
+                    });
+                    // Opening a thread clears its unread flag server-side.
+                    controller.fetch();
+                  },
+                  child: AppCard(
+                    child: Row(children: [
+                      Container(
+                        width: 39,
+                        height: 39,
+                        decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                                colors: [AppColors.blue, AppColors.sky]),
+                            borderRadius: BorderRadius.circular(14)),
+                        child: Center(
                             child: CustomText(
-                                text: t['staffName'] ?? 'Staff',
+                                text: (t['staffName'] ?? '?')
+                                    .toString()
+                                    .substring(0, 2)
+                                    .toUpperCase(),
+                                color: Colors.white,
                                 fontWeight: FontWeight.w800,
-                                fontSize: 12,
-                                color: AppColors.primaryColor,
+                                fontSize: 11,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis)),
-                        if (lastAt != null)
-                          CustomText(
-                              text:
-                                  '${lastAt.hour}:${lastAt.minute.toString().padLeft(2, '0')}',
-                              color: AppColors.faint,
-                              fontSize: 9),
-                      ]),
-                      const SizedBox(height: 3),
-                      CustomText(
-                          text: t['lastMessagePreview'] ?? '',
-                          color: unread ? AppColors.ink : AppColors.muted,
-                          fontSize: 10.5,
-                          fontWeight:
-                              unread ? FontWeight.w700 : FontWeight.w400,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis),
-                    ],
+                      ),
+                      const SizedBox(width: 11),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(children: [
+                              Expanded(
+                                  child: CustomText(
+                                      text: t['staffName'] ?? 'Staff',
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 12,
+                                      color: AppColors.primaryColor,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis)),
+                              if (lastAt != null)
+                                CustomText(
+                                    text:
+                                        '${lastAt.hour}:${lastAt.minute.toString().padLeft(2, '0')}',
+                                    color: AppColors.faint,
+                                    fontSize: 9),
+                            ]),
+                            const SizedBox(height: 3),
+                            CustomText(
+                                text: t['lastMessagePreview'] ?? '',
+                                color: unread ? AppColors.ink : AppColors.muted,
+                                fontSize: 10.5,
+                                fontWeight:
+                                    unread ? FontWeight.w700 : FontWeight.w400,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
+                      ),
+                      if (unread)
+                        Container(
+                            margin: const EdgeInsets.only(left: 6),
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                                color: AppColors.amber,
+                                shape: BoxShape.circle)),
+                    ]),
                   ),
-                ),
-                if (unread)
-                  Container(
-                      margin: const EdgeInsets.only(left: 6),
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                          color: AppColors.amber, shape: BoxShape.circle)),
-              ]),
-            );
-          }),
+                );
+              }),
             ],
           ],
         ),

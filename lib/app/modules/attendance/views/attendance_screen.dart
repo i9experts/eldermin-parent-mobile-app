@@ -53,7 +53,8 @@ class AttendanceScreen extends GetView<AttendanceController> {
         final present = records.where((r) => r['status'] == 'present').length;
         final absent = records.where((r) => r['status'] == 'absent').length;
         final late = records.where((r) => r['status'] == 'late').length;
-        final pct = total == 0 ? 0 : ((present / total) * 100).round();
+        // A late arrival still attended that day, so it counts toward attendance.
+        final pct = total == 0 ? 0 : (((present + late) / total) * 100).round();
 
         final monthly = controller.monthlyAttendancePercent;
 
@@ -147,8 +148,9 @@ class AttendanceScreen extends GetView<AttendanceController> {
                           AppTag(
                               status.isEmpty
                                   ? '—'
-                                  : status[0].toUpperCase() +
-                                      status.substring(1),
+                                  : (status[0].toUpperCase() +
+                                          status.substring(1))
+                                      .replaceAll('_', ' '),
                               style: style),
                         ]),
                   );

@@ -23,7 +23,7 @@ class AuthController extends GetxController {
     // Runs alongside the real token/profile read below so the splash
     // screen's entrance animation always gets to finish, even on a
     // fast device where bootstrap alone would resolve in a few ms.
-    final minSplashDuration = Future.delayed(const Duration(milliseconds: 1400));
+    final minSplashDuration = Future.delayed(const Duration(seconds: 3));
 
     final token = await AppPreferences.getAccessTokenAsync();
     if (token == null) {

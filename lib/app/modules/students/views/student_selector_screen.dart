@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../core/models/student.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
+import '../../../../core/widgets/student_avatar.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_text.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -93,22 +94,18 @@ class _StudentTile extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
+          StudentAvatar(
+            photoUrl: student.photoUrl,
+            initials: student.initials,
+            size: 48,
+            radius: AppRadius.lg,
+            fontSize: 15,
+            initialsColor: Colors.white,
+            fallbackDecoration: BoxDecoration(
               gradient:
                   const LinearGradient(colors: [AppColors.blue, AppColors.sky]),
               borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
-            child: Center(
-                child: CustomText(
-                    text: student.initials,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 15,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis)),
           ),
           const SizedBox(width: 14),
           Expanded(

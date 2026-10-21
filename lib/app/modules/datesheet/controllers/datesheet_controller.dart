@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../utils/toast_util.dart';
 import '../../students/controllers/student_controller.dart';
 
 class DatesheetController extends GetxController {
@@ -23,8 +25,9 @@ class DatesheetController extends GetxController {
     error.value = null;
     try {
       assessments.value = await _api.getDatesheet(studentId);
-    } catch (_) {
-      error.value = 'Could not load exam datesheet';
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }

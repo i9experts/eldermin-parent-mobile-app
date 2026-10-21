@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../utils/toast_util.dart';
 
 class CircularsController extends GetxController {
   final ParentApiService _api = Get.find<ParentApiService>();
@@ -28,10 +30,20 @@ class CircularsController extends GetxController {
     error.value = null;
     try {
       circulars.value = await _api.getCirculars();
-    } catch (_) {
-      error.value = 'Could not load school updates';
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
+    }
+  }
+
+  Future<void> acknowledge(String id) async {
+    try {
+      await _api.acknowledgeCircular(id);
+      await fetch();
+    } on ApiException catch (e) {
+      ToastUtil.showToast(e.message);
     }
   }
 }

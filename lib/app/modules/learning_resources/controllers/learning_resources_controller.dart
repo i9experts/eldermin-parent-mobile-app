@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../utils/toast_util.dart';
 import '../../students/controllers/student_controller.dart';
 
 class LearningResourcesController extends GetxController {
@@ -23,8 +25,9 @@ class LearningResourcesController extends GetxController {
     error.value = null;
     try {
       plans.value = await _api.getLearningResources(studentId);
-    } catch (_) {
-      error.value = 'Could not load learning resources';
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }

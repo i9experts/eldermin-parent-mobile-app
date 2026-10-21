@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../utils/toast_util.dart';
 
 class NotificationsController extends GetxController {
   final ParentApiService _api = Get.find<ParentApiService>();
@@ -19,8 +21,9 @@ class NotificationsController extends GetxController {
     error.value = null;
     try {
       items.value = await _api.getNotifications();
-    } catch (_) {
-      error.value = 'Could not load notifications';
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }
@@ -31,7 +34,8 @@ class NotificationsController extends GetxController {
       await _api.markAllNotificationsRead();
       await fetch();
       return true;
-    } catch (_) {
+    } on ApiException catch (e) {
+      error.value = e.message;
       return false;
     }
   }
