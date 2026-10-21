@@ -5,7 +5,6 @@ import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/hero_card.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_text.dart';
-import '../../shared/views/coming_soon_screen.dart';
 import '../controllers/dues_controller.dart';
 
 class DuesScreen extends GetView<DuesController> {
@@ -101,31 +100,6 @@ class DuesScreen extends GetView<DuesController> {
                 trendWarn: totalDue > 0,
                 percent: percentPaid,
                 ringColor: totalDue <= 0 ? AppColors.secondryColor : AppColors.amber,
-              ),
-              const SizedBox(height: 10),
-              Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                  onTap: () => Get.to(
-                      () => const ComingSoonScreen(title: 'Secure Payment')),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 13),
-                    decoration: BoxDecoration(
-                        color: AppColors.amber,
-                        borderRadius: BorderRadius.circular(AppRadius.md)),
-                    child: const Center(
-                      child: CustomText(
-                        text: 'Pay securely →',
-                        color: AppColors.primaryColor,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ),
               ),
               const SizedBox(height: AppSpacing.md),
               StatsRow(items: [

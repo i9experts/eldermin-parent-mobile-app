@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../utils/toast_util.dart';
 import '../../students/controllers/student_controller.dart';
 
 class LibraryController extends GetxController {
@@ -32,6 +34,8 @@ class LibraryController extends GetxController {
 
     return issues.where((raw) {
       final b = raw as Map;
+      // Books still out (issued/overdue) must stay visible whatever month it is.
+      if (b['status'] == 'issued' || b['status'] == 'overdue') return true;
       final hasAnyDate =
           b['dueDate'] != null || b['returnDate'] != null || b['issueDate'] != null;
       if (!hasAnyDate) return true;
@@ -54,8 +58,9 @@ class LibraryController extends GetxController {
     error.value = null;
     try {
       issues.value = await _api.getLibrary(studentId);
-    } catch (_) {
-      error.value = 'Could not load library records';
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }

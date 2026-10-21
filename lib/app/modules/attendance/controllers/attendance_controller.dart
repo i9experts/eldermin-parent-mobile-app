@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../utils/toast_util.dart';
 import '../../students/controllers/student_controller.dart';
 
 class AttendanceController extends GetxController {
@@ -41,9 +43,14 @@ class AttendanceController extends GetxController {
     loading.value = true;
     error.value = null;
     try {
-      records.value = await _api.getAttendance(studentId);
-    } catch (_) {
-      error.value = 'Could not load attendance';
+      final now = DateTime.now();
+      // Last 12 months so the month picker can go back past the server's default recent-rows window.
+      records.value = await _api.getAttendance(studentId,
+          from: DateTime(now.year - 1, now.month, 1).toIso8601String(),
+          to: now.add(const Duration(days: 1)).toIso8601String());
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }
@@ -71,7 +78,7 @@ class AttendanceController extends GetxController {
         : sortedKeys;
     return last6.map((key) {
       final list = byMonth[key]!;
-      final present = list.where((r) => r['status'] == 'present').length;
+      final present = list.where((r) => r['status'] == 'present' || r['status'] == 'late').length;
       final pct = list.isEmpty ? 0.0 : (present / list.length) * 100;
       final month = int.parse(key.split('-')[1]);
       return (_monthNames[month - 1], pct);

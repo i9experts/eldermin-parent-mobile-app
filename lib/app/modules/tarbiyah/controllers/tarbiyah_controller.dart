@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../utils/toast_util.dart';
 import '../../students/controllers/student_controller.dart';
 
 class TarbiyahController extends GetxController {
@@ -39,8 +41,9 @@ class TarbiyahController extends GetxController {
       behaviourRecords.value = data['behaviourRecords'] as List<dynamic>? ?? [];
       tarbiyahAssessments.value =
           data['tarbiyahAssessments'] as List<dynamic>? ?? [];
-    } catch (_) {
-      error.value = 'Could not load growth & tarbiyah records';
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }

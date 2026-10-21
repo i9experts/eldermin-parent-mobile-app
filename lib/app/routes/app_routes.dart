@@ -19,9 +19,16 @@ abstract class Routes {
   static const profile = '/profile';
   static const medical = '/medical';
   static const documents = '/documents';
+  static const courses = '/courses';
+  static const quizzes = '/quizzes';
+  static const quizAttempt = '/quiz-attempt';
   static const diary = '/diary';
   static const learningResources = '/learning-resources';
   static const datesheet = '/datesheet';
   static const ptm = '/ptm';
   static const feedback = '/feedback';
+  static const messageThread = '/message-thread';
+  static const aboutUs = '/about-us';
+  static const help = '/help';
+  static const privacyPolicy = '/privacy-policy';
 }

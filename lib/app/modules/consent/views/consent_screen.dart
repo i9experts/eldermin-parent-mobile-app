@@ -171,7 +171,8 @@ class ConsentScreen extends GetView<ConsentController> {
                                                   'Response recorded — consent declined.');
                                             } else {
                                               CustomAppSnackbar.error(
-                                                  'Could not submit your response. Please try again.');
+                                                  controller.error.value ??
+                                                      'Could not submit your response. Please try again.');
                                             }
                                           },
                                     child: const CustomText(text: 'Decline'),
@@ -192,7 +193,8 @@ class ConsentScreen extends GetView<ConsentController> {
                                             'Response recorded — consent granted.');
                                       } else {
                                         CustomAppSnackbar.error(
-                                            'Could not submit your response. Please try again.');
+                                            controller.error.value ??
+                                                'Could not submit your response. Please try again.');
                                       }
                                     },
                                     prefix: busy

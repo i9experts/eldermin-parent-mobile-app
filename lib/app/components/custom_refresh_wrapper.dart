@@ -200,7 +200,7 @@ class _CustomRefreshWrapperState extends State<CustomRefreshWrapper>
                       ],
                     ),
                     child: CommonImageView(
-                      imagePath: AppImages.logoImage,
+                      imagePath: AppImages.fullLogo,
                       fit: BoxFit.contain,
                     ),
                   ),

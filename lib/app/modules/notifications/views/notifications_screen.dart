@@ -5,6 +5,7 @@ import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_app_snack_bar.dart';
 import '../../../components/custom_text.dart';
+import '../../../routes/app_routes.dart';
 import '../controllers/notifications_controller.dart';
 
 const _notificationIcons = {
@@ -17,6 +18,20 @@ const _notificationIcons = {
   'result': Icons.bar_chart_rounded,
   'behaviour': Icons.emoji_events_outlined,
   'message': Icons.chat_bubble_outline_rounded,
+  'ptm': Icons.groups_outlined,
+  'leave_status': Icons.event_note_outlined,
+};
+
+/// Where a notification type's detail lives in the app.
+const _notificationRoutes = {
+  'circular': Routes.circulars,
+  'consent': Routes.consent,
+  'leave_decision': Routes.leaves,
+  'fee_due': Routes.dues,
+  'homework': Routes.homework,
+  'diary': Routes.diary,
+  'behaviour': Routes.tarbiyah,
+  'ptm': Routes.ptm,
 };
 
 class NotificationsScreen extends GetView<NotificationsController> {
@@ -38,7 +53,8 @@ class NotificationsScreen extends GetView<NotificationsController> {
               if (ok) {
                 CustomAppSnackbar.success('All notifications marked as read.');
               } else {
-                CustomAppSnackbar.error('Could not update notifications. Please try again.');
+                CustomAppSnackbar.error(controller.error.value ??
+                    'Could not update notifications. Please try again.');
               }
             },
             child: const CustomText(
@@ -87,6 +103,8 @@ class NotificationsScreen extends GetView<NotificationsController> {
                             color: AppColors.amber, shape: BoxShape.circle)),
                 onTap: () {
                   if (!isRead) controller.markRead(n['_id']);
+                  final route = _notificationRoutes[n['type']];
+                  if (route != null) Get.toNamed(route);
                 },
               );
             }).toList(),

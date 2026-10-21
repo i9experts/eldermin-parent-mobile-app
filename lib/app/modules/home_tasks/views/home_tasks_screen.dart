@@ -61,7 +61,6 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
               const ScreenHeader(
                 title: 'Home tasks',
                 caption: 'Small Tarbiyah tasks to practice at home',
-                selectLabel: 'Academic year',
               ),
               const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
@@ -83,6 +82,14 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                   final isCompleted = status == 'completed';
                   final due = DateTime.tryParse(t['dueDate']?.toString() ?? '');
                   final id = t['_id']?.toString() ?? '';
+                  final today = DateTime.now();
+                  final overdue = !isCompleted &&
+                      due != null &&
+                      due.toLocal().isBefore(DateTime(today.year, today.month, today.day));
+                  final assignedBy = t['assignedBy']?.toString() ?? '';
+                  final completedAt = DateTime.tryParse(t['completedAt']?.toString() ?? '');
+                  final rating = (t['reviewRating'] as num?)?.toInt();
+                  final reviewNotes = t['reviewNotes']?.toString() ?? '';
 
                   return Obx(() {
                     final isSubmitting = controller.completingId.value == id;
@@ -102,10 +109,11 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis),
                               ),
-                              AppTag(isCompleted ? 'Completed' : 'To do',
+                              AppTag(
+                                  isCompleted ? 'Completed' : (overdue ? 'Overdue' : 'To do'),
                                   style: isCompleted
                                       ? TagStyle.green
-                                      : TagStyle.amber),
+                                      : (overdue ? TagStyle.red : TagStyle.amber)),
                             ],
                           ),
                           if ((t['description']?.toString() ?? '')
@@ -118,11 +126,15 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis),
                           ],
-                          if (due != null) ...[
+                          if (due != null || assignedBy.isNotEmpty) ...[
                             const SizedBox(height: 4),
                             CustomText(
-                                text:
-                                    'Due ${due.day}/${due.month}/${due.year}',
+                                text: [
+                                  if (assignedBy.isNotEmpty) 'By $assignedBy',
+                                  if (due != null) 'Due ${due.toLocal().day}/${due.toLocal().month}/${due.toLocal().year}',
+                                  if (completedAt != null)
+                                    'Done ${completedAt.toLocal().day}/${completedAt.toLocal().month}/${completedAt.toLocal().year}',
+                                ].join(' · '),
                                 color: AppColors.muted,
                                 fontSize: 9.5),
                           ],
@@ -151,6 +163,28 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                                 text: '"${t['parentNotes']}"',
                                 color: AppColors.muted,
                                 fontSize: 10.5),
+                          ],
+                          if (isCompleted && (rating != null || reviewNotes.isNotEmpty)) ...[
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                if (rating != null)
+                                  for (var i = 1; i <= 5; i++)
+                                    Icon(i <= rating ? Icons.star_rounded : Icons.star_outline_rounded,
+                                        size: 16, color: AppColors.amber),
+                                if (reviewNotes.isNotEmpty) ...[
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: CustomText(
+                                        text: 'Teacher: $reviewNotes',
+                                        color: AppColors.muted,
+                                        fontSize: 10.5,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis),
+                                  ),
+                                ],
+                              ],
+                            ),
                           ],
                         ],
                       ),
@@ -209,7 +243,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                       if (ok) {
                         CustomAppSnackbar.success('Marked as complete.');
                       } else {
-                        CustomAppSnackbar.error('Please try again.');
+                        CustomAppSnackbar.error(controller.lastError ?? 'Please try again.');
                       }
                     },
                   )),

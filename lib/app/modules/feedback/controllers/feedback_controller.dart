@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/services/parent_api_service.dart';
 import '../../auth/controllers/auth_controller.dart';
 
@@ -25,8 +26,8 @@ class FeedbackController extends GetxController {
         priority: priority.value,
       );
       return true;
-    } catch (_) {
-      error.value = 'Could not submit your feedback. Please try again.';
+    } on ApiException catch (e) {
+      error.value = e.message;
       return false;
     } finally {
       submitting.value = false;

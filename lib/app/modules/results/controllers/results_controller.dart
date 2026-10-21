@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../utils/toast_util.dart';
 import '../../students/controllers/student_controller.dart';
 
 class ResultsController extends GetxController {
@@ -16,6 +18,10 @@ class ResultsController extends GetxController {
   void onInit() {
     super.onInit();
     ever(_students.selectedId, (_) => _loadIfStudentChanged());
+    // The children list arrives over the network, usually after this controller
+    // is created; selectedId stays null (first child is the default), so also
+    // react to the list itself or the first load never happens.
+    ever(_students.students, (_) => _loadIfStudentChanged());
     _loadIfStudentChanged();
   }
 
@@ -33,8 +39,9 @@ class ResultsController extends GetxController {
     error.value = null;
     try {
       reportCards.value = await _api.getResults(studentId);
-    } catch (_) {
-      error.value = 'Could not load results';
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }

@@ -34,7 +34,7 @@ class Student {
         currentGrade: json['currentGrade'] as String? ?? '',
         currentSection: json['currentSection'] as String?,
         admissionNo: json['admissionNo'] as String?,
-        photoUrl: json['photoUrl'] as String?,
+        photoUrl: (json['photoUrl'] ?? json['photo']) as String?,
         status: json['status'] as String?,
       );
 }

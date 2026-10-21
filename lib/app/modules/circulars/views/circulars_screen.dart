@@ -104,12 +104,58 @@ class CircularsScreen extends GetView<CircularsController> {
                       category,
                     ].join(' • '),
                     trailing: AppTag(category, style: TagStyle.info),
+                    onTap: () => _showCircular(context, c),
                   );
                 }),
             ],
           ),
         );
       }),
+    );
+  }
+
+  void _showCircular(BuildContext context, Map<String, dynamic> c) {
+    final needsAck = c['requiresAcknowledgment'] == true && c['acknowledged'] != true;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomText(
+                  text: c['title']?.toString() ?? 'Notice',
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  color: AppColors.primaryColor),
+              const SizedBox(height: 10),
+              CustomText(
+                  text: (c['body']?.toString().isNotEmpty ?? false)
+                      ? c['body'].toString()
+                      : 'No further details.',
+                  fontSize: 13,
+                  color: AppColors.ink),
+              if (needsAck && c['_id'] != null) ...[
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      Navigator.of(ctx).pop();
+                      await controller.acknowledge(c['_id'].toString());
+                    },
+                    child: const Text('Acknowledge'),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

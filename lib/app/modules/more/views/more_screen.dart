@@ -8,6 +8,7 @@ import '../../../components/svg_icon.dart';
 import '../../../config/app_icons.dart';
 import '../../shared/views/coming_soon_screen.dart';
 import '../../students/controllers/student_controller.dart';
+import '../../auth/controllers/auth_controller.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -21,6 +22,16 @@ class MoreScreen extends StatelessWidget {
         const Icon(Icons.auto_stories_outlined, color: AppColors.blue),
         'Class diary',
         () => Get.toNamed(Routes.diary)
+      ),
+      (
+        const Icon(Icons.school_outlined, color: AppColors.blue),
+        'My courses',
+        () => Get.toNamed(Routes.courses)
+      ),
+      (
+        const Icon(Icons.quiz_outlined, color: AppColors.blue),
+        'Online quizzes',
+        () => Get.toNamed(Routes.quizzes)
       ),
       (
         const Icon(Icons.folder_outlined, color: AppColors.blue),
@@ -100,17 +111,22 @@ class MoreScreen extends StatelessWidget {
       (
         const SvgIcon(assetName: AppIcons.privacy, size: 22, color: AppColors.blue),
         'Privacy policy',
-        () => Get.to(() => const ComingSoonScreen(title: 'Privacy Policy'))
+        () => Get.toNamed(Routes.privacyPolicy)
       ),
       (
         const SvgIcon(assetName: AppIcons.aboutIcon, size: 22, color: AppColors.blue),
         'About us',
-        () => Get.to(() => const ComingSoonScreen(title: 'About Eldermin'))
+        () => Get.toNamed(Routes.aboutUs)
       ),
       (
         const SvgIcon(assetName: AppIcons.faqIcon, size: 22, color: AppColors.blue),
         'Help',
-        () => Get.to(() => const ComingSoonScreen(title: 'Help & Support'))
+        () => Get.toNamed(Routes.help)
+      ),
+      (
+        const Icon(Icons.logout_rounded, color: AppColors.red),
+        'Logout',
+        () => _confirmLogout()
       ),
     ];
 
@@ -200,7 +216,9 @@ class MoreScreen extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 fontSize: 9.5,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.primaryColor,
+                                color: m.$2 == 'Logout'
+                                    ? AppColors.red
+                                    : AppColors.primaryColor,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis),
                           ],
@@ -215,6 +233,38 @@ class MoreScreen extends StatelessWidget {
         ],
       );
     });
+  }
+
+  Future<void> _confirmLogout() async {
+    final confirmed = await Get.dialog<bool>(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const CustomText(
+            text: 'Logout',
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: AppColors.black),
+        content: const CustomText(
+            text: 'Are you sure you want to logout?',
+            fontSize: 14,
+            color: AppColors.grey,
+            height: 1.5),
+        actions: [
+          TextButton(
+              onPressed: () => Get.back(result: false),
+              child: const CustomText(text: 'Cancel', color: AppColors.grey)),
+          TextButton(
+              onPressed: () => Get.back(result: true),
+              child: const CustomText(
+                  text: 'Logout',
+                  color: AppColors.red,
+                  fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await Get.find<AuthController>().logout();
+    }
   }
 
   Widget _tile(IconData icon, String label, Color color, VoidCallback onTap) {

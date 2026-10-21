@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import '../../../../core/services/parent_api_service.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../utils/toast_util.dart';
 import '../../students/controllers/student_controller.dart';
 
 class HomeworkController extends GetxController {
@@ -32,16 +34,35 @@ class HomeworkController extends GetxController {
     List<dynamic> base;
     if (filter.value == 1) {
       base = items
-          .where((h) => h['status'] != 'graded' && h['status'] != 'submitted')
+          .where((h) => !['submitted', 'late', 'graded'].contains((h['mySubmission'] is Map ? h['mySubmission']['status'] : null)))
           .toList();
     } else if (filter.value == 2) {
       base = items
-          .where((h) => h['status'] == 'submitted' || h['status'] == 'graded')
+          .where((h) => ['submitted', 'late', 'graded'].contains((h['mySubmission'] is Map ? h['mySubmission']['status'] : null)))
           .toList();
     } else {
       base = items;
     }
     return base.where(_inSelectedMonth).toList();
+  }
+
+  final submittingId = RxnString();
+
+  Future<String?> submit(String assignmentId, String text) async {
+    final studentId = _students.selectedStudent?.id;
+    if (studentId == null) return 'No child selected';
+    submittingId.value = assignmentId;
+    try {
+      await _api.submitHomework(studentId, assignmentId, textResponse: text);
+      await fetch();
+      return null;
+    } on ApiException catch (e) {
+      return e.message;
+    } catch (_) {
+      return 'Could not submit. Please try again.';
+    } finally {
+      submittingId.value = null;
+    }
   }
 
   void changeFilter(int index) => filter.value = index;
@@ -55,8 +76,9 @@ class HomeworkController extends GetxController {
     error.value = null;
     try {
       items.value = await _api.getHomework(studentId);
-    } catch (_) {
-      error.value = 'Could not load homework';
+    } on ApiException catch (e) {
+      error.value = e.message;
+      ToastUtil.showToast(e.message);
     } finally {
       loading.value = false;
     }

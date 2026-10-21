@@ -110,7 +110,24 @@ class AppLineChart extends StatelessWidget {
 class AppMonthCalendar extends StatelessWidget {
   final DateTime month;
   final Set<int> eventDays;
-  const AppMonthCalendar({super.key, required this.month, this.eventDays = const {}});
+  final int? selectedDay;
+  final ValueChanged<int>? onDayTap;
+  final VoidCallback? onPrevMonth;
+  final VoidCallback? onNextMonth;
+  const AppMonthCalendar({
+    super.key,
+    required this.month,
+    this.eventDays = const {},
+    this.selectedDay,
+    this.onDayTap,
+    this.onPrevMonth,
+    this.onNextMonth,
+  });
+
+  static const _monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -119,57 +136,97 @@ class AppMonthCalendar extends StatelessWidget {
     final today = DateTime.now();
     final isCurrentMonth = today.year == month.year && today.month == month.month;
 
-    return Column(
-      children: [
-        Row(
-          children: const ['M', 'T', 'W', 'T', 'F', 'S', 'S']
-              .map((d) => Expanded(
-                    child: Center(
-                      child: CustomText(text: d, fontSize: 8, color: AppColors.faint, fontWeight: FontWeight.w700),
-                    ),
-                  ))
-              .toList(),
-        ),
-        const SizedBox(height: 4),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: leadingBlanks + daysInMonth,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, mainAxisSpacing: 4, crossAxisSpacing: 4),
-          itemBuilder: (context, i) {
-            if (i < leadingBlanks) return const SizedBox.shrink();
-            final day = i - leadingBlanks + 1;
-            final isToday = isCurrentMonth && today.day == day;
-            final hasEvent = eventDays.contains(day);
-            return Container(
-              decoration: BoxDecoration(
-                color: isToday ? AppColors.primaryColor : (hasEvent ? AppColors.pale : null),
-                borderRadius: BorderRadius.circular(9),
-              ),
-              alignment: Alignment.center,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
+    return GestureDetector(
+      // Horizontal swipe changes month, like a native calendar.
+      onHorizontalDragEnd: (d) {
+        final v = d.primaryVelocity ?? 0;
+        if (v < -200) onNextMonth?.call();
+        if (v > 200) onPrevMonth?.call();
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        children: [
+          if (onPrevMonth != null || onNextMonth != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 2),
-                    child: CustomText(
-                      text: '$day',
-                      fontSize: 10,
-                      fontWeight: isToday ? FontWeight.w700 : FontWeight.w400,
-                      color: isToday ? Colors.white : (hasEvent ? AppColors.blue : const Color(0xFF455C70)),
-                    ),
+                  IconButton(
+                    onPressed: onPrevMonth,
+                    visualDensity: VisualDensity.compact,
+                    icon: const Icon(Icons.chevron_left_rounded, color: AppColors.primaryColor),
                   ),
-                  if (hasEvent && !isToday)
-                    Positioned(
-                      bottom: 1,
-                      child: Container(width: 4, height: 4, decoration: const BoxDecoration(color: AppColors.amber, shape: BoxShape.circle)),
-                    ),
+                  CustomText(
+                    text: '${_monthNames[month.month - 1]} ${month.year}',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primaryColor,
+                  ),
+                  IconButton(
+                    onPressed: onNextMonth,
+                    visualDensity: VisualDensity.compact,
+                    icon: const Icon(Icons.chevron_right_rounded, color: AppColors.primaryColor),
+                  ),
                 ],
               ),
-            );
-          },
-        ),
-      ],
+            ),
+          Row(
+            children: const ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+                .map((d) => Expanded(
+                      child: Center(
+                        child: CustomText(text: d, fontSize: 8, color: AppColors.faint, fontWeight: FontWeight.w700),
+                      ),
+                    ))
+                .toList(),
+          ),
+          const SizedBox(height: 4),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: leadingBlanks + daysInMonth,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, mainAxisSpacing: 4, crossAxisSpacing: 4),
+            itemBuilder: (context, i) {
+              if (i < leadingBlanks) return const SizedBox.shrink();
+              final day = i - leadingBlanks + 1;
+              final isToday = isCurrentMonth && today.day == day;
+              final hasEvent = eventDays.contains(day);
+              final isSelected = selectedDay == day;
+              return InkWell(
+                borderRadius: BorderRadius.circular(9),
+                onTap: onDayTap == null ? null : () => onDayTap!(day),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isToday ? AppColors.primaryColor : (hasEvent ? AppColors.pale : null),
+                    borderRadius: BorderRadius.circular(9),
+                    border: isSelected ? Border.all(color: AppColors.blue, width: 2) : null,
+                  ),
+                  alignment: Alignment.center,
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 2),
+                        child: CustomText(
+                          text: '$day',
+                          fontSize: 10,
+                          fontWeight: isToday || isSelected ? FontWeight.w700 : FontWeight.w400,
+                          color: isToday ? Colors.white : (hasEvent ? AppColors.blue : const Color(0xFF455C70)),
+                        ),
+                      ),
+                      if (hasEvent && !isToday)
+                        Positioned(
+                          bottom: 1,
+                          child: Container(width: 4, height: 4, decoration: const BoxDecoration(color: AppColors.amber, shape: BoxShape.circle)),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../modules/about/views/about_screen.dart';
 import '../modules/attendance/bindings/attendance_binding.dart';
 import '../modules/attendance/views/attendance_screen.dart';
 import '../modules/auth/bindings/otp_verify_binding.dart';
@@ -21,10 +22,16 @@ import '../modules/feedback/bindings/feedback_binding.dart';
 import '../modules/feedback/views/feedback_screen.dart';
 import '../modules/home_tasks/bindings/home_tasks_binding.dart';
 import '../modules/home_tasks/views/home_tasks_screen.dart';
+import '../modules/help/views/help_screen.dart';
 import '../modules/homework/bindings/homework_binding.dart';
 import '../modules/homework/views/homework_screen.dart';
 import '../modules/leaves/bindings/leaves_binding.dart';
 import '../modules/leaves/views/leaves_screen.dart';
+import '../modules/courses/bindings/courses_binding.dart';
+import '../modules/courses/views/courses_screen.dart';
+import '../modules/quizzes/bindings/quizzes_binding.dart';
+import '../modules/quizzes/views/quiz_attempt_screen.dart';
+import '../modules/quizzes/views/quizzes_screen.dart';
 import '../modules/diary/bindings/diary_binding.dart';
 import '../modules/diary/views/diary_screen.dart';
 import '../modules/learning_resources/bindings/learning_resources_binding.dart';
@@ -33,10 +40,13 @@ import '../modules/library/bindings/library_binding.dart';
 import '../modules/library/views/library_screen.dart';
 import '../modules/medical/bindings/medical_binding.dart';
 import '../modules/medical/views/medical_screen.dart';
+import '../modules/messages/bindings/message_thread_binding.dart';
+import '../modules/messages/views/message_thread_screen.dart';
 import '../modules/notifications/bindings/notifications_binding.dart';
 import '../modules/notifications/views/notifications_screen.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_screen.dart';
+import '../modules/privacy/views/privacy_screen.dart';
 import '../modules/ptm/bindings/ptm_binding.dart';
 import '../modules/ptm/views/ptm_screen.dart';
 import '../modules/students/views/student_selector_screen.dart';
@@ -125,6 +135,18 @@ class AppPages {
         page: () => const DocumentsScreen(),
         binding: DocumentsBinding()),
     GetPage(
+        name: Routes.courses,
+        page: () => const CoursesScreen(),
+        binding: CoursesBinding()),
+    GetPage(
+        name: Routes.quizzes,
+        page: () => const QuizzesScreen(),
+        binding: QuizzesBinding()),
+    GetPage(
+        name: Routes.quizAttempt,
+        page: () => const QuizAttemptScreen(),
+        binding: QuizAttemptBinding()),
+    GetPage(
         name: Routes.diary,
         page: () => const DiaryScreen(),
         binding: DiaryBinding()),
@@ -136,10 +158,19 @@ class AppPages {
         name: Routes.datesheet,
         page: () => const DatesheetScreen(),
         binding: DatesheetBinding()),
-    GetPage(name: Routes.ptm, page: () => const PtmScreen(), binding: PtmBinding()),
+    GetPage(
+        name: Routes.ptm, page: () => const PtmScreen(), binding: PtmBinding()),
     GetPage(
         name: Routes.feedback,
         page: () => const FeedbackScreen(),
         binding: FeedbackBinding()),
+    GetPage(
+        name: Routes.messageThread,
+        page: () => const MessageThreadScreen(),
+        binding: MessageThreadBinding()),
+    GetPage(name: Routes.aboutUs, page: () => const AboutScreen()),
+    GetPage(name: Routes.help, page: () => const HelpScreen()),
+    GetPage(
+        name: Routes.privacyPolicy, page: () => const PrivacyPolicyScreen()),
   ];
 }
