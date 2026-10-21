@@ -18,6 +18,11 @@ class MoreScreen extends StatelessWidget {
 
     final modules = <(Widget, String, VoidCallback)>[
       (
+        const Icon(Icons.auto_stories_outlined, color: AppColors.blue),
+        'Class diary',
+        () => Get.toNamed(Routes.diary)
+      ),
+      (
         const Icon(Icons.folder_outlined, color: AppColors.blue),
         'Learning resources',
         () => Get.toNamed(Routes.learningResources)

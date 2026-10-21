@@ -25,6 +25,8 @@ import '../modules/homework/bindings/homework_binding.dart';
 import '../modules/homework/views/homework_screen.dart';
 import '../modules/leaves/bindings/leaves_binding.dart';
 import '../modules/leaves/views/leaves_screen.dart';
+import '../modules/diary/bindings/diary_binding.dart';
+import '../modules/diary/views/diary_screen.dart';
 import '../modules/learning_resources/bindings/learning_resources_binding.dart';
 import '../modules/learning_resources/views/learning_resources_screen.dart';
 import '../modules/library/bindings/library_binding.dart';
@@ -122,6 +124,10 @@ class AppPages {
         name: Routes.documents,
         page: () => const DocumentsScreen(),
         binding: DocumentsBinding()),
+    GetPage(
+        name: Routes.diary,
+        page: () => const DiaryScreen(),
+        binding: DiaryBinding()),
     GetPage(
         name: Routes.learningResources,
         page: () => const LearningResourcesScreen(),

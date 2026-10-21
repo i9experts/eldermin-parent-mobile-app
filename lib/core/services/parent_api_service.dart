@@ -72,6 +72,18 @@ class ParentApiService {
   Future<List<dynamic>> getHomework(String studentId) async =>
       await _get(ApiConstants.homework(studentId)) as List<dynamic>;
 
+  Future<List<dynamic>> getClassDiary(String studentId) async =>
+      await _get(ApiConstants.classDiary(studentId)) as List<dynamic>;
+
+  Future<List<int>> downloadClassDiaryPdf(String studentId, String diaryId) async {
+    try {
+      final res = await _client.getBytes(ApiConstants.classDiaryPdf(studentId, diaryId));
+      return res.data ?? const <int>[];
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    }
+  }
+
   Future<List<dynamic>> getLearningResources(String studentId) async =>
       await _get(ApiConstants.learningResources(studentId)) as List<dynamic>;
 

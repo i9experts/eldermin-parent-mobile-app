@@ -19,6 +19,7 @@ abstract class Routes {
   static const profile = '/profile';
   static const medical = '/medical';
   static const documents = '/documents';
+  static const diary = '/diary';
   static const learningResources = '/learning-resources';
   static const datesheet = '/datesheet';
   static const ptm = '/ptm';

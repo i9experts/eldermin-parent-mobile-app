@@ -13,6 +13,7 @@ const _notificationIcons = {
   'leave_decision': Icons.event_available_outlined,
   'fee_due': Icons.account_balance_wallet_outlined,
   'homework': Icons.menu_book_outlined,
+  'diary': Icons.auto_stories_outlined,
   'result': Icons.bar_chart_rounded,
   'behaviour': Icons.emoji_events_outlined,
   'message': Icons.chat_bubble_outline_rounded,

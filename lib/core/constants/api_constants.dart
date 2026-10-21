@@ -37,6 +37,8 @@ class ApiConstants {
   static String attendance(String id) => '$parentPortal/students/$id/attendance';
   static String homework(String id) => '$parentPortal/students/$id/homework';
   static String learningResources(String id) => '$parentPortal/students/$id/learning-resources';
+  static String classDiary(String id) => '$parentPortal/students/$id/class-diary';
+  static String classDiaryPdf(String id, String diaryId) => '$parentPortal/students/$id/class-diary/$diaryId/pdf';
   static String results(String id) => '$parentPortal/students/$id/results';
   static String dues(String id) => '$parentPortal/students/$id/dues';
   static String behaviourAndTarbiyah(String id) => '$parentPortal/students/$id/behaviour';

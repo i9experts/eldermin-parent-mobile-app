@@ -21,6 +21,16 @@ class BaseClient {
     );
   }
 
+  Future<Response<List<int>>> getBytes(String url) async {
+    final dio = DioService.getDio();
+    debugPrint('GET (bytes) → $url');
+
+    return dio.get<List<int>>(
+      url,
+      options: Options(responseType: ResponseType.bytes, extra: {'requiresAuth': true}),
+    );
+  }
+
   Future<Response> post(
     String url, {
     dynamic data,
