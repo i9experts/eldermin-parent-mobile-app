@@ -11,6 +11,7 @@ class ResultsController extends GetxController {
   final loading = false.obs;
   final reportCards = <dynamic>[].obs;
   final RxnString error = RxnString();
+  final locked = false.obs;
 
   String? _loadedForStudentId;
 
@@ -37,8 +38,15 @@ class ResultsController extends GetxController {
     if (studentId == null) return;
     loading.value = true;
     error.value = null;
+    locked.value = false;
     try {
-      reportCards.value = await _api.getResults(studentId);
+      final result = await _api.getResults(studentId);
+      if (result.suspended) {
+        locked.value = true;
+        reportCards.clear();
+      } else {
+        reportCards.value = result.data!;
+      }
     } on ApiException catch (e) {
       error.value = e.message;
       ToastUtil.showToast(e.message);

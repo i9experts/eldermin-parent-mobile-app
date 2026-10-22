@@ -17,6 +17,7 @@ class QuizAttemptController extends GetxController {
   final loading = true.obs;
   final submitting = false.obs;
   final RxnString error = RxnString();
+  final locked = false.obs;
   final questions = <Map<String, dynamic>>[].obs;
   final Rxn<Map<String, dynamic>> attempt = Rxn();
   final Rxn<Map<String, dynamic>> result = Rxn();
@@ -40,8 +41,14 @@ class QuizAttemptController extends GetxController {
     if (studentId == null) return;
     loading.value = true;
     error.value = null;
+    locked.value = false;
     try {
-      final res = await _api.startQuiz(studentId, assessmentId: assessmentId, subject: subject);
+      final startResult = await _api.startQuiz(studentId, assessmentId: assessmentId, subject: subject);
+      if (startResult.suspended) {
+        locked.value = true;
+        return;
+      }
+      final res = startResult.data!;
       attempt.value = Map<String, dynamic>.from(res['attempt'] as Map);
       questions.value = (res['questions'] as List<dynamic>).map((q) => Map<String, dynamic>.from(q as Map)).toList();
     } on ApiException catch (e) {
@@ -76,7 +83,12 @@ class QuizAttemptController extends GetxController {
     if (studentId == null || attemptId == null) return 'Quiz not started';
     submitting.value = true;
     try {
-      result.value = await _api.submitQuiz(studentId, attemptId, answers.values.toList());
+      final submitResult = await _api.submitQuiz(studentId, attemptId, answers.values.toList());
+      if (submitResult.suspended) {
+        locked.value = true;
+        return null;
+      }
+      result.value = submitResult.data!;
       return null;
     } on ApiException catch (e) {
       return e.message;

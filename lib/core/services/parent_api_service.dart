@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import '../constants/api_constants.dart';
+import '../models/feature_access_result.dart';
 import '../network/api_exception.dart';
 import '../network/base_client.dart';
 import '../network/dio_exception_handler.dart';
@@ -45,6 +46,19 @@ class ParentApiService {
     }
     throw ApiException('Unexpected response format from server.');
   }
+
+  /// A handful of parent-facing endpoints can return a suspended-feature
+  /// placeholder (`{ suspended: true, feature, reason }`, HTTP 200) instead
+  /// of their normal list/map payload when the school admin has paused that
+  /// feature for this parent + child - see [FeatureAccessResult].
+  Future<FeatureAccessResult<List<dynamic>>> _getListOrLocked(String url, {Map<String, dynamic>? query}) async =>
+      FeatureAccessResult.fromRaw(await _get(url, query: query), (raw) => raw as List<dynamic>);
+
+  Future<FeatureAccessResult<Map<String, dynamic>>> _getMapOrLocked(String url) async =>
+      FeatureAccessResult.fromRaw(await _get(url), (raw) => _asMap(raw));
+
+  Future<FeatureAccessResult<Map<String, dynamic>>> _postMapOrLocked(String url, {dynamic data}) async =>
+      FeatureAccessResult.fromRaw(await _post(url, data: data), (raw) => _asMap(raw));
 
   // ── Auth ────────────────────────────────────────────────────
   Future<Map<String, dynamic>> requestOtp(String phone) async => _asMap(
@@ -103,17 +117,19 @@ class ParentApiService {
         'syllabusId': syllabusId, 'unitNo': unitNo, 'topicNo': topicNo, 'lessonNo': lessonNo, 'status': status,
       });
 
-  Future<List<dynamic>> getQuizzes(String studentId) async =>
-      await _get(ApiConstants.quizzes(studentId)) as List<dynamic>;
+  Future<FeatureAccessResult<List<dynamic>>> getQuizzes(String studentId) async =>
+      _getListOrLocked(ApiConstants.quizzes(studentId));
 
-  Future<Map<String, dynamic>> startQuiz(String studentId, {required String assessmentId, required String subject}) async =>
-      _asMap(await _post(ApiConstants.startQuiz(studentId), data: {'assessmentId': assessmentId, 'subject': subject}));
+  Future<FeatureAccessResult<Map<String, dynamic>>> startQuiz(String studentId,
+          {required String assessmentId, required String subject}) async =>
+      _postMapOrLocked(ApiConstants.startQuiz(studentId), data: {'assessmentId': assessmentId, 'subject': subject});
 
-  Future<Map<String, dynamic>> submitQuiz(String studentId, String attemptId, List<Map<String, dynamic>> answers) async =>
-      _asMap(await _post(ApiConstants.submitQuiz(studentId, attemptId), data: {'answers': answers}));
+  Future<FeatureAccessResult<Map<String, dynamic>>> submitQuiz(
+          String studentId, String attemptId, List<Map<String, dynamic>> answers) async =>
+      _postMapOrLocked(ApiConstants.submitQuiz(studentId, attemptId), data: {'answers': answers});
 
-  Future<List<dynamic>> getClassDiary(String studentId) async =>
-      await _get(ApiConstants.classDiary(studentId)) as List<dynamic>;
+  Future<FeatureAccessResult<List<dynamic>>> getClassDiary(String studentId) async =>
+      _getListOrLocked(ApiConstants.classDiary(studentId));
 
   Future<List<int>> downloadClassDiaryPdf(String studentId, String diaryId) async {
     try {
@@ -127,14 +143,14 @@ class ParentApiService {
   Future<List<dynamic>> getLearningResources(String studentId) async =>
       await _get(ApiConstants.learningResources(studentId)) as List<dynamic>;
 
-  Future<List<dynamic>> getResults(String studentId) async =>
-      await _get(ApiConstants.results(studentId)) as List<dynamic>;
+  Future<FeatureAccessResult<List<dynamic>>> getResults(String studentId) async =>
+      _getListOrLocked(ApiConstants.results(studentId));
 
   Future<List<dynamic>> getDues(String studentId) async =>
       await _get(ApiConstants.dues(studentId)) as List<dynamic>;
 
-  Future<Map<String, dynamic>> getBehaviourAndTarbiyah(String studentId) async =>
-      _asMap(await _get(ApiConstants.behaviourAndTarbiyah(studentId)));
+  Future<FeatureAccessResult<Map<String, dynamic>>> getBehaviourAndTarbiyah(String studentId) async =>
+      _getMapOrLocked(ApiConstants.behaviourAndTarbiyah(studentId));
 
   Future<Map<String, dynamic>?> getTimetable(String studentId) async {
     final data = await _get(ApiConstants.timetable(studentId));
@@ -164,12 +180,20 @@ class ParentApiService {
           data: {'fromDate': fromDate, 'toDate': toDate, 'reason': reason, 'leaveType': leaveType});
 
   // ── Home Tasks (Tarbiyah-at-home) ───────────────────────────
-  Future<List<dynamic>> getHomeTasks(String studentId) async =>
-      await _get(ApiConstants.homeTasks(studentId)) as List<dynamic>;
+  Future<FeatureAccessResult<List<dynamic>>> getHomeTasks(String studentId) async =>
+      _getListOrLocked(ApiConstants.homeTasks(studentId));
 
-  Future<void> completeHomeTask(String studentId, String taskId, {String? parentNotes}) =>
-      _post(ApiConstants.completeHomeTask(studentId, taskId),
-          data: {if (parentNotes != null) 'parentNotes': parentNotes});
+  /// Returns a [FeatureAccessResult] rather than `void` so a caller can tell
+  /// "the admin just paused this feature mid-session" apart from a normal
+  /// network/API error.
+  Future<FeatureAccessResult<bool>> completeHomeTask(String studentId, String taskId, {String? parentNotes}) async {
+    final raw = await _post(ApiConstants.completeHomeTask(studentId, taskId),
+        data: {if (parentNotes != null) 'parentNotes': parentNotes});
+    if (FeatureAccessResult.isSuspendedShape(raw)) {
+      return FeatureAccessResult.suspended(reason: (raw as Map)['reason']?.toString());
+    }
+    return const FeatureAccessResult.data(true);
+  }
 
   // ── School-wide ─────────────────────────────────────────────
   Future<List<dynamic>> getCirculars() async => await _get(ApiConstants.circulars) as List<dynamic>;

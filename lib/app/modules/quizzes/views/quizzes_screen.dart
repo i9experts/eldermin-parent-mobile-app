@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
+import '../../../../core/widgets/locked_feature_view.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_text.dart';
 import '../../../routes/app_routes.dart';
@@ -31,6 +32,9 @@ class QuizzesScreen extends GetView<QuizzesController> {
         }
         if (controller.error.value != null) {
           return AppErrorView(message: controller.error.value!, onRetry: controller.fetch);
+        }
+        if (controller.locked.value) {
+          return const LockedFeatureView();
         }
         final quizzes = controller.quizzes;
         return RefreshIndicator(

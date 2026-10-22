@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
+import '../../../../core/widgets/locked_feature_view.dart';
 import '../../../components/custom_app_snack_bar.dart';
 import '../../../components/custom_button.dart';
 import '../../../components/custom_text.dart';
@@ -48,6 +49,7 @@ class QuizAttemptScreen extends GetView<QuizAttemptController> {
           if (controller.error.value != null) {
             return AppErrorView(message: controller.error.value!, onRetry: controller.start);
           }
+          if (controller.locked.value) return const LockedFeatureView();
           if (controller.result.value != null) return _ResultView(result: controller.result.value!);
           return _QuestionView();
         }),

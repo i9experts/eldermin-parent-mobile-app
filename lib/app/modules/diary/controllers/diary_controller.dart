@@ -16,6 +16,7 @@ class DiaryController extends GetxController {
   final entries = <dynamic>[].obs;
   final RxnString error = RxnString();
   final RxnString downloadingId = RxnString();
+  final locked = false.obs;
 
   @override
   void onInit() {
@@ -28,8 +29,15 @@ class DiaryController extends GetxController {
     if (studentId == null) return;
     loading.value = true;
     error.value = null;
+    locked.value = false;
     try {
-      entries.value = await _api.getClassDiary(studentId);
+      final result = await _api.getClassDiary(studentId);
+      if (result.suspended) {
+        locked.value = true;
+        entries.clear();
+      } else {
+        entries.value = result.data!;
+      }
     } on ApiException catch (e) {
       error.value = e.message;
       ToastUtil.showToast(e.message);
