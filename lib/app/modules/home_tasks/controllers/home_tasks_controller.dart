@@ -11,6 +11,7 @@ class HomeTasksController extends GetxController {
   final completingId = RxnString();
   final tasks = <dynamic>[].obs;
   final RxnString error = RxnString();
+  final locked = false.obs;
   String? lastError;
 
   @override
@@ -24,8 +25,15 @@ class HomeTasksController extends GetxController {
     if (studentId == null) return;
     loading.value = true;
     error.value = null;
+    locked.value = false;
     try {
-      final list = await _api.getHomeTasks(studentId);
+      final result = await _api.getHomeTasks(studentId);
+      if (result.suspended) {
+        locked.value = true;
+        tasks.clear();
+        return;
+      }
+      final list = result.data!;
       // To-do first (soonest due date on top), completed after.
       int rank(dynamic t) => t['status'] == 'completed' ? 1 : 0;
       DateTime? due(dynamic t) => DateTime.tryParse(t['dueDate']?.toString() ?? '');
@@ -51,7 +59,12 @@ class HomeTasksController extends GetxController {
     if (studentId == null) return false;
     completingId.value = taskId;
     try {
-      await _api.completeHomeTask(studentId, taskId, parentNotes: parentNotes);
+      final result = await _api.completeHomeTask(studentId, taskId, parentNotes: parentNotes);
+      if (result.suspended) {
+        locked.value = true;
+        lastError = null;
+        return false;
+      }
       await fetch();
       return true;
     } on ApiException catch (e) {

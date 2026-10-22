@@ -4,6 +4,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/chart_widgets.dart';
 import '../../../../core/widgets/hero_card.dart';
+import '../../../../core/widgets/locked_feature_view.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_text.dart';
 import '../../students/controllers/student_controller.dart';
@@ -44,6 +45,9 @@ class ResultsScreen extends StatelessWidget {
       if (controller.error.value != null) {
         return AppErrorView(
             message: controller.error.value!, onRetry: controller.fetch);
+      }
+      if (controller.locked.value) {
+        return const LockedFeatureView();
       }
 
       final reportCards = controller.reportCards;

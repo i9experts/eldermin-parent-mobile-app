@@ -12,6 +12,7 @@ class TarbiyahController extends GetxController {
   final behaviourRecords = <dynamic>[].obs;
   final tarbiyahAssessments = <dynamic>[].obs;
   final RxnString error = RxnString();
+  final locked = false.obs;
 
   @override
   void onInit() {
@@ -36,11 +37,19 @@ class TarbiyahController extends GetxController {
     if (studentId == null) return;
     loading.value = true;
     error.value = null;
+    locked.value = false;
     try {
-      final data = await _api.getBehaviourAndTarbiyah(studentId);
-      behaviourRecords.value = data['behaviourRecords'] as List<dynamic>? ?? [];
-      tarbiyahAssessments.value =
-          data['tarbiyahAssessments'] as List<dynamic>? ?? [];
+      final result = await _api.getBehaviourAndTarbiyah(studentId);
+      if (result.suspended) {
+        locked.value = true;
+        behaviourRecords.clear();
+        tarbiyahAssessments.clear();
+      } else {
+        final data = result.data!;
+        behaviourRecords.value = data['behaviourRecords'] as List<dynamic>? ?? [];
+        tarbiyahAssessments.value =
+            data['tarbiyahAssessments'] as List<dynamic>? ?? [];
+      }
     } on ApiException catch (e) {
       error.value = e.message;
       ToastUtil.showToast(e.message);

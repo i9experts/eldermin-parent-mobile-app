@@ -11,6 +11,7 @@ class QuizzesController extends GetxController {
   final loading = false.obs;
   final quizzes = <dynamic>[].obs;
   final RxnString error = RxnString();
+  final locked = false.obs;
 
   @override
   void onInit() {
@@ -23,8 +24,15 @@ class QuizzesController extends GetxController {
     if (studentId == null) return;
     loading.value = true;
     error.value = null;
+    locked.value = false;
     try {
-      quizzes.value = await _api.getQuizzes(studentId);
+      final result = await _api.getQuizzes(studentId);
+      if (result.suspended) {
+        locked.value = true;
+        quizzes.clear();
+      } else {
+        quizzes.value = result.data!;
+      }
     } on ApiException catch (e) {
       error.value = e.message;
       ToastUtil.showToast(e.message);
