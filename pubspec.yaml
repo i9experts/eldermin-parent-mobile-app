@@ -57,13 +57,24 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/auth/
     - assets/icons/
-  # fonts:
-  #   - family: EldeminSans
-  #     fonts:
-  #       - asset: assets/fonts/EldeminSans-Regular.ttf
-  #       - asset: assets/fonts/EldeminSans-Bold.ttf
-  #         weight: 700
+    - assets/brand/
+    - assets/fonts/OFL.txt
+  # Plus Jakarta Sans (SIL OFL 1.1), bundled. Used on the auth screens ONLY (EmType, lib/core/design);
+  # the app theme and every other screen are unchanged. License: assets/fonts/OFL.txt (registered in
+  # lib/core/design/font_license.dart).
+  fonts:
+    - family: PlusJakartaSans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/PlusJakartaSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/PlusJakartaSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/PlusJakartaSans-Bold.ttf
+          weight: 700
 
 # Generates the app launcher icon for iOS/Android from the Eldermin
 # logomark - run `dart run flutter_launcher_icons` after changing this.
@@ -78,7 +89,9 @@ flutter_launcher_icons:
 # Generates the iOS/Android launch (splash) screen from the Eldermin
 # logomark - run `dart run flutter_native_splash:create` after changing this.
 flutter_native_splash:
-  color: "#FFFFFF"
-  image: "assets/images/eldermin_logomark.png"
+  color: "#0A3158"
+  image: "assets/splash/splash_logo.png"
+  color_dark: "#0A3158"
+  image_dark: "assets/splash/splash_logo.png"
   android: false
   ios: true
