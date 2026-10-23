@@ -72,12 +72,20 @@ void main() {
             if (name == 'otp') Get.put<OtpVerifyController>(TestOtp(dev: '123456'));
             await pumpScreen(t, build(), width: w, height: h, textScale: scale);
             final photo = t.getSize(find.byKey(const Key('auth_photo'))).height;
-            expect(photo, closeTo(h * fraction, 1), reason: name);
+            expect(photo, closeTo(h * (name == 'login' ? AuthPhotoSize.tall.fractionFor(h) : fraction), 1), reason: name);
             // everything but the back button and the logo tile lives below the line
             expectBelow(t, photo * AuthPageShell.contentStart, '$name ${w}x$h @$scale');
           }
         }
       }
+    });
+
+    testWidgets('login fits the iPhone SE (375 x 667) without scrolling: the photo gives way to 46%', (t) async {
+      setUpAuthDeps();
+      await pumpScreen(t, const PhoneEntryScreen(), width: 375, height: 667);
+      expect(t.getSize(find.byKey(const Key('auth_photo'))).height, closeTo(667 * AuthPhotoSize.compactTall, 1));
+      expect(t.getRect(find.textContaining('Create an account', findRichText: true)).bottom, lessThanOrEqualTo(667));
+      expect(t.getRect(find.byType(EmMorphButton)).bottom, lessThanOrEqualTo(667));
     });
 
     testWidgets('splash: title and tagline start below the strong line', (t) async {

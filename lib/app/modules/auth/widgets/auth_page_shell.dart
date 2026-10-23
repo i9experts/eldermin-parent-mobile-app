@@ -17,6 +17,12 @@ enum AuthPhotoSize {
   /// Where the photo sits in its box: the short box shows the photo shifted up a little so the faces stay
   /// above the overlay's ramp (and clear of the status bar).
   final Alignment alignment;
+
+  /// Share of a screen [height] dp tall: the tall photo gives way a little on small phones (< 700 dp, the iPhone SE)
+  /// so the whole form still fits without scrolling.
+  double fractionFor(double height) => this == tall && height < compactHeight ? compactTall : fraction;
+
+  static const double compactHeight = 700, compactTall = 0.46;
 }
 
 /// Shared layout of the signed-out screens: the first photo at the top fading
@@ -63,7 +69,8 @@ class AuthPageShell extends StatelessWidget {
     final reduced = EmReduceMotion.of(context);
     final top = MediaQuery.paddingOf(context).top;
     final keyboard = MediaQuery.viewInsetsOf(context).bottom > 0;
-    final full = MediaQuery.sizeOf(context).height * photoSize.fraction;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final full = screenHeight * photoSize.fractionFor(screenHeight);
     // the keyboard collapses the photo to a strip that still holds the logo tile
     final collapsed = top + EmSpacing.s12 + logoTile + EmSpacing.s24;
     final photoHeight = keyboard ? (collapsed < full ? collapsed : full) : full;
