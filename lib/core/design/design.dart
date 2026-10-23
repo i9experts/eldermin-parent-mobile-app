@@ -1,0 +1,19 @@
+export 'contrast.dart';
+// Barrel for the photo auth design kit (duplicated from the teacher app, see docs/PHOTO_AUTH_DUPLICATION.md).
+export 'font_license.dart';
+export 'motion/em_entrance.dart';
+export 'motion/em_ripple_rings.dart';
+export 'motion/logomark_geometry.dart';
+export 'motion/node_network_painter.dart';
+export 'motion/reduce_motion.dart';
+export 'tokens/em_colors.dart';
+export 'tokens/em_motion.dart';
+export 'tokens/em_photo_overlay.dart';
+export 'tokens/em_radius.dart';
+export 'tokens/em_shadows.dart';
+export 'tokens/em_spacing.dart';
+export 'tokens/em_typography.dart';
+export 'widgets/em_logo_tile.dart';
+export 'widgets/em_logomark.dart';
+export 'widgets/em_morph_button.dart';
+export 'widgets/em_photo_backdrop.dart';
