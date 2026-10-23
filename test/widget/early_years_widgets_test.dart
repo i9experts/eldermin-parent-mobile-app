@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:eldermin_parent_app/app/modules/early_years/controllers/early_years_controller.dart';
 import 'package:eldermin_parent_app/app/modules/early_years/views/early_years_detail_screens.dart';
 import 'package:eldermin_parent_app/app/modules/early_years/views/early_years_screen.dart';
@@ -173,5 +174,36 @@ void main() {
       expect(find.text('Early Years'), findsNothing);
       expect(t.takeException(), isNull);
     });
+  });
+
+  testWidgets('while the list loads the screen shows shimmer skeletons (the app\'s loading style), not a bare spinner', (t) async {
+    final c = await boot(t, const EarlyYearsScreen());
+    final gate = Completer<Map<String, dynamic>>();
+    api.summary = (id) async => eySummaryJson(id, portfolio: 1);
+    api.portfolio = (id, p) => gate.future;
+    await c.loadSummary();
+    await frames(t);
+    expect(find.byKey(const Key('ey_loading')), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    gate.complete(eyPage([eyItem('e1', title: 'Painting')], total: 1));
+    await frames(t);
+    expect(find.byKey(const Key('ey_loading')), findsNothing);
+    expect(find.text('Painting'), findsOneWidget);
+  });
+
+  testWidgets('while the summary is still loading the first paint is a shimmer skeleton', (t) async {
+    final gate = Completer<Map<String, dynamic>>();
+    Get.reset();
+    api = FakeEyApi()..summary = (id) => gate.future;
+    final students = studentsOf(api, [kid('s1')], selected: 's1');
+    Get.put(students);
+    final c = Get.put(EarlyYearsController(api: api, students: students));
+    await t.pumpWidget(GetMaterialApp(home: const EarlyYearsScreen()));
+    await frames(t);
+    expect(c.summaryLoading.value, isTrue);
+    expect(find.byKey(const Key('ey_loading')), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    gate.complete(eySummaryJson('s1', portfolio: 0));
+    await frames(t);
   });
 }

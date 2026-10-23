@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/models/early_years_models.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
+import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_text.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/early_years_controller.dart';
@@ -61,7 +62,7 @@ class _EarlyYearsScreenState extends State<EarlyYearsScreen> with WidgetsBinding
       body: Obx(() {
         if (!c.eligible) {
           return c.summaryLoading.value
-              ? const AppLoader()
+              ? AppShimmer(key: const Key('ey_loading'), child: ListView(padding: const EdgeInsets.all(AppSpacing.md), children: [const ShimmerScreenHeaderSkeleton(), const SizedBox(height: AppSpacing.lg), ...shimmerListRows(3)]))
               : const AppEmptyView(icon: Icons.child_care_rounded, title: "Early Years isn't available for this child");
         }
         final showObs = c.showObservations;
@@ -95,7 +96,7 @@ class _EarlyYearsScreenState extends State<EarlyYearsScreen> with WidgetsBinding
   }
 
   List<Widget> _portfolio() {
-    if (c.portfolioLoading.value && c.portfolio.isEmpty) return const [Padding(padding: EdgeInsets.all(AppSpacing.xl), child: AppLoader())];
+    if (c.portfolioLoading.value && c.portfolio.isEmpty) return [AppShimmer(key: const Key('ey_loading'), child: Column(children: shimmerListRows(3)))];
     if (c.portfolioError.value != null && c.portfolio.isEmpty) {
       return [AppErrorView(message: c.portfolioError.value!, onRetry: c.loadPortfolio)];
     }
@@ -115,7 +116,7 @@ class _EarlyYearsScreenState extends State<EarlyYearsScreen> with WidgetsBinding
   }
 
   List<Widget> _observations() {
-    if (c.observationsLoading.value && c.observations.isEmpty) return const [Padding(padding: EdgeInsets.all(AppSpacing.xl), child: AppLoader())];
+    if (c.observationsLoading.value && c.observations.isEmpty) return [AppShimmer(key: const Key('ey_loading'), child: Column(children: shimmerListRows(3)))];
     if (c.observationsError.value != null && c.observations.isEmpty) {
       return [AppErrorView(message: c.observationsError.value!, onRetry: c.loadObservations)];
     }
