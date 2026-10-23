@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app/common/bindings/initial_binding.dart';
 import 'app/routes/app_pages.dart';
+import 'core/design/design.dart';
 import 'core/theme/app_theme.dart';
 import 'app/modules/auth/controllers/auth_controller.dart';
 import 'app/modules/auth/views/phone_entry_screen.dart';
@@ -9,6 +10,8 @@ import 'app/modules/home/views/home_shell.dart';
 import 'app/modules/splash/views/splash_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  registerFontLicenses(); // Plus Jakarta Sans (OFL), used on the auth screens only
   runApp(const EldeminParentApp());
 }
 
@@ -67,14 +70,20 @@ class _AuthGateState extends State<_AuthGate> {
     final auth = Get.find<AuthController>();
 
     return Obx(() {
+      final Widget screen;
       switch (auth.status.value) {
         case AuthStatus.unknown:
-          return const SplashScreen();
+          screen = const SplashScreen();
         case AuthStatus.unauthenticated:
-          return const PhoneEntryScreen();
+          screen = const PhoneEntryScreen();
         case AuthStatus.authenticated:
-          return const HomeShell();
+          screen = const HomeShell();
       }
+      // the splash and the login screen share the first photo: a short crossfade between them
+      return AnimatedSwitcher(
+        duration: EmReduceMotion.of(context) ? EmMotion.crossfade : EmMotion.slow,
+        child: KeyedSubtree(key: ValueKey(auth.status.value), child: screen),
+      );
     });
   }
 }

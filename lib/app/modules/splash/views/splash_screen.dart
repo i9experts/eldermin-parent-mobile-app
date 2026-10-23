@@ -1,242 +1,216 @@
-import 'dart:math' as math;
+import 'dart:async';
+import 'dart:ui' show lerpDouble;
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../../components/common_image_view.dart';
-import '../../../components/custom_text.dart';
-import '../../../config/app_images.dart';
+import 'package:flutter/services.dart';
+import '../../../../core/design/design.dart';
 
 /// The root screen shown while [AuthController] resolves its bootstrap
-/// (token check + cached profile read). Purely presentational - the
-/// swap away from this screen is driven entirely by `_AuthGate` in
-/// main.dart reacting to `AuthController.status`, matching the same
-/// gradient/ring language as [HeroCard] so the very first frame the
-/// user sees already looks like the rest of the app.
+/// (token check + cached profile read). Purely presentational - the swap away
+/// from this screen is driven entirely by `_AuthGate` in main.dart reacting to
+/// `AuthController.status`.
+///
+/// Frame 0 is the native splash: the app navy and the reversed logomark at
+/// [EmLogomark.splashHeight] in the exact centre, nothing moving. Then, in the
+/// first beat, the first photo crossfades in behind the logo under the navy
+/// overlay, a white rounded tile grows around the logo (which turns navy /
+/// orange), light travels along the logo's links, and two thin accent rings
+/// ripple out of the tile (they keep going while the session is checked).
+///
+/// Reduce motion: the photo and the tile crossfade in ([EmMotion.crossfade]);
+/// no rings, no link motion.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  static const String title = 'Eldermin Parent';
+  static const String tagline = 'Stay connected, stay informed.';
+
+  /// Side of the white logo tile (the logo inside is [EmLogomark.splashHeight]).
+  static const double tileSize = EmLogomark.splashHeight / EmLogoTile.logoShare;
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
-  late final AnimationController _entrance;
-  late final AnimationController _loop;
-  late final Animation<double> _ringFade;
-  late final Animation<double> _ringScale;
-  late final Animation<double> _logoFade;
-  late final Animation<double> _logoScale;
-  late final Animation<double> _titleFade;
+class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+  // windows (ms) of the intro, the same as the teacher app's splash
+  static const _intro = Duration(milliseconds: 1500);
+  static const _charge = (begin: 40, end: 790);
+  static const _pulse = (begin: 680, end: 1300);
+  static const _text = (begin: 120, end: 520);
+  static const _photoWait = Duration(milliseconds: 400);
+
+  late final AnimationController _introC = AnimationController(vsync: this, duration: _intro);
+  late final AnimationController _time = AnimationController(vsync: this, duration: EmMotion.ambientPeriod);
+  late final AnimationController _reveal = AnimationController(vsync: this, duration: EmMotion.photoReveal);
+  late final AnimationController _rings = AnimationController(vsync: this, duration: EmMotion.ringPeriod);
+
+  late final Animation<double> _chargeA, _pulseA, _dash, _titleFade, _taglineFade;
   late final Animation<Offset> _titleSlide;
-  late final Animation<double> _taglineFade;
-  late final Animation<double> _loaderFade;
+  late final CurvedAnimation _photo, _tile;
+
+  bool _reduced = false;
+  bool _configured = false;
+  bool _revealStarted = false;
+
+  double _at(int ms) => ms / _intro.inMilliseconds;
 
   @override
   void initState() {
     super.initState();
+    Animation<double> window(({int begin, int end}) w) => CurvedAnimation(parent: _introC, curve: Interval(_at(w.begin), _at(w.end)));
+    _chargeA = window(_charge);
+    _pulseA = window(_pulse);
+    // 60 whole dash periods per ambient loop: the dash drift never seams
+    _dash = Tween<double>(begin: 0, end: EmMotion.ambientPeriod.inMilliseconds / EmMotion.dashPeriod.inMilliseconds).animate(_time);
+    _photo = CurvedAnimation(parent: _reveal, curve: Curves.easeOut);
+    _tile = CurvedAnimation(parent: _reveal, curve: const Interval(0.2, 1, curve: Curves.easeOutCubic));
+    final t0 = _at(_text.begin), t1 = _at(_text.end);
+    _titleFade = CurvedAnimation(parent: _introC, curve: Interval(t0, t0 + (t1 - t0) * 0.7, curve: Curves.easeOut));
+    _titleSlide = Tween(begin: const Offset(0, 0.3), end: Offset.zero).animate(CurvedAnimation(parent: _introC, curve: Interval(t0, t1, curve: EmMotion.enter)));
+    _taglineFade = CurvedAnimation(parent: _introC, curve: Interval(t0 + (t1 - t0) * 0.3, t1, curve: Curves.easeOut));
+  }
 
-    _entrance = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1200))
-      ..forward();
-    _loop = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1400))
-      ..repeat();
-    _ringFade = CurvedAnimation(
-        parent: _entrance,
-        curve: const Interval(0.0, 0.45, curve: Curves.easeOut));
-    _ringScale = Tween(begin: 0.5, end: 1.0).animate(CurvedAnimation(
-        parent: _entrance,
-        curve: const Interval(0.0, 0.55, curve: Curves.easeOutCubic)));
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reduced = EmReduceMotion.of(context);
+    if (!_revealStarted) {
+      _revealStarted = true;
+      _reveal.duration = reduced ? EmMotion.crossfade : EmMotion.photoReveal;
+      _beginReveal();
+    }
+    if (!_configured || reduced != _reduced) {
+      _configured = true;
+      _reduced = reduced;
+      if (reduced) {
+        _introC.stop();
+        _time.stop();
+        _rings.stop();
+      } else {
+        if (!_introC.isCompleted && !_introC.isAnimating) _introC.forward();
+        if (!_time.isAnimating) _time.repeat();
+        if (!_rings.isAnimating) _rings.repeat();
+      }
+    }
+  }
 
-    _logoFade = CurvedAnimation(
-        parent: _entrance,
-        curve: const Interval(0.05, 0.5, curve: Curves.easeOut));
-    _logoScale = Tween(begin: 0.55, end: 1.0).animate(CurvedAnimation(
-        parent: _entrance,
-        curve: const Interval(0.05, 0.6, curve: Curves.easeOutBack)));
-
-    _titleFade = CurvedAnimation(
-        parent: _entrance,
-        curve: const Interval(0.4, 0.75, curve: Curves.easeOut));
-    _titleSlide = Tween(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-        CurvedAnimation(
-            parent: _entrance,
-            curve: const Interval(0.4, 0.8, curve: Curves.easeOutCubic)));
-
-    _taglineFade = CurvedAnimation(
-        parent: _entrance,
-        curve: const Interval(0.6, 0.95, curve: Curves.easeOut));
-    _loaderFade = CurvedAnimation(
-        parent: _entrance,
-        curve: const Interval(0.75, 1.0, curve: Curves.easeOut));
+  /// Preloads the photos (the splash one first), then crossfades the first in. Never waits
+  /// longer than [_photoWait]: the reveal starts anyway (the photo area stays navy).
+  Future<void> _beginReveal() async {
+    unawaited(EmAuthPhotos.precache(context));
+    await EmAuthPhotos.precache(context, assets: const [EmAuthPhotos.photo1]).timeout(_photoWait, onTimeout: () {});
+    if (mounted && !_reveal.isAnimating && !_reveal.isCompleted) _reveal.forward();
   }
 
   @override
   void dispose() {
-    _entrance.dispose();
-    _loop.dispose();
+    _photo.dispose();
+    _tile.dispose();
+    _introC.dispose();
+    _time.dispose();
+    _reveal.dispose();
+    _rings.dispose();
     super.dispose();
   }
 
+  EmNetworkDrive get _drive => _reduced
+      ? EmNetworkDrive(to: EmNetworkPalette.standard, morph: _tile)
+      : EmNetworkDrive(to: EmNetworkPalette.standard, morph: _tile, charge: _chargeA, dashPhase: _dash, pulse: _pulseA);
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.primaryColor,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: AppColors.heroGradient,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    const tileSize = SplashScreen.tileSize;
+    final mark = SizedBox.square(
+      dimension: tileSize,
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          if (!_reduced)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(painter: EmRippleRings(phase: _rings, strength: _tile, radiusFactor: EmRadius.logoTileRatio)),
+              ),
+            ),
+          // the white tile grows in around the logo, with a small swell on the pulse
+          FadeTransition(
+            opacity: _tile,
+            child: AnimatedBuilder(
+              animation: Listenable.merge([_tile, _pulseA]),
+              builder: (context, child) {
+                final swell = _reduced ? 1.0 : 1 + 0.03 * (_pulseA.value <= 0 || _pulseA.value >= 1 ? 0 : 1 - (2 * _pulseA.value - 1).abs());
+                return Transform.scale(scale: lerpDouble(0.92, 1, _tile.value)! * swell, child: child);
+              },
+              child: const EmLogoTile(size: tileSize, child: SizedBox.shrink()),
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: -70,
-              top: -70,
-              child: FadeTransition(
-                opacity: _ringFade,
-                child: ScaleTransition(
-                  scale: _ringScale,
-                  child: Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color: Colors.white.withOpacity(0.07), width: 42),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: -60,
-              bottom: -80,
-              child: FadeTransition(
-                opacity: _ringFade,
-                child: ScaleTransition(
-                  scale: _ringScale,
-                  child: Container(
-                    width: 220,
-                    height: 220,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color: Colors.white.withOpacity(0.05), width: 46),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SafeArea(
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Spacer(flex: 3),
-                    FadeTransition(
-                      opacity: _logoFade,
-                      child: ScaleTransition(
-                        scale: _logoScale,
-                        child: Container(
-                          width: 128,
-                          height: 128,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                                color: AppColors.primaryColor.withOpacity(0.8)),
-                          ),
-                          child: const CommonImageView(
-                            imagePath: AppImages.fullLogo,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    FadeTransition(
-                      opacity: _titleFade,
-                      child: SlideTransition(
-                        position: _titleSlide,
-                        child: const CustomText(
-                          text: 'Eldermin',
-                          textAlign: TextAlign.center,
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -1,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    FadeTransition(
-                      opacity: _taglineFade,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.xl),
-                        child: CustomText(
-                          text: 'Stay connected, stay informed.',
-                          textAlign: TextAlign.center,
-                          color: Colors.white.withOpacity(0.75),
-                          fontSize: 13.5,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    const Spacer(flex: 4),
-                    FadeTransition(
-                      opacity: _loaderFade,
-                      child: _LoadingDots(loop: _loop),
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          EmLogomark(height: EmLogomark.splashHeight, reversed: true, semanticLabel: SplashScreen.title, drive: _drive),
+        ],
       ),
     );
-  }
-}
 
-/// Three softly pulsing dots, phase-offset via a repeating [loop]
-/// controller - a lighter-weight "still working" affordance than a
-/// spinner, consistent with the calm tone of the rest of the splash.
-class _LoadingDots extends StatelessWidget {
-  final AnimationController loop;
-  const _LoadingDots({required this.loop});
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: loop,
-      builder: (context, _) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: List.generate(3, (i) {
-            final phase = (loop.value + i * 0.2) % 1.0;
-            final t = 0.5 + 0.5 * math.sin(2 * math.pi * phase);
-            return Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.35 + 0.55 * t),
-              ),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Material(
+        type: MaterialType.transparency,
+        child: LayoutBuilder(
+          builder: (context, box) {
+            final screen = box.biggest;
+            final textTop = screen.height / 2 + tileSize / 2 + EmSpacing.s24;
+            // the text sits at or below the overlay's strong line, whatever the text size
+            final safeTop = EmPhotoOverlay.safeTopFor(textTop / screen.height, margin: 0.02);
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                const ColoredBox(color: EmColors.primaryDark),
+                FadeTransition(
+                  opacity: _photo,
+                  child: EmPhotoBackdrop(image: EmAuthPhotos.provider(EmAuthPhotos.photo1), safeTop: safeTop),
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: textTop,
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.symmetric(horizontal: EmSpacing.s32),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FadeTransition(
+                          opacity: _reduced ? const AlwaysStoppedAnimation(1) : _titleFade,
+                          child: SlideTransition(
+                            position: _reduced ? const AlwaysStoppedAnimation(Offset.zero) : _titleSlide,
+                            child: Text(SplashScreen.title,
+                                key: const Key('splash_title'),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: EmType.splashTitle.copyWith(color: EmColors.onPrimaryDark)),
+                          ),
+                        ),
+                        const SizedBox(height: EmSpacing.s8),
+                        FadeTransition(
+                          opacity: _reduced ? const AlwaysStoppedAnimation(1) : _taglineFade,
+                          child: Text(SplashScreen.tagline,
+                              key: const Key('splash_tagline'),
+                              textAlign: TextAlign.center,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: EmType.splashTagline.copyWith(color: EmColors.accent)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // exact centre, identical to the native splash image at frame 0
+                Center(child: mark),
+                // the animated mark has its own label; this keeps the loading cue for screen readers
+                Positioned(bottom: 0, left: 0, child: Semantics(label: 'Loading', liveRegion: true, child: const SizedBox(width: 1, height: 1))),
+              ],
             );
-          }),
-        );
-      },
+          },
+        ),
+      ),
     );
   }
 }

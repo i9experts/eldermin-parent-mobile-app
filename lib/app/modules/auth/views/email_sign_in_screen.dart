@@ -1,109 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../../components/custom_text.dart';
-import '../../../components/custom_button.dart';
-import '../../../components/custom_text_field.dart';
+import '../../../../core/design/design.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/email_sign_in_controller.dart';
+import '../widgets/auth_page_shell.dart';
 
-class EmailSignInScreen extends StatelessWidget {
+/// Email + password sign in (self-serve accounts): photo header, form on the navy.
+class EmailSignInScreen extends StatefulWidget {
   const EmailSignInScreen({super.key});
 
   @override
+  State<EmailSignInScreen> createState() => _EmailSignInScreenState();
+}
+
+class _EmailSignInScreenState extends State<EmailSignInScreen> {
+  late final EmailSignInController controller = Get.put(EmailSignInController());
+  final _shake = ValueNotifier<int>(0);
+  Worker? _errors;
+
+  @override
+  void initState() {
+    super.initState();
+    _errors = ever(controller.error, (e) {
+      if (e != null) _shake.value++;
+    });
+  }
+
+  @override
+  void dispose() {
+    _errors?.dispose();
+    _shake.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = Get.put(EmailSignInController());
-
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.primaryColor),
-        title: const CustomText(
-          text: 'Sign In',
-          fontSize: 17,
-          fontWeight: FontWeight.w700,
-          color: AppColors.primaryColor,
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const CustomText(
-                text: 'Welcome back',
-                fontSize: 19,
-                fontWeight: FontWeight.w800,
-                color: AppColors.primaryColor,
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              const CustomText(
-                text: 'Sign in with the email and password you created your account with.',
-                color: AppColors.grey,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-
-              CustomTextField(
-                controller: controller.emailController,
-                isborder: true,
-                fillColor: AppColors.background,
-                keyboardType: TextInputType.emailAddress,
-                hintText: 'Email address',
-                prefixIcon: const Icon(Icons.mail_outline, color: AppColors.primaryColor),
-              ),
-              const SizedBox(height: AppSpacing.md),
-
-              Obx(() => CustomTextField(
-                    controller: controller.passwordController,
-                    isborder: true,
-                    fillColor: AppColors.background,
-                    obscureText: controller.obscurePassword.value,
-                    hintText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primaryColor),
-                    suffixIcon: IconButton(
-                      icon: Icon(controller.obscurePassword.value ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppColors.grey),
-                      onPressed: controller.togglePasswordVisibility,
-                    ),
-                  )),
-
-              Obx(() => controller.error.value != null
-                  ? Padding(
-                      padding: const EdgeInsets.only(top: AppSpacing.sm),
-                      child: CustomText(text: controller.error.value!, color: Colors.red, fontSize: 12.5),
-                    )
-                  : const SizedBox.shrink()),
-
-              const SizedBox(height: AppSpacing.lg),
-              Obx(() => CustomButton(
-                    label: controller.loading.value ? '' : 'Sign In',
-                    height: 54,
-                    color: AppColors.primaryColor,
-                    borderRadius: 16,
-                    enabled: !controller.loading.value,
-                    onPressed: controller.signIn,
-                    prefix: controller.loading.value
-                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                        : null,
-                  )),
-              const SizedBox(height: AppSpacing.md),
-
-              Center(
-                child: TextButton(
-                  onPressed: () => Get.offNamed(Routes.createAccount),
-                  child: Text.rich(
-                    TextSpan(children: [
-                      const TextSpan(text: "Don't have an account? ", style: TextStyle(color: AppColors.grey)),
-                      TextSpan(text: 'Create Account', style: TextStyle(color: AppColors.accentColor, fontWeight: FontWeight.w700)),
-                    ]),
-                  ),
-                ),
-              ),
-            ],
+    return AuthPageShell(
+      showBack: true,
+      shake: _shake,
+      eyebrow: 'Sign In',
+      title: 'Welcome back',
+      subtitle: 'Sign in with the email and password you created your account with.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AuthTextField(
+            controller: controller.emailController,
+            keyboardType: TextInputType.emailAddress,
+            hintText: 'Email address',
+            prefixIcon: Icons.mail_outline,
           ),
-        ),
+          const SizedBox(height: EmSpacing.s12),
+          Obx(() => AuthTextField(
+                controller: controller.passwordController,
+                obscureText: controller.obscurePassword.value,
+                hintText: 'Password',
+                prefixIcon: Icons.lock_outline,
+                suffix: AuthPasswordToggle(obscured: controller.obscurePassword.value, onToggle: controller.togglePasswordVisibility),
+              )),
+          Obx(() => controller.error.value != null
+              ? Padding(padding: const EdgeInsets.only(top: EmSpacing.s8), child: AuthMessage(controller.error.value!))
+              : const SizedBox.shrink()),
+          const SizedBox(height: EmSpacing.s20),
+          Obx(() => EmMorphButton(
+                label: 'Sign In',
+                loadingLabel: 'Signing in',
+                phase: controller.loading.value ? EmMorphPhase.loading : EmMorphPhase.idle,
+                onPressed: controller.signIn,
+              )),
+          const SizedBox(height: EmSpacing.s12),
+          Center(
+            child: TextButton(
+              onPressed: () => Get.offNamed(Routes.createAccount),
+              child: Text.rich(TextSpan(children: [
+                TextSpan(text: "Don't have an account? ", style: EmType.body.copyWith(color: EmColors.primaryContainer, fontWeight: FontWeight.w400)),
+                TextSpan(text: 'Create Account', style: EmType.body.copyWith(color: EmColors.accent, fontWeight: FontWeight.w700)),
+              ])),
+            ),
+          ),
+        ],
       ),
     );
   }
