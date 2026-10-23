@@ -4,6 +4,7 @@ import '../../../core/network/dio_service.dart';
 import '../../../core/services/device_activation_service.dart';
 import '../../../core/services/parent_api_service.dart';
 import '../../modules/auth/controllers/auth_controller.dart';
+import '../../modules/early_years/controllers/early_years_controller.dart';
 import '../../modules/students/controllers/student_controller.dart';
 
 /// Wires up the app's global, app-lifetime singletons - the network layer
@@ -19,5 +20,7 @@ class InitialBinding extends Bindings {
     DioService.onUnauthorized = auth.logout;
 
     Get.put(StudentController(Get.find<ParentApiService>()), permanent: true);
+    // After StudentController: it reacts to the selected child to decide whether Early Years is shown.
+    Get.put(EarlyYearsController(), permanent: true);
   }
 }

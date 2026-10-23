@@ -52,6 +52,9 @@ import '../modules/ptm/views/ptm_screen.dart';
 import '../modules/students/views/student_selector_screen.dart';
 import '../modules/tarbiyah/bindings/tarbiyah_binding.dart';
 import '../modules/tarbiyah/views/tarbiyah_screen.dart';
+import '../modules/early_years/bindings/early_years_binding.dart';
+import '../modules/early_years/views/early_years_screen.dart';
+import '../modules/early_years/views/early_years_detail_screens.dart';
 import '../modules/timetable/bindings/timetable_binding.dart';
 import '../modules/timetable/views/timetable_screen.dart';
 import 'app_routes.dart';
@@ -102,6 +105,18 @@ class AppPages {
         name: Routes.tarbiyah,
         page: () => const TarbiyahScreen(),
         binding: TarbiyahBinding()),
+    GetPage(
+        name: Routes.earlyYears,
+        page: () => const EarlyYearsScreen(),
+        binding: EarlyYearsBinding()),
+    GetPage(
+        name: Routes.earlyYearsEntry,
+        page: () => const EarlyYearsEntryScreen(),
+        binding: EarlyYearsBinding()),
+    GetPage(
+        name: Routes.earlyYearsObservation,
+        page: () => const EarlyYearsObservationScreen(),
+        binding: EarlyYearsBinding()),
     GetPage(
         name: Routes.library,
         page: () => const LibraryScreen(),
