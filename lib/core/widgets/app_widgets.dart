@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../utils/greeting.dart';
 import '../design/design.dart';
 import '../theme/app_theme.dart';
 import 'em_section_header.dart';
@@ -283,26 +282,6 @@ class SegmentedControl extends StatelessWidget {
   }
 }
 
-class DateStripWidget extends StatelessWidget {
-  final List<DateTime> days;
-  final DateTime selected;
-  final Set<DateTime> highlighted;
-  final ValueChanged<DateTime> onSelect;
-  const DateStripWidget(
-      {super.key,
-      required this.days,
-      required this.selected,
-      this.highlighted = const {},
-      required this.onSelect});
-
-  @override
-  Widget build(BuildContext context) => EmDateStrip(
-      days: days,
-      selected: selected,
-      onSelected: onSelect,
-      markedDays: highlighted);
-}
-
 class DonutRing extends StatelessWidget {
   final int percent;
   final Color color;
@@ -460,40 +439,3 @@ class ScreenIntro extends StatelessWidget {
   }
 }
 
-/// A current-week strip that manages its own selected day (no controller wiring). Decorative on the screens that still
-/// show it; the Home tab no longer does.
-class AppWeekDateStrip extends StatefulWidget {
-  final Set<DateTime> highlighted;
-  final ValueChanged<DateTime>? onSelect;
-  const AppWeekDateStrip(
-      {super.key, this.highlighted = const {}, this.onSelect});
-
-  @override
-  State<AppWeekDateStrip> createState() => _AppWeekDateStripState();
-}
-
-class _AppWeekDateStripState extends State<AppWeekDateStrip> {
-  late DateTime _selected;
-  late List<DateTime> _days;
-
-  @override
-  void initState() {
-    super.initState();
-    final now = uiNow();
-    _days = EmDateStrip.weekOf(now);
-    _selected = DateTime(now.year, now.month, now.day);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DateStripWidget(
-      days: _days,
-      selected: _selected,
-      highlighted: widget.highlighted,
-      onSelect: (d) {
-        setState(() => _selected = d);
-        widget.onSelect?.call(d);
-      },
-    );
-  }
-}

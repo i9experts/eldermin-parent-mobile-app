@@ -64,7 +64,7 @@ void main() {
           setUpRouteDeps(p4Api());
           await _open(t, e.value.$1, e.value.$2, w: w, h: h, scale: scale);
           expect(find.byType(EmAppBar), findsOneWidget);
-          expect(find.byType(AppWeekDateStrip), findsNothing);
+          expect(find.byType(EmDateStrip), findsNothing);
           expect(t.takeException(), isNull);
           // nothing is drawn below the kit's smallest type size (12 sp)
           for (final text in t.widgetList<Text>(find.byType(Text))) {

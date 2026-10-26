@@ -25,47 +25,6 @@ class ShimmerBone extends StatelessWidget {
   Widget build(BuildContext context) => EmSkeletonBox(width: width, height: height, radius: radius);
 }
 
-/// A circular bone - icon badges, avatars.
-class ShimmerCircle extends StatelessWidget {
-  final double size;
-  const ShimmerCircle({super.key, this.size = 38});
-
-  @override
-  Widget build(BuildContext context) => EmSkeletonBox(height: size, circle: true);
-}
-
-/// Mirrors a tab root's [TabHeading] - title + caption + optional trailing chip.
-class ShimmerScreenHeaderSkeleton extends StatelessWidget {
-  final bool withChip;
-  const ShimmerScreenHeaderSkeleton({super.key, this.withChip = true});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.block),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                EmSkeletonBox(width: 160, height: 24),
-                SizedBox(height: EmSpacing.s8),
-                EmSkeletonBox(width: 210, height: 14),
-              ],
-            ),
-          ),
-          if (withChip) ...[
-            const SizedBox(width: EmSpacing.s12),
-            const EmSkeletonBox(width: 78, height: 28, radius: EmRadius.pill),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
 /// Mirrors [ScreenIntro] - one caption line + optional chip (the title is the app bar's).
 class ShimmerScreenIntroSkeleton extends StatelessWidget {
   final bool withChip;
@@ -84,23 +43,6 @@ class ShimmerScreenIntroSkeleton extends StatelessWidget {
           ],
         ],
       ),
-    );
-  }
-}
-
-/// Mirrors [DateStripWidget] / [AppWeekDateStrip] - 7 equal day pills.
-class ShimmerDateStripSkeleton extends StatelessWidget {
-  const ShimmerDateStripSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < 7; i++) ...[
-          if (i > 0) const SizedBox(width: EmSpacing.s4),
-          const Expanded(child: EmSkeletonBox(height: 56, radius: EmRadius.pill)),
-        ],
-      ],
     );
   }
 }

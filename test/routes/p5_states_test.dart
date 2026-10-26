@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:eldermin_parent_app/app/routes/app_routes.dart';
 import 'package:eldermin_parent_app/core/design/design.dart';
-import 'package:eldermin_parent_app/core/widgets/app_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -28,7 +27,7 @@ void main() {
         setUpRouteDeps(p5Api());
         await open(t, e.value, w: w, h: h, scale: scale);
         expect(find.byType(EmAppBar), findsOneWidget);
-        expect(find.byType(AppWeekDateStrip), findsNothing);
+        expect(find.byType(EmDateStrip), findsNothing);
         expect(t.takeException(), isNull);
         for (final text in t.widgetList<Text>(find.byType(Text))) {
           final size = text.style?.fontSize;

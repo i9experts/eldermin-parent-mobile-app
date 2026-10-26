@@ -178,7 +178,7 @@ void main() {
       expect(find.byKey(const Key('greeting_date')), findsOneWidget);
       expect(find.text('Good morning'), findsOneWidget);
       expect(find.text('Monday, 26 October 2026'), findsOneWidget);
-      expect(find.byType(AppWeekDateStrip), findsNothing);
+      expect(find.byType(EmDateStrip), findsNothing);
       expect(find.byType(EmDateStrip), findsNothing);
       expect(find.byType(ScreenIntro), findsNothing);
       expect(t.takeException(), isNull);

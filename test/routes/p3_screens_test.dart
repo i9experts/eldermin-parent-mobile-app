@@ -51,7 +51,7 @@ void main() {
           setUpRouteDeps(p3Api());
           await openTab(t, e.value, width: w, height: w == 320 ? 640 : 844, scale: scale);
           expect(find.byType(TabHeading), findsOneWidget);
-          expect(find.byType(AppWeekDateStrip), findsNothing);
+          expect(find.byType(EmDateStrip), findsNothing);
           expect(find.byType(EmDateStrip), findsNothing);
           expect(t.takeException(), isNull);
           await disposeApp(t);
@@ -242,7 +242,7 @@ void main() {
           await settle(t);
           expect(find.byType(EmAppBar), findsOneWidget);
           expect(find.byType(ScreenIntro).evaluate().length, lessThanOrEqualTo(1));
-          expect(find.byType(AppWeekDateStrip), findsNothing);
+          expect(find.byType(EmDateStrip), findsNothing);
           expect(t.takeException(), isNull);
           await disposeApp(t);
         });
