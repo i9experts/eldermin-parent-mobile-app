@@ -3,6 +3,7 @@ import 'package:eldermin_parent_app/app/modules/early_years/controllers/early_ye
 import 'package:eldermin_parent_app/app/modules/early_years/views/early_years_detail_screens.dart';
 import 'package:eldermin_parent_app/app/modules/early_years/views/early_years_screen.dart';
 import 'package:eldermin_parent_app/app/modules/more/views/more_screen.dart';
+import 'package:eldermin_parent_app/core/design/design.dart';
 import 'package:eldermin_parent_app/core/models/early_years_models.dart';
 import 'package:eldermin_parent_app/core/network/api_exception.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ Future<EarlyYearsController> _bootWith(WidgetTester t, Widget screen, String chi
   final students = studentsOf(api, [kid('s1'), kid('s2', name: 'Omar')], selected: child);
   Get.put(students);
   final c = Get.put(EarlyYearsController(api: api, students: students));
-  await t.pumpWidget(GetMaterialApp(home: screen));
+  await t.pumpWidget(GetMaterialApp(theme: buildEmTheme(), home: screen));
   return c;
 }
 
@@ -198,7 +199,7 @@ void main() {
     final students = studentsOf(api, [kid('s1')], selected: 's1');
     Get.put(students);
     final c = Get.put(EarlyYearsController(api: api, students: students));
-    await t.pumpWidget(GetMaterialApp(home: const EarlyYearsScreen()));
+    await t.pumpWidget(GetMaterialApp(theme: buildEmTheme(), home: const EarlyYearsScreen()));
     await frames(t);
     expect(c.summaryLoading.value, isTrue);
     expect(find.byKey(const Key('ey_loading')), findsOneWidget);

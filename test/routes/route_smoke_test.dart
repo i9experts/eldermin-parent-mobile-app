@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:eldermin_parent_app/app/routes/app_pages.dart';
 import 'package:eldermin_parent_app/app/routes/app_routes.dart';
+import 'package:eldermin_parent_app/core/models/early_years_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -40,16 +41,20 @@ final routes = <String, Object?>{
   Routes.aboutUs: null,
   Routes.help: null,
   Routes.privacyPolicy: null,
+  // Early Years (merged from main, PR #7)
+  Routes.earlyYears: null,
+  Routes.earlyYearsEntry: EyPortfolioEntry.fromJson({'id': 'e1', 'title': 'Painting', 'narrative': 'Mixed colours', 'createdAt': '2026-10-01T10:00:00Z', 'media': []}),
+  Routes.earlyYearsObservation: EyObservation.fromJson({'id': 'o1', 'type': 'learning_story', 'narrative': 'Built a tower', 'createdAt': '2026-10-01T10:00:00Z', 'learningAreas': [], 'media': []}),
 };
 
 void main() {
   setUpAll(loadAuthFonts);
   tearDown(Get.reset);
 
-  test('the smoke test covers every named route (30)', () {
+  test('the smoke test covers every named route (33)', () {
     final registered = AppPages.pages.map((p) => p.name).toSet();
     expect(routes.keys.toSet(), registered);
-    expect(routes.length, 30);
+    expect(routes.length, 33);
   });
 
   for (final entry in routes.entries) {

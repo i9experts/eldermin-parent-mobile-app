@@ -45,7 +45,7 @@ class EmTileGrid extends StatelessWidget {
               child: ExcludeSemantics(child: Center(child: t.leading ?? Icon(t.icon, color: color, size: 20))),
             ),
             const SizedBox(width: EmSpacing.s8),
-            Expanded(child: Text(t.label, maxLines: 2, overflow: TextOverflow.ellipsis, style: EmType.label.copyWith(color: t.destructive ? EmColors.onErrorContainer : EmColors.ink))),
+            Expanded(child: Text(t.label, maxLines: 3, overflow: TextOverflow.ellipsis, style: EmType.label.copyWith(color: t.destructive ? EmColors.onErrorContainer : EmColors.ink))),
           ]),
         );
       }

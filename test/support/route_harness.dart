@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:eldermin_parent_app/app/modules/attendance/controllers/attendance_controller.dart';
 import 'package:eldermin_parent_app/app/modules/auth/controllers/auth_controller.dart';
 import 'package:eldermin_parent_app/app/modules/circulars/controllers/circulars_controller.dart';
+import 'package:eldermin_parent_app/app/modules/early_years/controllers/early_years_controller.dart';
 import 'package:eldermin_parent_app/app/modules/events/controllers/events_controller.dart';
 import 'package:eldermin_parent_app/app/modules/homework/controllers/homework_controller.dart';
 import 'package:eldermin_parent_app/app/modules/library/controllers/library_controller.dart';
@@ -74,6 +75,8 @@ FakeClient setUpRouteDeps(FutureOr<dynamic> Function(String method, String url) 
   final students = StudentController(api);
   if (withStudent) students.students.value = [testStudent];
   Get.put<StudentController>(students, permanent: true);
+  // registered permanent in InitialBinding on main (initial_binding.dart): the More tile and the Early Years screens read it
+  Get.put<EarlyYearsController>(EarlyYearsController(), permanent: true);
   return client;
 }
 

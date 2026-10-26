@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/design/design.dart';
 import '../../../../core/models/early_years_models.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
-import '../../../components/custom_text.dart';
 import '../controllers/early_years_controller.dart';
 import 'early_years_media.dart';
 import 'early_years_screen.dart' show eyDate;
 
-AppBar _bar(String title) => AppBar(title: CustomText(text: title, color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700, maxLines: 1));
-
-/// One shared portfolio entry. Opens with the list's copy and re-fetches the
-/// entry so its photo links are fresh (they expire after ~15 minutes).
+/// One shared portfolio entry. Opens with the list's copy and re-fetches the entry so its photo links are fresh (they expire after
+/// ~15 minutes). Teacher pattern (`design-kit-v1`): `ptm_detail_screen.dart:67-70` (`EmScaffold` + `EmAppBar`) with the content in
+/// titled sections (`:119-136`, `SubHeading`).
 class EarlyYearsEntryScreen extends StatefulWidget {
   final EyPortfolioEntry? initial;
   const EarlyYearsEntryScreen({super.key, this.initial});
@@ -34,8 +32,8 @@ class _EarlyYearsEntryScreenState extends State<EarlyYearsEntryScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: _bar('Portfolio entry'),
+  Widget build(BuildContext context) => EmScaffold(
+        appBar: EmAppBar(title: 'Portfolio entry'),
         body: Obx(() {
           final e = c.entry.value;
           if (e == null) {
@@ -43,31 +41,32 @@ class _EarlyYearsEntryScreenState extends State<EarlyYearsEntryScreen> {
                 ? AppErrorView(message: c.entryError.value!)
                 : const AppEmptyView(icon: Icons.photo_library_outlined, title: 'Entry not found');
           }
-          return ListView(padding: const EdgeInsets.all(AppSpacing.md), children: [
-            CustomText(text: e.title, color: AppColors.primaryColor, fontSize: 18, fontWeight: FontWeight.w800),
-            const SizedBox(height: 4),
-            CustomText(text: eyDate(e.createdAt), color: AppColors.faint, fontSize: 11),
+          return ListView(padding: EmSpacing.listPadding, children: [
+            Semantics(header: true, child: Text(e.title, style: EmType.title.copyWith(color: EmColors.ink))),
+            const SizedBox(height: EmSpacing.s4),
+            Text(eyDate(e.createdAt), style: EmType.body.copyWith(color: EmColors.textSecondary)),
             if (c.entryError.value != null) ...[
-              const SizedBox(height: 8),
-              CustomText(text: c.entryError.value!, color: AppColors.red, fontSize: 11),
+              const SizedBox(height: EmSpacing.s8),
+              Text(c.entryError.value!, style: EmType.caption.copyWith(color: EmColors.error, fontWeight: FontWeight.w600)),
             ],
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: EmSpacing.s16),
             EyMediaStrip(media: e.media),
-            if (e.media.isNotEmpty) const SizedBox(height: AppSpacing.md),
-            CustomText(text: e.narrative, color: AppColors.black, fontSize: 14, height: 1.5),
+            if (e.media.isNotEmpty) const SizedBox(height: EmSpacing.s16),
+            Text(e.narrative, style: EmType.bodyLarge.copyWith(color: EmColors.ink, fontWeight: FontWeight.w400, height: 1.5)),
             if (e.tryThisAtHome != null) ...[
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: EmSpacing.s16),
               Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(color: AppColors.amberBg, borderRadius: BorderRadius.circular(AppRadius.md)),
+                key: const Key('ey_try_at_home'),
+                padding: EmSpacing.cardPad,
+                decoration: BoxDecoration(color: EmTone.warning.background, borderRadius: EmRadius.mdAll),
                 child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Icon(Icons.lightbulb_outline_rounded, color: AppColors.amberDark),
-                  const SizedBox(width: 10),
+                  ExcludeSemantics(child: Icon(Icons.lightbulb_outline_rounded, color: EmTone.warning.foreground)),
+                  const SizedBox(width: EmSpacing.s12),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      const CustomText(text: 'Try this at home', color: AppColors.amberDark, fontWeight: FontWeight.w800, fontSize: 12.5),
-                      const SizedBox(height: 4),
-                      CustomText(text: e.tryThisAtHome!, color: AppColors.black, fontSize: 13),
+                      Text('Try this at home', style: EmType.label.copyWith(color: EmTone.warning.foreground, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: EmSpacing.s4),
+                      Text(e.tryThisAtHome!, style: EmType.body.copyWith(color: EmColors.ink, fontWeight: FontWeight.w400)),
                     ]),
                   ),
                 ]),
@@ -78,7 +77,7 @@ class _EarlyYearsEntryScreenState extends State<EarlyYearsEntryScreen> {
       );
 }
 
-/// One shared observation (taken from the list; its links are refreshed with the list).
+/// One shared observation (taken from the list; its links are refreshed with the list). Same teacher pattern as the entry screen.
 class EarlyYearsObservationScreen extends StatefulWidget {
   final EyObservation? initial;
   const EarlyYearsObservationScreen({super.key, this.initial});
@@ -98,34 +97,34 @@ class _EarlyYearsObservationScreenState extends State<EarlyYearsObservationScree
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: _bar('Observation'),
+  Widget build(BuildContext context) => EmScaffold(
+        appBar: EmAppBar(title: 'Observation'),
         body: Obx(() {
           // Prefer the freshest copy of this observation (same id) from the controller's list.
           final o = c.observations.firstWhereOrNull((x) => x.id == _seed?.id) ?? _seed;
           if (o == null) return const AppEmptyView(icon: Icons.visibility_outlined, title: 'Observation not found');
-          return ListView(padding: const EdgeInsets.all(AppSpacing.md), children: [
-            CustomText(text: eyDate(o.createdAt), color: AppColors.faint, fontSize: 11),
-            const SizedBox(height: AppSpacing.sm),
+          return ListView(padding: EmSpacing.listPadding, children: [
+            Text(eyDate(o.createdAt), style: EmType.body.copyWith(color: EmColors.textSecondary)),
+            const SizedBox(height: EmSpacing.s8),
             EyMediaStrip(media: o.media),
-            if (o.media.isNotEmpty) const SizedBox(height: AppSpacing.md),
-            CustomText(text: o.narrative, color: AppColors.black, fontSize: 14, height: 1.5),
+            if (o.media.isNotEmpty) const SizedBox(height: EmSpacing.s16),
+            Text(o.narrative, style: EmType.bodyLarge.copyWith(color: EmColors.ink, fontWeight: FontWeight.w400, height: 1.5)),
             if (o.learningAreas.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: EmSpacing.s16),
               const SectionRow(title: 'Learning areas'),
               for (final a in o.learningAreas)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
+                  padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.s8),
                   child: Row(children: [
-                    Expanded(child: CustomText(text: a.skill, color: AppColors.black, fontSize: 13)),
-                    if (a.level.isNotEmpty) AppTag(a.level),
+                    Expanded(child: Text(a.skill, style: EmType.body.copyWith(color: EmColors.ink, fontWeight: FontWeight.w400))),
+                    if (a.level.isNotEmpty) ...[const SizedBox(width: EmSpacing.s8), AppTag(a.level)],
                   ]),
                 ),
             ],
             if (o.nextStep != null) ...[
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: EmSpacing.s16),
               const SectionRow(title: 'Next step'),
-              CustomText(text: o.nextStep!, color: AppColors.muted, fontSize: 13),
+              Text(o.nextStep!, style: EmType.body.copyWith(color: EmColors.textSecondary, fontWeight: FontWeight.w400)),
             ],
           ]);
         }),

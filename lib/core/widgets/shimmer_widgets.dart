@@ -201,6 +201,67 @@ class ShimmerProgressCardSkeleton extends StatelessWidget {
   }
 }
 
+/// Mirrors a summary hero card (name + tag, a few detail lines, count tags): the Early Years summary.
+class ShimmerSummaryCardSkeleton extends StatelessWidget {
+  const ShimmerSummaryCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsetsDirectional.all(EmSpacing.s16),
+      decoration: const BoxDecoration(color: EmColors.surface, borderRadius: EmRadius.heroAll),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            EmSkeletonBox(height: 40, circle: true),
+            SizedBox(width: EmSpacing.s12),
+            Expanded(child: EmSkeletonBox(height: 20)),
+            SizedBox(width: EmSpacing.s12),
+            EmSkeletonBox(width: 80, height: 24, radius: EmRadius.pill),
+          ]),
+          SizedBox(height: EmSpacing.s16),
+          EmSkeletonBox(width: 150, height: 14),
+          SizedBox(height: EmSpacing.s8),
+          EmSkeletonBox(width: 190, height: 14),
+          SizedBox(height: EmSpacing.s16),
+          Row(children: [
+            EmSkeletonBox(width: 110, height: 26, radius: EmRadius.pill),
+            SizedBox(width: EmSpacing.s8),
+            EmSkeletonBox(width: 110, height: 26, radius: EmRadius.pill),
+          ]),
+        ],
+      ),
+    );
+  }
+}
+
+/// Mirrors a media card (a photo block, a title, a date and two text lines): the Early Years portfolio entry.
+class ShimmerMediaCardSkeleton extends StatelessWidget {
+  const ShimmerMediaCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsetsDirectional.only(bottom: EmSpacing.row),
+      padding: EmSpacing.cardPad,
+      decoration: const BoxDecoration(color: EmColors.surface, borderRadius: EmRadius.cardAll),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          EmSkeletonBox(width: double.infinity, height: 150, radius: EmRadius.md),
+          SizedBox(height: EmSpacing.s12),
+          EmSkeletonBox(width: 160, height: 16),
+          SizedBox(height: EmSpacing.s8),
+          EmSkeletonBox(width: 90, height: 12),
+          SizedBox(height: EmSpacing.s8),
+          EmSkeletonBox(width: double.infinity, height: 12),
+        ],
+      ),
+    );
+  }
+}
+
 /// Mirrors the profile header card: avatar circle, name and one line.
 class ShimmerProfileHeaderSkeleton extends StatelessWidget {
   const ShimmerProfileHeaderSkeleton({super.key});
