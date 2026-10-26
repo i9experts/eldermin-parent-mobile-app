@@ -180,6 +180,49 @@ class ShimmerHeroCardSkeleton extends StatelessWidget {
   }
 }
 
+/// Mirrors a one-bar progress card ("Requests approved", "Profile completeness"): a title bone and a thin bar bone.
+class ShimmerProgressCardSkeleton extends StatelessWidget {
+  const ShimmerProgressCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EmSpacing.cardPad,
+      decoration: const BoxDecoration(color: EmColors.surface, borderRadius: EmRadius.cardAll),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          EmSkeletonBox(width: 130, height: 14),
+          SizedBox(height: EmSpacing.s12),
+          EmSkeletonBox(width: double.infinity, height: 8, radius: EmRadius.pill),
+        ],
+      ),
+    );
+  }
+}
+
+/// Mirrors the profile header card: avatar circle, name and one line.
+class ShimmerProfileHeaderSkeleton extends StatelessWidget {
+  const ShimmerProfileHeaderSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EmSpacing.cardPad,
+      decoration: const BoxDecoration(color: EmColors.surface, borderRadius: EmRadius.cardAll),
+      child: const Column(
+        children: [
+          EmSkeletonBox(height: 96, circle: true),
+          SizedBox(height: EmSpacing.s12),
+          EmSkeletonBox(width: 150, height: 18),
+          SizedBox(height: EmSpacing.s8),
+          EmSkeletonBox(width: 190, height: 12),
+        ],
+      ),
+    );
+  }
+}
+
 /// Mirrors the `AppCard`-wrapped chart cards - a title bone above a full-width chart-shaped block.
 class ShimmerChartSkeleton extends StatelessWidget {
   const ShimmerChartSkeleton({super.key});
