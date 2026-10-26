@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -17,13 +18,8 @@ class HomeworkScreen extends GetView<HomeworkController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Homework',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Homework'),
       body: Obx(() {
         if (controller.loading.value && controller.items.isEmpty) {
           return AppShimmer(

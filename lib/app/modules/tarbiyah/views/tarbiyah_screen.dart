@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -27,17 +28,8 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const CustomText(
-          text: 'Growth & tarbiyah',
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Growth & tarbiyah'),
       body: Obx(() {
         if (controller.loading.value &&
             controller.tarbiyahAssessments.isEmpty &&

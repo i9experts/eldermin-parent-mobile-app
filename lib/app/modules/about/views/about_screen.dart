@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../components/custom_text.dart';
@@ -24,15 +25,8 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const CustomText(
-          text: 'About us',
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-          fontSize: 18,
-        ),
-      ),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'About us'),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [

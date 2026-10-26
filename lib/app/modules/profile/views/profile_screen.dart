@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -34,13 +35,8 @@ class ProfileScreen extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Student profile',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Student profile'),
       body: Obx(() {
         if (controller.loading.value && controller.profile.value == null) {
           return AppShimmer(

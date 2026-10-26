@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -13,13 +14,8 @@ class CircularsScreen extends GetView<CircularsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'School updates',
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 18)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'School updates'),
       body: Obx(() {
         if (controller.loading.value && controller.circulars.isEmpty) {
           return AppShimmer(

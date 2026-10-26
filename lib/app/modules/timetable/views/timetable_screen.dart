@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_date_picker.dart';
@@ -39,17 +40,8 @@ class TimetableScreen extends GetView<TimetableController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const CustomText(
-          text: 'Timetable',
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Timetable'),
       body: Obx(() {
         if (controller.loading.value && controller.timetable.value == null) {
           return AppShimmer(

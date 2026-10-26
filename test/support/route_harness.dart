@@ -40,7 +40,7 @@ DioException networkError(String url) => DioException(requestOptions: RequestOpt
 /// The suspended-feature placeholder (HTTP 200) the backend sends for a paused premium feature.
 const suspendedBody = {'suspended': true, 'feature': 'paused', 'reason': 'paused by the school'};
 
-final testStudent = Student(id: 's1', firstName: 'Ayesha', lastName: 'Khan', currentGrade: 'Grade 5', currentSection: 'A', admissionNo: '1001');
+final testStudent = Student(id: 's1', firstName: 'Ayesha', lastName: 'Khan', currentGrade: '5', currentSection: 'A', admissionNo: '1001');
 
 /// Registers the app's global singletons on a fake API, exactly like InitialBinding but with no storage/network.
 FakeClient setUpRouteDeps(FutureOr<dynamic> Function(String method, String url) respond, {bool withStudent = true}) {

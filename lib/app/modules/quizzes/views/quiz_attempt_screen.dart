@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../../components/custom_text.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/locked_feature_view.dart';
 import '../../../components/custom_app_snack_bar.dart';
 import '../../../components/custom_button.dart';
-import '../../../components/custom_text.dart';
 import '../controllers/quiz_attempt_controller.dart';
 
 class QuizAttemptScreen extends GetView<QuizAttemptController> {
@@ -35,15 +36,8 @@ class QuizAttemptScreen extends GetView<QuizAttemptController> {
         if (didPop) return;
         if (await _confirmLeave(context)) Get.back();
       },
-      child: Scaffold(
-        appBar: AppBar(
-            title: CustomText(
-                text: controller.title,
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis)),
+      child: EmScaffold(
+        appBar: EmAppBar(title: controller.title),
         body: Obx(() {
           if (controller.loading.value) return const Center(child: CircularProgressIndicator());
           if (controller.error.value != null) {

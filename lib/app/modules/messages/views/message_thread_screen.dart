@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -11,24 +12,14 @@ class MessageThreadScreen extends GetView<MessageThreadController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return EmScaffold(
+      appBar: EmAppBar(
+        titleWidget: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CustomText(
-              text: controller.staffName,
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-            ),
+            Text(controller.staffName, maxLines: 1, overflow: TextOverflow.ellipsis, style: EmType.heading.copyWith(color: EmColors.ink)),
             if (controller.studentName != null)
-              CustomText(
-                text: 'Re: ${controller.studentName}',
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 11,
-              ),
+              Text('Re: ${controller.studentName}', maxLines: 1, overflow: TextOverflow.ellipsis, style: EmType.caption.copyWith(color: EmColors.textSecondary)),
           ],
         ),
       ),

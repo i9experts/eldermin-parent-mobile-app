@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -14,14 +15,8 @@ class DuesScreen extends GetView<DuesController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-        text: 'Fees & dues',
-        color: Colors.white,
-        fontWeight: FontWeight.w700,
-        fontSize: 18,
-      )),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Fees & dues'),
       body: Obx(() {
         if (controller.loading.value && controller.invoices.isEmpty) {
           return AppShimmer(

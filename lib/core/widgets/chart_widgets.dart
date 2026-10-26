@@ -1,45 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import '../design/design.dart' show EmBarChart, EmBarDatum;
 import '../theme/app_theme.dart';
 import '../../app/components/custom_text.dart';
 
-/// Matches the mockup's `.bar-chart` — one bar per category (e.g. a
-/// month), height proportional to a 0-100 value.
+/// One bar per category (e.g. a month), height proportional to a 0-100 value. Wraps the kit's [EmBarChart].
 class AppBarChart extends StatelessWidget {
   final List<(String label, double value)> data;
   const AppBarChart({super.key, required this.data});
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 116,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: data.map((d) {
-          final h = (d.$2.clamp(0, 100) / 100) * 80;
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    height: h,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(colors: [AppColors.sky, AppColors.blue], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(5), bottom: Radius.circular(2)),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  CustomText(text: d.$1, fontSize: 8, color: AppColors.faint, maxLines: 1, overflow: TextOverflow.ellipsis),
-                ],
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => EmBarChart(data: [for (final d in data) EmBarDatum(d.$1, d.$2.clamp(0, 100).toDouble())]);
 }
 
 /// Matches the mockup's `lineChart()` — a smoothed line + gradient area

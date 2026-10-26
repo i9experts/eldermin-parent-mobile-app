@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_text.dart';
 import '../controllers/learning_resources_controller.dart';
 
 class LearningResourcesScreen extends GetView<LearningResourcesController> {
@@ -11,13 +11,8 @@ class LearningResourcesScreen extends GetView<LearningResourcesController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Learning resources',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Learning resources'),
       body: Obx(() {
         if (controller.loading.value && controller.plans.isEmpty) {
           return AppShimmer(

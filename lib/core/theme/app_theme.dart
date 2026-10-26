@@ -187,17 +187,18 @@ class AppSpacing {
   static const double xl = EmSpacing.s24;
 }
 
-/// Semantic color pairs (foreground + tinted background) for badges/tags.
+/// Semantic color pairs (foreground + tinted background) for badges/tags; [tone] is the kit tone they render with.
 class TagStyle {
   final Color fg;
   final Color bg;
-  const TagStyle(this.fg, this.bg);
+  final EmTone tone;
+  const TagStyle(this.fg, this.bg, {this.tone = EmTone.neutral});
 
-  static const info = TagStyle(EmColors.onInfoContainer, EmColors.infoContainer);
-  static const amber = TagStyle(EmColors.onWarningContainer, EmColors.warningContainer);
-  static const green = TagStyle(EmColors.onSuccessContainer, EmColors.successContainer);
-  static const red = TagStyle(EmColors.onErrorContainer, EmColors.errorContainer);
-  static const neutral = TagStyle(EmColors.textSecondary, EmColors.border);
+  static const info = TagStyle(EmColors.onInfoContainer, EmColors.infoContainer, tone: EmTone.info);
+  static const amber = TagStyle(EmColors.onWarningContainer, EmColors.warningContainer, tone: EmTone.warning);
+  static const green = TagStyle(EmColors.onSuccessContainer, EmColors.successContainer, tone: EmTone.success);
+  static const red = TagStyle(EmColors.onErrorContainer, EmColors.errorContainer, tone: EmTone.error);
+  static const neutral = TagStyle(EmColors.textSecondary, EmColors.border, tone: EmTone.neutral);
 }
 
 class AppTheme {

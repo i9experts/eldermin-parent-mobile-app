@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../routes/app_routes.dart';
+import '../../../../core/design/design.dart';
+import '../../../../core/utils/greeting.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/hero_card.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_text.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../students/controllers/student_controller.dart';
 import '../controllers/home_dashboard_controller.dart';
 
+/// Home tab (the teacher Home pattern): the greeting header and the child switcher live in the shell; this is today's
+/// date and independent dashboard sections, each with its own loading / error / empty state. Pull to refresh.
 class HomeDashboardScreen extends StatelessWidget {
   const HomeDashboardScreen({super.key});
 
@@ -30,10 +33,10 @@ class HomeDashboardScreen extends StatelessWidget {
           icon: auth.schoolOnboarded.value ? Icons.hourglass_top_rounded : Icons.directions_bus_filled_outlined,
           title: auth.schoolOnboarded.value
               ? "You're almost there!"
-              : "Your school isn't on SmartVan yet",
+              : "Your school isn't on Eldermin yet",
           subtitle: auth.schoolOnboarded.value
               ? 'Your school is on Eldermin - ask the school office to link your account to your child\'s profile to unlock van tracking and everything else here.'
-              : "We've got you on the list. As soon as your child's school joins SmartVan, you'll be notified and can start tracking the van right from here.",
+              : "We've got you on the list. As soon as your child's school joins Eldermin, you'll be notified and can start tracking the van right from here.",
         );
       }
 
@@ -48,100 +51,86 @@ class HomeDashboardScreen extends StatelessWidget {
       return RefreshIndicator(
         onRefresh: () => controller.refresh(),
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsetsDirectional.fromSTEB(EmSpacing.screenH, EmSpacing.s8, EmSpacing.screenH, EmSpacing.s24),
           children: [
             Obx(() {
               final fullName = auth.userName.value;
-              final firstName =
-                  (fullName != null && fullName.trim().isNotEmpty)
-                      ? fullName.trim().split(RegExp(r'\s+')).first
-                      : null;
-              return ScreenHeader(
-                title: firstName != null
-                    ? 'Good morning, $firstName'
-                    : 'Good morning',
-                caption: DateFormat('EEEE, d MMMM yyyy').format(DateTime.now()),
-                selectLabel: 'Today',
+              final firstName = (fullName != null && fullName.trim().isNotEmpty) ? fullName.trim().split(RegExp(r'\s+')).first : null;
+              return Padding(
+                padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.s12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                        firstName != null ? '${greetingFor(uiNow())}, $firstName' : greetingFor(uiNow()),
+                        key: const Key('greeting_name'),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: EmType.heading.copyWith(color: EmColors.ink)),
+                    Text(DateFormat('EEEE, d MMMM yyyy').format(uiNow()),
+                        key: const Key('greeting_date'), style: EmType.body.copyWith(color: EmColors.textSecondary)),
+                  ],
+                ),
               );
             }),
-            const AppWeekDateStrip(),
-            const SizedBox(height: AppSpacing.lg),
             Obx(() {
-              if (controller.attendanceLoading.value)
+              if (controller.attendanceLoading.value) {
                 return const AppShimmer(child: ShimmerHeroCardSkeleton());
+              }
               if (controller.attendanceError.value != null) {
-                return AppErrorView(
-                    message: controller.attendanceError.value!,
-                    onRetry: controller.refresh);
+                return AppErrorView(message: controller.attendanceError.value!, onRetry: controller.refresh);
               }
               final records = controller.attendance;
               final total = records.length;
-              final present =
-                  records.where((r) => r['status'] == 'present' || r['status'] == 'late').length;
+              final present = records.where((r) => r['status'] == 'present' || r['status'] == 'late').length;
               final pct = total == 0 ? 0 : ((present / total) * 100).round();
               return HeroCard(
+                key: const Key('home_hero'),
                 kicker: "${student.firstName}'s day at a glance",
                 value: total == 0 ? '—' : '$pct%',
                 trend: total == 0
                     ? 'No attendance recorded yet'
-                    : (pct >= 90
-                        ? 'Strong attendance this month'
-                        : 'Keep an eye on attendance'),
+                    : (pct >= 90 ? 'Strong attendance this month' : 'Keep an eye on attendance'),
+                trendWarn: total != 0 && pct < 90,
                 percent: pct,
                 metrics: [
                   (total == 0 ? '—' : '$pct%', 'Attendance'),
-                  controller.homeworkLoading.value
-                      ? ('—', 'Homework')
-                      : ('${controller.homework.length}', 'Homework'),
+                  controller.homeworkLoading.value ? ('—', 'Homework') : ('${controller.homework.length}', 'Homework'),
                   controller.duesLoading.value
                       ? ('—', 'Fees')
-                      : (
-                          controller.dues.any((x) => (x['balanceDue'] ?? 0) > 0)
-                              ? 'Due'
-                              : 'Clear',
-                          'Fees'
-                        ),
+                      : (controller.dues.any((x) => (x['balanceDue'] ?? 0) > 0) ? 'Due' : 'Clear', 'Fees'),
                 ],
+                metricIcons: const [Icons.check_circle_outline_rounded, Icons.menu_book_rounded, Icons.account_balance_wallet_outlined],
               );
             }),
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: EmSpacing.s16),
             const SectionRow(title: 'Quick access'),
             _QuickAccessGrid(studentId: student.id),
-            const SizedBox(height: AppSpacing.lg),
-            SectionRow(
-                title: "Today's priority",
-                onSeeAll: () => Get.toNamed(Routes.homework)),
+            const SizedBox(height: EmSpacing.s16),
+            SectionRow(title: "Today's priority", onSeeAll: () => Get.toNamed(Routes.homework)),
             Obx(() {
               if (controller.homeworkLoading.value) {
-                return AppShimmer(child: Column(children: shimmerListRows(3)));
+                return AppShimmer(key: const Key('section_loading'), child: Column(children: shimmerListRows(3)));
               }
-              if (controller.homeworkError.value != null)
-                return const SizedBox.shrink();
+              if (controller.homeworkError.value != null) return const SizedBox.shrink();
               final pending = controller.homework
-                  .where((h) =>
-                      !['submitted', 'late', 'graded'].contains((h['mySubmission'] is Map ? h['mySubmission']['status'] : null)))
+                  .where((h) => !['submitted', 'late', 'graded'].contains((h['mySubmission'] is Map ? h['mySubmission']['status'] : null)))
                   .take(3)
                   .toList();
               if (pending.isEmpty) {
-                return const AppEmptyView(
-                    icon: Icons.check_circle_outline_rounded,
-                    title: 'All caught up',
-                    subtitle: 'No pending homework right now.');
+                return const _InfoCard(
+                    key: Key('section_empty'), icon: Icons.check_circle_outline_rounded, title: 'All caught up', subtitle: 'No pending homework right now.');
               }
               return Column(
                 children: pending.map((h) {
-                  final due = h['dueDate'] != null
-                      ? DateTime.tryParse(h['dueDate'].toString())
-                      : null;
+                  final due = h['dueDate'] != null ? DateTime.tryParse(h['dueDate'].toString()) : null;
                   return ListCardRow(
                     icon: Icons.menu_book_rounded,
                     iconColor: AppColors.amber,
                     title: h['subject'] ?? h['title'] ?? 'Homework',
                     subtitle: h['title'] ?? '',
-                    trailing: due != null
-                        ? AppTag('Due ${due.day}/${due.month}',
-                            style: TagStyle.amber)
-                        : null,
+                    trailing: due != null ? AppTag('Due ${due.day}/${due.month}', style: TagStyle.amber) : null,
                   );
                 }).toList(),
               );
@@ -150,27 +139,18 @@ class HomeDashboardScreen extends StatelessWidget {
               if (controller.eventsLoading.value) return const SizedBox.shrink();
               final now = DateTime.now();
               final today = DateTime(now.year, now.month, now.day);
-              final upcoming = controller.events
-                  .cast<Map>()
-                  .where((e) {
-                    final d = e['startDate'] != null
-                        ? DateTime.tryParse(e['startDate'].toString())
-                        : null;
-                    return d == null || !d.isBefore(today);
-                  })
-                  .toList()
+              final upcoming = controller.events.cast<Map>().where((e) {
+                final d = e['startDate'] != null ? DateTime.tryParse(e['startDate'].toString()) : null;
+                return d == null || !d.isBefore(today);
+              }).toList()
                 ..sort((a, b) {
-                  final da = DateTime.tryParse(a['startDate']?.toString() ?? '') ??
-                      DateTime(9999);
-                  final db = DateTime.tryParse(b['startDate']?.toString() ?? '') ??
-                      DateTime(9999);
+                  final da = DateTime.tryParse(a['startDate']?.toString() ?? '') ?? DateTime(9999);
+                  final db = DateTime.tryParse(b['startDate']?.toString() ?? '') ?? DateTime(9999);
                   return da.compareTo(db);
                 });
               if (upcoming.isEmpty) return const SizedBox.shrink();
               final e = upcoming.first;
-              final date = e['startDate'] != null
-                  ? DateTime.tryParse(e['startDate'].toString())
-                  : null;
+              final date = e['startDate'] != null ? DateTime.tryParse(e['startDate'].toString()) : null;
               final subtitleParts = [
                 if (date != null) '${date.day}/${date.month}/${date.year}',
                 if (e['venue'] != null) e['venue'].toString(),
@@ -179,9 +159,7 @@ class HomeDashboardScreen extends StatelessWidget {
                 icon: Icons.calendar_month_rounded,
                 iconColor: AppColors.purple,
                 title: e['title']?.toString() ?? 'School event',
-                subtitle: subtitleParts.isEmpty
-                    ? 'Upcoming'
-                    : subtitleParts.join(' • '),
+                subtitle: subtitleParts.isEmpty ? 'Upcoming' : subtitleParts.join(' • '),
                 trailing: AppTag((e['category'] ?? 'event').toString()),
               );
             }),
@@ -192,6 +170,35 @@ class HomeDashboardScreen extends StatelessWidget {
   }
 }
 
+/// A one-line empty message in a card (the teacher Home sections' empty state).
+class _InfoCard extends StatelessWidget {
+  const _InfoCard({super.key, required this.icon, required this.title, this.subtitle});
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+
+  @override
+  Widget build(BuildContext context) => EmCard(
+        child: Row(children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: const BoxDecoration(color: EmColors.primaryTint, shape: BoxShape.circle),
+            child: ExcludeSemantics(child: Icon(icon, color: EmColors.primary, size: 22)),
+          ),
+          const SizedBox(width: EmSpacing.s12),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, style: EmType.bodyLarge.copyWith(color: EmColors.ink)),
+              if (subtitle != null) Text(subtitle!, style: EmType.label.copyWith(color: EmColors.textSecondary, fontWeight: FontWeight.w400)),
+            ]),
+          ),
+        ]),
+      );
+}
+
+/// Four shortcuts, two per row (four on wide screens, one at large text sizes): icon chip + label in a kit card, so the labels keep room
+/// at large text sizes.
 class _QuickAccessGrid extends StatelessWidget {
   final String studentId;
   const _QuickAccessGrid({required this.studentId});
@@ -199,80 +206,48 @@ class _QuickAccessGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      (
-        Icons.check_circle_outline_rounded,
-        'Attendance',
-        AppColors.blue,
-        () => Get.toNamed(Routes.attendance)
-      ),
-      (
-        Icons.menu_book_rounded,
-        'Homework',
-        AppColors.amber,
-        () => Get.toNamed(Routes.homework)
-      ),
-      (
-        Icons.account_balance_wallet_outlined,
-        'Fees & dues',
-        AppColors.secondryColor,
-        () => Get.toNamed(Routes.dues)
-      ),
-      (
-        Icons.schedule_rounded,
-        'Timetable',
-        AppColors.purple,
-        () => Get.toNamed(Routes.timetable)
-      ),
+      (Icons.check_circle_outline_rounded, 'Attendance', AppColors.blue, () => Get.toNamed(Routes.attendance)),
+      (Icons.menu_book_rounded, 'Homework', AppColors.amber, () => Get.toNamed(Routes.homework)),
+      (Icons.account_balance_wallet_outlined, 'Fees & dues', AppColors.secondryColor, () => Get.toNamed(Routes.dues)),
+      (Icons.schedule_rounded, 'Timetable', AppColors.purple, () => Get.toNamed(Routes.timetable)),
     ];
     return LayoutBuilder(builder: (context, constraints) {
-      final crossAxisCount = constraints.maxWidth >= 640 ? 6 : 4;
-      return GridView.count(
-        crossAxisCount: crossAxisCount,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        childAspectRatio: 0.85,
-        children: items.map((item) {
-          return Material(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(17),
-            child: InkWell(
-              onTap: item.$4,
-              borderRadius: BorderRadius.circular(17),
-              splashColor: item.$3.withOpacity(0.12),
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.line),
-                    borderRadius: BorderRadius.circular(17)),
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 34,
-                      height: 34,
-                      decoration: BoxDecoration(
-                          color: item.$3.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Icon(item.$1, color: item.$3, size: 17),
-                    ),
-                    const SizedBox(height: 7),
-                    CustomText(
-                        text: item.$2,
-                        textAlign: TextAlign.center,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.ink,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
-                  ],
-                ),
+      // one per row at large text sizes, so no label breaks inside a word
+      final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.15;
+      final columns = constraints.maxWidth >= 640 ? 4 : (largeText ? 1 : 2);
+      final rows = <List<(IconData, String, Color, VoidCallback)>>[];
+      for (var i = 0; i < items.length; i += columns) {
+        rows.add(items.sublist(i, i + columns > items.length ? items.length : i + columns));
+      }
+      Widget tile((IconData, String, Color, VoidCallback) item) => EmCard(
+            key: Key('quick_${item.$2}'),
+            onTap: item.$4,
+            radius: EmRadius.tile,
+            padding: EmSpacing.cardPadCompact,
+            child: Row(children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(color: item.$3.withAlpha(31), shape: BoxShape.circle),
+                child: ExcludeSemantics(child: Icon(item.$1, color: item.$3, size: 20)),
               ),
-            ),
+              const SizedBox(width: EmSpacing.s8),
+              Expanded(child: Text(item.$2, maxLines: 2, overflow: TextOverflow.ellipsis, style: EmType.label.copyWith(color: EmColors.ink))),
+            ]),
           );
-        }).toList(),
-      );
+      return Column(children: [
+        for (final (r, row) in rows.indexed) ...[
+          if (r > 0) const SizedBox(height: EmSpacing.s8),
+          IntrinsicHeight(
+            child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              for (var c = 0; c < columns; c++) ...[
+                if (c > 0) const SizedBox(width: EmSpacing.s8),
+                Expanded(child: c < row.length ? tile(row[c]) : const SizedBox.shrink()),
+              ],
+            ]),
+          ),
+        ],
+      ]);
     });
   }
 }

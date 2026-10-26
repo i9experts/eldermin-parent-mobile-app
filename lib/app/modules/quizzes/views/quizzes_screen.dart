@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/locked_feature_view.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_text.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/quizzes_controller.dart';
 
@@ -13,10 +13,8 @@ class QuizzesScreen extends GetView<QuizzesController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Online quizzes', color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Online quizzes'),
       body: Obx(() {
         if (controller.loading.value && controller.quizzes.isEmpty) {
           return AppShimmer(

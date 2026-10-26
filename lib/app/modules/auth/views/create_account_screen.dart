@@ -43,7 +43,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       eyebrow: 'Create Account',
       title: 'No school linked yet? No problem.',
       subtitle:
-          "Create an account now - as soon as your child's school joins SmartVan, you'll be ready to start tracking the van.",
+          "Create an account now - as soon as your child's school joins Eldermin, you'll be ready to start tracking the van.",
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

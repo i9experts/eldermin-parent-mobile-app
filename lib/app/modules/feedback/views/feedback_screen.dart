@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -18,14 +19,8 @@ class FeedbackScreen extends GetView<FeedbackController> {
     final titleCtrl = TextEditingController();
     final descriptionCtrl = TextEditingController();
 
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-        text: 'Send feedback',
-        color: Colors.white,
-        fontWeight: FontWeight.w700,
-        fontSize: 18,
-      )),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Send feedback'),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [

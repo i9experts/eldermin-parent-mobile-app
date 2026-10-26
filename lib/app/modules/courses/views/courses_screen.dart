@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -12,10 +13,8 @@ class CoursesScreen extends GetView<CoursesController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'My courses', color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'My courses'),
       body: Obx(() {
         if (controller.loading.value && controller.courses.isEmpty) {
           return AppShimmer(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -15,13 +16,8 @@ class AttendanceScreen extends GetView<AttendanceController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Attendance',
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 18)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Attendance'),
       body: Obx(() {
         if (controller.loading.value && controller.records.isEmpty) {
           return AppShimmer(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -63,13 +64,8 @@ class MedicalScreen extends GetView<MedicalController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Medical information',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Medical information'),
       body: Obx(() {
         if (controller.loading.value && controller.medical.value == null) {
           return AppShimmer(

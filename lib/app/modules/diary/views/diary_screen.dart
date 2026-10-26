@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -15,13 +16,8 @@ class DiaryScreen extends GetView<DiaryController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Class diary',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Class diary'),
       body: Obx(() {
         if (controller.loading.value && controller.entries.isEmpty) {
           return AppShimmer(

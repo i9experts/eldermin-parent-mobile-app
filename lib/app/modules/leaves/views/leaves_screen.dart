@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_date_picker.dart';
@@ -27,13 +28,8 @@ class LeavesScreen extends GetView<LeavesController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Leave requests',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Leave requests'),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openRequestSheet(context),
         backgroundColor: AppColors.primaryColor,

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
-import '../../app/components/custom_text.dart';
+import '../design/design.dart';
 
-/// Matches the mockup's `.hero-card` — navy gradient, decorative ring
-/// cutout, a kicker/value/trend on the left and a progress ring on the
-/// right, with up to 3 metrics along the bottom.
+/// The summary card at the top of a dashboard: kicker, a big value with a trend line, a progress ring and up to three
+/// metric tiles. Built on the kit's [EmHeroCard] + [EmProgressRing] + [EmStatTile]s (the teacher Home pattern).
+/// [metricIcons] (optional, one per metric) are the tiles' icons; [ringColor] defaults to the kit primary.
 class HeroCard extends StatelessWidget {
   final String kicker;
   final String value;
@@ -13,6 +12,7 @@ class HeroCard extends StatelessWidget {
   final int percent;
   final Color ringColor;
   final List<(String, String)> metrics;
+  final List<IconData>? metricIcons;
 
   const HeroCard({
     super.key,
@@ -21,130 +21,70 @@ class HeroCard extends StatelessWidget {
     required this.trend,
     this.trendWarn = false,
     required this.percent,
-    this.ringColor = AppColors.amber,
+    this.ringColor = EmColors.primary,
     this.metrics = const [],
+    this.metricIcons,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: AppColors.heroGradient, begin: Alignment.topLeft, end: Alignment.bottomRight),
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        boxShadow: [BoxShadow(color: AppColors.primaryColor.withOpacity(0.2), blurRadius: 30, offset: const Offset(0, 15))],
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
+    return EmHeroCard(
+      padding: const EdgeInsetsDirectional.all(EmSpacing.s16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Positioned(
-            right: -70, top: -70,
-            child: Container(
-              width: 170, height: 170,
-              decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white.withOpacity(0.06), width: 38)),
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          Text(kicker, maxLines: 2, overflow: TextOverflow.ellipsis, style: EmType.label.copyWith(color: EmColors.textSecondary)),
+          const SizedBox(height: EmSpacing.s8),
+          Row(
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Column(
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(value, style: EmType.display.copyWith(color: EmColors.ink)),
+                    ),
+                    const SizedBox(height: EmSpacing.s8),
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CustomText(text: kicker.toUpperCase(), color: Colors.white.withOpacity(0.75), fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1, maxLines: 1, overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 4),
-                        CustomText(text: value, color: Colors.white, fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -1, maxLines: 1, overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 2),
-                        CustomText(text: trend, color: trendWarn ? const Color(0xFFFFDCA2) : const Color(0xFFC8F1DF), fontSize: 11, maxLines: 2, overflow: TextOverflow.ellipsis),
+                        Padding(
+                          padding: const EdgeInsetsDirectional.only(top: EmSpacing.s4),
+                          child: Container(width: 8, height: 8, decoration: BoxDecoration(color: trendWarn ? EmColors.accent : EmColors.success, shape: BoxShape.circle)),
+                        ),
+                        const SizedBox(width: EmSpacing.s8),
+                        Expanded(child: Text(trend, maxLines: 2, overflow: TextOverflow.ellipsis, style: EmType.label.copyWith(color: EmColors.ink))),
                       ],
                     ),
-                  ),
-                  _ProgressRing(percent: percent, ringColor: ringColor),
-                ],
-              ),
-              if (metrics.isNotEmpty) ...[
-                const SizedBox(height: 14),
-                Container(
-                  padding: const EdgeInsets.only(top: 12),
-                  decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.white.withOpacity(0.14)))),
-                  child: Row(
-                    children: metrics.asMap().entries.map((entry) {
-                      final isFirst = entry.key == 0;
-                      return Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.only(left: 12),
-                          decoration: isFirst ? null : BoxDecoration(border: Border(left: BorderSide(color: Colors.white.withOpacity(0.12)))),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CustomText(text: entry.value.$1, color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700, maxLines: 1, overflow: TextOverflow.ellipsis),
-                              const SizedBox(height: 2),
-                              CustomText(text: entry.value.$2, color: Colors.white.withOpacity(0.7), fontSize: 9, maxLines: 1, overflow: TextOverflow.ellipsis),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                  ],
                 ),
-              ],
+              ),
+              const SizedBox(width: EmSpacing.s12),
+              EmProgressRing(
+                value: percent.clamp(0, 100) / 100,
+                size: 96,
+                strokeWidth: 10,
+                centerText: '$percent%',
+                color: ringColor,
+                semanticLabel: '$kicker $percent percent',
+              ),
             ],
           ),
+          if (metrics.isNotEmpty) ...[
+            const SizedBox(height: EmSpacing.s16),
+            EmStatTileRow(tiles: [
+              for (final (i, m) in metrics.indexed)
+                EmStatTile(
+                  icon: metricIcons != null && i < metricIcons!.length ? metricIcons![i] : Icons.insights_outlined,
+                  value: m.$1,
+                  label: m.$2,
+                ),
+            ]),
+          ],
         ],
       ),
     );
   }
-}
-
-class _ProgressRing extends StatelessWidget {
-  final int percent;
-  final Color ringColor;
-  const _ProgressRing({required this.percent, required this.ringColor});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 76, height: 76,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          CustomPaint(size: const Size(76, 76), painter: _RingPainter(percent: percent, color: ringColor)),
-          CustomText(text: '$percent%', color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800),
-        ],
-      ),
-    );
-  }
-}
-
-class _RingPainter extends CustomPainter {
-  final int percent;
-  final Color color;
-  _RingPainter({required this.percent, required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = size.center(Offset.zero);
-    final radius = size.width / 2;
-    const strokeWidth = 8.0;
-
-    final bgPaint = Paint()
-      ..color = Colors.white.withOpacity(0.14)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
-    canvas.drawCircle(center, radius - strokeWidth / 2, bgPaint);
-
-    final fgPaint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-    final sweep = 2 * 3.14159265 * (percent.clamp(0, 100) / 100);
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius - strokeWidth / 2), -3.14159265 / 2, sweep, false, fgPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _RingPainter oldDelegate) => oldDelegate.percent != percent || oldDelegate.color != color;
 }

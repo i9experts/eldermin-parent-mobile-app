@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_app_snack_bar.dart';
-import '../../../components/custom_text.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/notifications_controller.dart';
 
@@ -39,15 +39,12 @@ class NotificationsScreen extends GetView<NotificationsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const CustomText(
-            text: 'Notifications',
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w700),
+    return EmScaffold(
+      appBar: EmAppBar(
+        title: 'Notifications',
         actions: [
-          TextButton(
+          EmTextAction(
+            label: 'Mark all read',
             onPressed: () async {
               final ok = await controller.markAllRead();
               if (ok) {
@@ -57,8 +54,6 @@ class NotificationsScreen extends GetView<NotificationsController> {
                     'Could not update notifications. Please try again.');
               }
             },
-            child: const CustomText(
-                text: 'Mark all read', color: Colors.white, fontSize: 12),
           ),
         ],
       ),

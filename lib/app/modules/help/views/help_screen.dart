@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -50,15 +51,8 @@ class HelpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const CustomText(
-          text: 'Help & support',
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-          fontSize: 18,
-        ),
-      ),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Help & support'),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [

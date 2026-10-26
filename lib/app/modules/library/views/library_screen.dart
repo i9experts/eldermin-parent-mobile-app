@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -44,13 +45,8 @@ class LibraryScreen extends GetView<LibraryController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Learning library',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Learning library'),
       body: Obx(() {
         if (controller.loading.value && controller.issues.isEmpty) {
           return AppShimmer(

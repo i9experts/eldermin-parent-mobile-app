@@ -47,7 +47,9 @@ class EmNavItem {
 /// `extendBody: false` ends above it.
 class EmBottomNav extends StatelessWidget {
   const EmBottomNav({super.key, required this.items, required this.currentIndex, required this.onTap, this.centerAction})
-      : assert(items.length == 4, 'EmBottomNav shows exactly 4 items plus the centre slot');
+      // PARENT DEVIATION from design-kit-v1 (which asserts exactly 4): the parent app keeps its 5 tabs, so 5 items
+      // are allowed when there is no centre action.
+      : assert(items.length == 4 || (items.length == 5 && centerAction == null), 'EmBottomNav shows 4 items plus the centre slot, or 5 items without it');
 
   final List<EmNavItem> items;
   final int currentIndex;
@@ -83,7 +85,9 @@ class EmBottomNav extends StatelessWidget {
                 type: MaterialType.transparency,
                 child: Padding(
                   padding: EdgeInsets.only(bottom: bottom, left: 8, right: 8),
-                  child: Row(children: [item(0), item(1), if (centerAction != null) const SizedBox(width: 84), item(2), item(3)]),
+                  child: Row(children: [
+                    if (centerAction != null) ...[item(0), item(1), const SizedBox(width: 84), item(2), item(3)] else for (var i = 0; i < items.length; i++) item(i),
+                  ]),
                 ),
               ),
             ),
