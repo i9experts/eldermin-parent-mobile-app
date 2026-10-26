@@ -5,10 +5,10 @@ import '../../../../core/design/design.dart';
 
 /// How much of the screen the photo takes on a signed-out screen.
 enum AuthPhotoSize {
-  /// Login: the photo fills the top ~55% and fades into the navy.
+  /// Sign in: the photo fills the top ~55% and fades into the navy.
   tall(0.55, Alignment.topCenter),
 
-  /// The screens pushed from it (OTP, create account, email sign in).
+  /// The screens pushed from it (OTP, email sign in, create account): a shorter photo.
   short(0.34, Alignment(0, -0.78));
 
   const AuthPhotoSize(this.fraction, this.alignment);
@@ -25,26 +25,18 @@ enum AuthPhotoSize {
   static const double compactHeight = 700, compactTall = 0.46;
 }
 
-/// Shared layout of the signed-out screens: the first photo at the top fading
-/// into the navy page with the logo tile on it, then the heading, the subtitle
-/// and the form on the navy. The content rises and fades in; the photo collapses
-/// to a strip when the keyboard opens so the fields and the button stay in view.
-/// Scrolls. Everything below the photo's strong line ([EmPhotoOverlay]) is text
-/// on the overlay, so the content starts there.
+/// Shared layout for the signed-out screens (login, OTP, email sign in, create account). Copied from the teacher
+/// app's `design-kit-v1`; the parent additions are [eyebrow] and an optional [subtitle].
 ///
-/// (Duplicated from the teacher app, see docs/PHOTO_AUTH_DUPLICATION.md.)
+/// the first photo at the top fading into the navy page, the logo tile (the
+/// splash landing anchor) on it, then the heading, the subtitle and the form on
+/// the navy. The content rises and its items stagger in; the photo collapses to
+/// a strip when the keyboard opens so the fields and the button stay in view.
+/// Scrolls. See MOTION_SPEC.md 3.3 / 3.4 / 7.
+///
+/// Everything below the photo's strong line (EmPhotoOverlay) is text on the
+/// overlay, so the content starts there and is checked against the worst case.
 class AuthPageShell extends StatelessWidget {
-  const AuthPageShell({
-    super.key,
-    required this.title,
-    required this.child,
-    this.subtitle,
-    this.eyebrow,
-    this.showBack = false,
-    this.photoSize = AuthPhotoSize.short,
-    this.shake,
-  });
-
   final String title;
   final String? subtitle;
 
@@ -52,10 +44,23 @@ class AuthPageShell extends StatelessWidget {
   final String? eyebrow;
   final Widget child;
   final bool showBack;
+
+  /// Sign in has the tall photo; the others the short one.
   final AuthPhotoSize photoSize;
 
   /// Shakes the content whenever this changes (an error).
   final ValueListenable<int>? shake;
+
+  const AuthPageShell({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.eyebrow,
+    required this.child,
+    this.showBack = false,
+    this.photoSize = AuthPhotoSize.short,
+    this.shake,
+  });
 
   /// Strong line of the photo's overlay as a fraction of the photo box: content starts here.
   static const double photoSafeTop = 0.78;
@@ -74,16 +79,17 @@ class AuthPageShell extends StatelessWidget {
     // the keyboard collapses the photo to a strip that still holds the logo tile
     final collapsed = top + EmSpacing.s12 + logoTile + EmSpacing.s24;
     final photoHeight = keyboard ? (collapsed < full ? collapsed : full) : full;
-
     return EmEntranceHost(
       builder: (context, entrance) => EmEntrance(
         animation: entrance,
-        child: AnnotatedRegion<SystemUiOverlayStyle>(
-          value: SystemUiOverlayStyle.light,
-          child: Scaffold(
-            backgroundColor: EmColors.primaryDark,
-            body: LayoutBuilder(
-              builder: (context, constraints) => SingleChildScrollView(
+        child: EmScaffold(
+          extendBody: false,
+          wash: false,
+          backgroundColor: EmColors.primaryDark,
+          systemOverlay: SystemUiOverlayStyle.light,
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
                 keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
@@ -118,13 +124,21 @@ class AuthPageShell extends StatelessWidget {
                               PositionedDirectional(
                                 top: top + EmSpacing.s12,
                                 end: EmSpacing.s24,
-                                child: const EmLogoTile(size: logoTile),
+                                child: const EmLogoAnchor(child: EmLogoTile(size: logoTile)),
                               ),
                               if (showBack)
                                 PositionedDirectional(
                                   top: top + EmSpacing.s8,
                                   start: EmSpacing.s16,
-                                  child: const _BackCircle(),
+                                  child: Builder(builder: (context) {
+                                    final rtl = Directionality.of(context) == TextDirection.rtl;
+                                    return EmIconCircleButton(
+                                      icon: rtl ? Icons.chevron_right_rounded : Icons.chevron_left_rounded,
+                                      semanticLabel: 'Back',
+                                      tooltip: 'Back',
+                                      onTap: () => Navigator.maybeOf(context)?.maybePop(),
+                                    );
+                                  }),
                                 ),
                             ],
                           ),
@@ -145,38 +159,47 @@ class AuthPageShell extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  /// Heading (accent), muted subtitle, then the form, all on the navy.
+  /// Heading (accent: large bold only), muted subtitle, then the form, all on the navy ([EmOnDark]).
   Widget _content() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (eyebrow != null) ...[
-          Text(eyebrow!, key: const Key('auth_eyebrow'), style: EmType.caption.copyWith(color: EmColors.primaryLight)),
-          const SizedBox(height: EmSpacing.s4),
-        ],
-        Semantics(
-          header: true,
-          child: Text(title,
-              key: const Key('auth_title'),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: EmType.photoTitle.copyWith(color: EmColors.accent)),
+    return EmOnDark(
+      child: Builder(
+        builder: (context) => TextButtonTheme(
+          data: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: EmColors.onPrimaryDark)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (eyebrow != null) ...[
+                Text(eyebrow!, key: const Key('auth_eyebrow'), style: EmType.caption.copyWith(color: EmOnDark.muted(context))),
+                const SizedBox(height: EmSpacing.s4),
+              ],
+              Semantics(
+                header: true,
+                child: Text(title,
+                    key: const Key('auth_title'),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: EmType.photoTitle.copyWith(color: EmColors.accent)),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: EmSpacing.s8),
+                Text(subtitle!,
+                    key: const Key('auth_subtitle'),
+                    style: EmType.body.copyWith(color: EmOnDark.muted(context), fontWeight: FontWeight.w400)),
+              ],
+              const SizedBox(height: EmSpacing.s20),
+              child,
+            ],
+          ),
         ),
-        if (subtitle != null) ...[
-          const SizedBox(height: EmSpacing.s8),
-          Text(subtitle!, key: const Key('auth_subtitle'), style: EmType.body.copyWith(color: EmColors.primaryContainer, fontWeight: FontWeight.w400)),
-        ],
-        const SizedBox(height: EmSpacing.s20),
-        child,
-      ],
+      ),
     );
   }
 
@@ -196,132 +219,41 @@ class AuthPageShell extends StatelessWidget {
   }
 }
 
-/// White 48 dp circle with a chevron (the pushed screens' way back).
-class _BackCircle extends StatelessWidget {
-  const _BackCircle();
+/// Inline message box: errors use the error container, notices the info
+/// container; text is the dark on-container colour. Announced to screen readers.
+class AuthBanner extends StatelessWidget {
+  final String message;
+  final bool isError;
+  const AuthBanner({super.key, required this.message, this.isError = true});
 
   @override
   Widget build(BuildContext context) {
-    final rtl = Directionality.of(context) == TextDirection.rtl;
+    final tone = isError ? EmTone.error : EmTone.info;
     return Semantics(
+      liveRegion: true,
       container: true,
-      button: true,
-      label: 'Back',
-      excludeSemantics: true,
-      onTap: () => Navigator.maybeOf(context)?.maybePop(),
-      child: Tooltip(
-        message: 'Back',
-        child: DecoratedBox(
-          decoration: BoxDecoration(color: EmColors.surface, shape: BoxShape.circle, boxShadow: EmShadows.soft),
-          child: Material(
-            type: MaterialType.transparency,
-            shape: const CircleBorder(),
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: () => Navigator.maybeOf(context)?.maybePop(),
-              child: SizedBox(
-                width: 48,
-                height: 48,
-                child: Icon(rtl ? Icons.chevron_right_rounded : Icons.chevron_left_rounded, color: EmColors.ink),
-              ),
-            ),
-          ),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsetsDirectional.all(EmSpacing.s12),
+        decoration: BoxDecoration(color: tone.background, borderRadius: EmRadius.mdAll),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(isError ? Icons.error_outline_rounded : Icons.info_outline_rounded, color: tone.foreground, size: 20),
+            const SizedBox(width: EmSpacing.s8),
+            Expanded(child: Text(message, style: EmType.label.copyWith(color: tone.foreground))),
+          ],
         ),
       ),
     );
   }
 }
 
-/// Inline message under a field: the error colour that reads on the navy.
-class AuthMessage extends StatelessWidget {
-  const AuthMessage(this.message, {super.key});
-  final String message;
-
-  @override
-  Widget build(BuildContext context) => Semantics(
-        liveRegion: true,
-        child: Text(message, style: EmType.label.copyWith(color: EmColors.errorContainer)),
-      );
-}
-
-/// White field label above a field.
-class AuthLabel extends StatelessWidget {
-  const AuthLabel(this.text, {super.key});
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.s8),
-        child: Text(text, style: EmType.label.copyWith(color: EmColors.onPrimaryDark)),
-      );
-}
-
-/// Outlined pill field for the navy: transparent, 1 px light border, white text, accent border when focused.
-class AuthTextField extends StatelessWidget {
-  const AuthTextField({
-    super.key,
-    required this.controller,
-    this.hintText,
-    this.prefixIcon,
-    this.suffix,
-    this.keyboardType,
-    this.inputFormatters,
-    this.obscureText = false,
-    this.errorText,
-    this.textInputAction,
-    this.onSubmitted,
-  });
-
-  final TextEditingController controller;
-  final String? hintText;
-  final IconData? prefixIcon;
-  final Widget? suffix;
-  final TextInputType? keyboardType;
-  final List<TextInputFormatter>? inputFormatters;
-  final bool obscureText;
-  final String? errorText;
-  final TextInputAction? textInputAction;
-  final ValueChanged<String>? onSubmitted;
-
-  @override
-  Widget build(BuildContext context) {
-    OutlineInputBorder border(Color c, double w) =>
-        OutlineInputBorder(borderRadius: BorderRadius.circular(EmRadius.control), borderSide: BorderSide(color: c, width: w));
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      inputFormatters: inputFormatters,
-      obscureText: obscureText,
-      textInputAction: textInputAction,
-      onSubmitted: onSubmitted,
-      cursorColor: EmColors.accent,
-      style: EmType.body.copyWith(color: EmColors.onPrimaryDark),
-      decoration: InputDecoration(
-        filled: false,
-        hintText: hintText,
-        hintStyle: EmType.body.copyWith(color: EmColors.primaryContainer, fontWeight: FontWeight.w400),
-        errorText: errorText,
-        errorMaxLines: 3,
-        errorStyle: EmType.caption.copyWith(color: EmColors.errorContainer),
-        prefixIcon: prefixIcon == null ? null : Icon(prefixIcon, size: 22, color: EmColors.onPrimaryDark),
-        suffixIcon: suffix,
-        contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: 22, vertical: 14),
-        constraints: const BoxConstraints(minHeight: 56),
-        border: border(EmColors.primaryLight, 1),
-        enabledBorder: border(EmColors.primaryLight, 1),
-        focusedBorder: border(EmColors.accent, 2),
-        errorBorder: border(EmColors.errorContainer, 1),
-        focusedErrorBorder: border(EmColors.errorContainer, 2),
-      ),
-    );
-  }
-}
-
-/// Eye button for password fields (48 dp target).
-class AuthPasswordToggle extends StatelessWidget {
-  const AuthPasswordToggle({super.key, required this.obscured, required this.onToggle});
+/// Eye icon button for password fields (48dp target).
+class PasswordVisibilityButton extends StatelessWidget {
   final bool obscured;
   final VoidCallback onToggle;
+  const PasswordVisibilityButton({super.key, required this.obscured, required this.onToggle});
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -335,7 +267,7 @@ class AuthPasswordToggle extends StatelessWidget {
           child: SizedBox(
             width: 48,
             height: 48,
-            child: Icon(obscured ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20, color: EmColors.primaryContainer),
+            child: Icon(obscured ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20, color: EmOnDark.muted(context)),
           ),
         ),
       );

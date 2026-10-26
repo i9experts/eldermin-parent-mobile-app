@@ -78,7 +78,7 @@ Future<void> pumpScreen(
   addTearDown(t.view.reset);
   await t.pumpWidget(GetMaterialApp(
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(useMaterial3: true),
+    theme: buildEmTheme(), // the real app theme
     builder: (context, c) => Directionality(
       textDirection: dir,
       child: MediaQuery(

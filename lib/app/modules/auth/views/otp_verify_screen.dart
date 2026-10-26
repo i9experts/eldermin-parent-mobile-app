@@ -85,7 +85,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
             ),
           ),
           Obx(() => controller.error.value != null
-              ? Padding(padding: const EdgeInsets.only(top: EmSpacing.s8), child: AuthMessage(controller.error.value!))
+              ? Padding(padding: const EdgeInsets.only(top: EmSpacing.s12), child: AuthBanner(message: controller.error.value!))
               : const SizedBox.shrink()),
           const SizedBox(height: EmSpacing.s20),
           Obx(() => EmMorphButton(
@@ -101,7 +101,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                     style: EmType.body.copyWith(color: EmColors.primaryContainer, fontWeight: FontWeight.w400))
                 : TextButton(
                     onPressed: controller.resend,
-                    child: Text('Resend Code', style: EmType.body.copyWith(color: EmColors.accent, fontWeight: FontWeight.w700)))),
+                    child: Text('Resend Code', style: EmType.body.copyWith(color: EmColors.onPrimaryDark, fontWeight: FontWeight.w700)))),
           ),
         ],
       ),

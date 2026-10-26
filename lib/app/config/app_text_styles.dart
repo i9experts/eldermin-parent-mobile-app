@@ -1,11 +1,11 @@
-/// Matches the family already loaded app-wide by
-/// `GoogleFonts.interTextTheme` in `core/theme/app_theme.dart` — a plain
-/// literal here (not a `GoogleFonts.inter()` call) so it stays usable as a
-/// compile-time constant default value in the components under
-/// `app/components/`.
+import '../../core/design/tokens/em_typography.dart';
+
+/// The app-wide font family: the bundled Plus Jakarta Sans (see pubspec.yaml `fonts:`), the same family
+/// the Eldermin theme sets on [ThemeData.fontFamily]. A bare family string only resolves when the font is
+/// bundled under exactly this name, which is why it points at [EmType.family] instead of a literal.
 class AppTextStyles {
   AppTextStyles._();
 
-  static const String fontFamily = 'Inter';
-  static const String headingFontFamily = 'Inter';
+  static const String fontFamily = EmType.family;
+  static const String headingFontFamily = EmType.family;
 }

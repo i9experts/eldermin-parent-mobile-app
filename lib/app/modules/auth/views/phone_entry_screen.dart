@@ -46,21 +46,29 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Obx(() => AuthTextField(
-                controller: controller.phoneController,
-                keyboardType: TextInputType.phone,
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d\+\s]'))],
-                hintText: '3001234567',
-                prefixIcon: Icons.phone_iphone_rounded,
-                errorText: controller.error.value,
-              )),
+          EmStagger(
+              index: 0,
+              child: Obx(() => EmTextField(
+                    controller: controller.phoneController,
+                    label: 'WhatsApp number',
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d\+\s]'))],
+                    hint: '3001234567',
+                    prefixIcon: Icons.phone_iphone_rounded,
+                    fillColor: EmColors.background,
+                    radius: EmRadius.control,
+                    errorText: controller.error.value,
+                  ))),
           const SizedBox(height: EmSpacing.s20),
-          Obx(() => EmMorphButton(
-                label: 'Send Verification Code',
-                loadingLabel: 'Sending the code',
-                phase: controller.loading.value ? EmMorphPhase.loading : EmMorphPhase.idle,
-                onPressed: controller.requestOtp,
-              )),
+          EmStagger(
+            index: 1,
+            child: Obx(() => EmMorphButton(
+                  label: 'Send Verification Code',
+                  loadingLabel: 'Sending the code',
+                  phase: controller.loading.value ? EmMorphPhase.loading : EmMorphPhase.idle,
+                  onPressed: controller.requestOtp,
+                )),
+          ),
           const SizedBox(height: EmSpacing.s20),
           Text(
             "Haven't registered this number with your school yet? Contact the school office to link it to your child's profile.",
@@ -76,7 +84,7 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                   TextSpan(
                       text: "Your school isn't on Eldermin yet? ",
                       style: EmType.caption.copyWith(color: EmColors.primaryContainer, fontWeight: FontWeight.w400)),
-                  TextSpan(text: 'Create an account', style: EmType.caption.copyWith(color: EmColors.accent, fontWeight: FontWeight.w700)),
+                  TextSpan(text: 'Create an account', style: EmType.caption.copyWith(color: EmColors.onPrimaryDark, fontWeight: FontWeight.w700)),
                 ]),
                 textAlign: TextAlign.center,
               ),

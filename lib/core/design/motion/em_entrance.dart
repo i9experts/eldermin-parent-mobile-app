@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import '../tokens/em_motion.dart';
+import 'logo_handoff.dart';
 import 'reduce_motion.dart';
 
 /// Timeline of a screen entrance: the card rises (`emphasis`), then its items
@@ -56,7 +57,8 @@ class EmStagger extends StatelessWidget {
   }
 }
 
-/// Owns an entrance controller: starts it on the first frame, and not at all with reduce motion.
+/// Owns an entrance controller: starts it when the screen is actually visible
+/// (not hidden under the splash overlay), and not at all with reduce motion.
 class EmEntranceHost extends StatefulWidget {
   const EmEntranceHost({super.key, required this.builder});
 
@@ -78,13 +80,32 @@ class _EmEntranceHostState extends State<EmEntranceHost> with SingleTickerProvid
     _started = true;
     if (EmReduceMotion.of(context)) {
       _c.value = 1;
+    } else if (EmLogoHandoff.overlay.value && !EmLogoHandoff.flying.value) {
+      // the splash is still covering this screen: play the entrance as its navy lifts
+      // (or as soon as the overlay is gone, whichever comes first)
+      void go() {
+        if (!EmLogoHandoff.flying.value && EmLogoHandoff.overlay.value) return;
+        _detach?.call();
+        _detach = null;
+        if (mounted) _c.forward();
+      }
+
+      EmLogoHandoff.flying.addListener(go);
+      EmLogoHandoff.overlay.addListener(go);
+      _detach = () {
+        EmLogoHandoff.flying.removeListener(go);
+        EmLogoHandoff.overlay.removeListener(go);
+      };
     } else {
       _c.forward();
     }
   }
 
+  VoidCallback? _detach;
+
   @override
   void dispose() {
+    _detach?.call();
     _c.dispose();
     super.dispose();
   }

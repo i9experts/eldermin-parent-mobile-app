@@ -43,7 +43,7 @@ class EmMorphButton extends StatelessWidget {
       EmMorphPhase.loading => loadingLabel,
       EmMorphPhase.success => successLabel,
     };
-    // not actionable yet (e.g. the code is not complete): dimmed, same shape
+    // PARENT DEVIATION from design-kit-v1: not actionable yet (the OTP code is incomplete) -> dimmed, same shape
     final dimmed = onPressed == null && !busy;
     return Opacity(
         opacity: dimmed ? 0.45 : 1,

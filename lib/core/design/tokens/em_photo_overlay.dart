@@ -16,8 +16,9 @@ import 'em_colors.dart';
 /// RULE: text only starts at or below the strong line. The photo under it is
 /// unknown, so legibility is measured against the WORST case: the overlay's
 /// guaranteed alpha at that line composited over pure white ([worstCaseAt]).
-/// White, muted-light, light-caption and accent text are all AA on that colour
-/// (the parent app's amber on its navy: 4.8:1 at the strong line).
+/// White, muted-light and large accent text are AA on that colour; small accent
+/// text never is (accent on the brand navy is 4.43:1), so accent text is always
+/// large / bold.
 class EmPhotoOverlay {
   EmPhotoOverlay._();
 
@@ -85,8 +86,7 @@ class EmPhotoOverlay {
     EmOverlayPair('white title / body', EmColors.onPrimaryDark, 4.5),
     EmOverlayPair('muted light body (primaryContainer)', EmColors.primaryContainer, 4.5),
     EmOverlayPair('caption (primaryLight)', EmColors.primaryLight, 4.5),
-    // AA at any size on this navy (4.8:1 at the strong line), so the sign-in links may be accent at body size
-    EmOverlayPair('accent text', EmColors.accent, 4.5),
+    EmOverlayPair('accent LARGE bold text', EmColors.accent, 3.0),
     EmOverlayPair('light field border (primaryLight)', EmColors.primaryLight, 3.0),
     EmOverlayPair('active dot (accent)', EmColors.accent, 3.0),
   ];

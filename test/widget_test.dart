@@ -23,6 +23,9 @@ void main() {
 
     // the session check holds the splash for 3 s (AuthController._bootstrap); let it finish, then the crossfade
     await tester.pump(const Duration(seconds: 4));
+    // the splash overlay stays until its hand-off into the login screen has played
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
     await tester.pump(const Duration(seconds: 1));
     expect(find.byType(PhoneEntryScreen), findsOneWidget);
     expect(find.byType(SplashScreen), findsNothing);

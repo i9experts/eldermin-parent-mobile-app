@@ -32,7 +32,7 @@ void main() {
       }
     });
 
-    test("the overlay base is the parent app's navy", () => expect(EmPhotoOverlay.base.toARGB32(), 0xFF0A3158));
+    test('the overlay base is the Eldermin design navy (teacher palette)', () => expect(EmPhotoOverlay.base.toARGB32(), 0xFF18457A));
 
     for (final pair in EmPhotoOverlay.pairs) {
       test('${pair.name}: >= ${pair.min}:1 on the overlay at the strong line (worst-case photo)', () {

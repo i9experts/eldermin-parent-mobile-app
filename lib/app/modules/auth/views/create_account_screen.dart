@@ -47,45 +47,53 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const AuthLabel('Full Name'),
-          AuthTextField(controller: controller.fullNameController, hintText: 'Enter your full name', prefixIcon: Icons.person_outline),
+          EmTextField(
+            label: 'Full Name',controller: controller.fullNameController, hint: 'Enter your full name', prefixIcon: Icons.person_outline),
           gap,
-          const AuthLabel('School Name'),
-          AuthTextField(controller: controller.schoolNameController, hintText: "Your child's school name", prefixIcon: Icons.school_outlined),
+          EmTextField(
+            label: 'School Name',controller: controller.schoolNameController, hint: "Your child's school name", prefixIcon: Icons.school_outlined),
           gap,
-          const AuthLabel('Email Address'),
-          AuthTextField(
+          EmTextField(
+            label: 'Email Address',
             controller: controller.emailController,
             keyboardType: TextInputType.emailAddress,
-            hintText: 'Enter your email',
+            hint: 'Enter your email',
             prefixIcon: Icons.mail_outline,
+            fillColor: EmColors.background,
+            radius: EmRadius.control,
           ),
           gap,
-          const AuthLabel('Phone Number'),
-          AuthTextField(
+          EmTextField(
+            label: 'Phone Number',
             controller: controller.phoneController,
             keyboardType: TextInputType.phone,
             inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d\+\s]'))],
-            hintText: '+92 300 1234567',
+            hint: '+92 300 1234567',
             prefixIcon: Icons.phone_iphone_rounded,
+            fillColor: EmColors.background,
+            radius: EmRadius.control,
           ),
           gap,
-          const AuthLabel('Password'),
-          Obx(() => AuthTextField(
+          Obx(() => EmTextField(
+            label: 'Password',
                 controller: controller.passwordController,
                 obscureText: controller.obscurePassword.value,
-                hintText: 'Create a password',
+                hint: 'Create a password',
                 prefixIcon: Icons.lock_outline,
-                suffix: AuthPasswordToggle(obscured: controller.obscurePassword.value, onToggle: controller.togglePasswordVisibility),
+                fillColor: EmColors.background,
+                radius: EmRadius.control,
+                suffix: PasswordVisibilityButton(obscured: controller.obscurePassword.value, onToggle: controller.togglePasswordVisibility),
               )),
           gap,
-          const AuthLabel('Confirm Password'),
-          Obx(() => AuthTextField(
+          Obx(() => EmTextField(
+            label: 'Confirm Password',
                 controller: controller.confirmPasswordController,
                 obscureText: controller.obscureConfirmPassword.value,
-                hintText: 'Confirm your password',
+                hint: 'Confirm your password',
                 prefixIcon: Icons.lock_outline,
-                suffix: AuthPasswordToggle(
+                fillColor: EmColors.background,
+                radius: EmRadius.control,
+                suffix: PasswordVisibilityButton(
                     obscured: controller.obscureConfirmPassword.value, onToggle: controller.toggleConfirmPasswordVisibility),
               )),
           gap,
@@ -109,7 +117,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 ),
               )),
           Obx(() => controller.error.value != null
-              ? Padding(padding: const EdgeInsets.only(top: EmSpacing.s4), child: AuthMessage(controller.error.value!))
+              ? Padding(padding: const EdgeInsets.only(top: EmSpacing.s12), child: AuthBanner(message: controller.error.value!))
               : const SizedBox.shrink()),
           const SizedBox(height: EmSpacing.s20),
           Obx(() => EmMorphButton(
@@ -124,7 +132,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               onPressed: () => Get.offNamed(Routes.emailSignIn),
               child: Text.rich(TextSpan(children: [
                 TextSpan(text: 'Already have an account? ', style: EmType.body.copyWith(color: EmColors.primaryContainer, fontWeight: FontWeight.w400)),
-                TextSpan(text: 'Sign In', style: EmType.body.copyWith(color: EmColors.accent, fontWeight: FontWeight.w700)),
+                TextSpan(text: 'Sign In', style: EmType.body.copyWith(color: EmColors.onPrimaryDark, fontWeight: FontWeight.w700)),
               ])),
             ),
           ),

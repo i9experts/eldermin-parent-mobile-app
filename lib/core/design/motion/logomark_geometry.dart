@@ -1,15 +1,5 @@
 import 'dart:ui';
-
-/// The logomark's own colours (sampled from the logo, shared with the teacher app). Not the parent app's navy.
-class EmLogoColors {
-  EmLogoColors._();
-  static const Color primaryDark = Color(0xFF18457A);
-  static const Color primary = Color(0xFF1B5FA3);
-  static const Color primaryMid = Color(0xFF4A89C8);
-  static const Color primaryLight = Color(0xFFB5D3EC);
-  static const Color accent = Color(0xFFEE9F27);
-  static const Color white = Color(0xFFFFFFFF);
-}
+import '../tokens/em_colors.dart';
 
 /// Eldermin logomark geometry, in the SVG's own coordinates.
 ///
@@ -89,22 +79,22 @@ class EmNetworkPalette {
 
   /// logomark.svg (on light surfaces).
   static const standard = EmNetworkPalette(
-    solid: EmLogoColors.primaryLight,
-    dashed: EmLogoColors.primaryMid,
-    hub: EmLogoColors.primaryDark,
-    node: EmLogoColors.primary,
-    accent: EmLogoColors.accent,
-    light: EmLogoColors.primary,
+    solid: EmColors.primaryLight,
+    dashed: EmColors.primaryMid,
+    hub: EmColors.primaryDark,
+    node: EmColors.primary,
+    accent: EmColors.accent,
+    light: EmColors.primary,
   );
 
   /// logomark_reversed.svg (on primaryDark).
   static const reversed = EmNetworkPalette(
-    solid: EmLogoColors.primaryMid,
-    dashed: EmLogoColors.primaryLight,
-    hub: EmLogoColors.white,
-    node: EmLogoColors.primaryLight,
-    accent: EmLogoColors.accent,
-    light: EmLogoColors.white,
+    solid: EmColors.primaryMid,
+    dashed: EmColors.primaryLight,
+    hub: EmColors.onPrimaryDark,
+    node: EmColors.primaryLight,
+    accent: EmColors.accent,
+    light: EmColors.onPrimaryDark,
   );
 
   /// [t] 0 = [a], 1 = [b].

@@ -54,32 +54,29 @@ void main() {
 
     test('native splash config: the app navy + the reversed logo, iOS', () {
       final y = File('pubspec.yaml').readAsStringSync();
-      expect(y, contains('color: "#0A3158"'));
-      expect(y, contains('image: "assets/splash/splash_logo.png"'));
+      expect(y, contains('color: "#18457A"'));
+      expect(y, contains('image: assets/splash/splash_logo.png'));
       expect(File('assets/splash/splash_logo.png').existsSync(), isTrue);
-      expect(EmColors.primaryDark.toARGB32() & 0xFFFFFF, 0x0A3158, reason: 'the native navy is the token');
+      expect(EmColors.primaryDark.toARGB32() & 0xFFFFFF, 0x18457A, reason: 'the native navy is the token');
     });
   });
 
   group('font scope', () {
-    test('Plus Jakarta Sans is bundled with its OFL licence, and used only by the photo auth screens', () {
+    test('Plus Jakarta Sans is bundled with its OFL licence and is the app-wide font', () {
       final y = File('pubspec.yaml').readAsStringSync();
       expect(y, contains('family: PlusJakartaSans'));
       expect(y, contains('assets/fonts/OFL.txt'));
       expect(File('assets/fonts/OFL.txt').readAsStringSync(), contains('SIL OPEN FONT LICENSE'));
-      final offenders = <String>[];
-      for (final f in Directory('lib').listSync(recursive: true).whereType<File>().where((f) => f.path.endsWith('.dart'))) {
-        final p = f.path;
-        final allowed = p.startsWith('lib/core/design/') || p.startsWith('lib/app/modules/auth/') || p.startsWith('lib/app/modules/splash/') || p == 'lib/main.dart';
-        if (!allowed && (f.readAsStringSync().contains('PlusJakartaSans') || f.readAsStringSync().contains('EmType'))) offenders.add(p);
-      }
-      expect(offenders, isEmpty, reason: 'the font is for the auth screens only: $offenders');
+      expect(y, isNot(contains('google_fonts')), reason: 'no runtime font fetching');
     });
 
-    test('the global theme is unchanged: still Inter via google_fonts, no Plus Jakarta', () {
-      final theme = File('lib/core/theme/app_theme.dart').readAsStringSync();
-      expect(theme, isNot(contains('PlusJakarta')));
-      expect(theme, contains('GoogleFonts.inter'));
+    test('the global theme is the Eldermin theme with the bundled font; legacy CustomText resolves to it', () {
+      expect(File('lib/core/theme/app_theme.dart').readAsStringSync(), contains('buildEmTheme()'));
+      expect(buildEmTheme().textTheme.bodyMedium!.fontFamily, EmType.family);
+      expect(File('lib/app/config/app_text_styles.dart').readAsStringSync(), contains('EmType.family'));
+      for (final f in Directory('lib').listSync(recursive: true).whereType<File>().where((f) => f.path.endsWith('.dart'))) {
+        expect(f.readAsStringSync(), isNot(contains('google_fonts')), reason: f.path);
+      }
     });
   });
 

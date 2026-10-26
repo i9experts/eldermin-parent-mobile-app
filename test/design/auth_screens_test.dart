@@ -79,12 +79,16 @@ void main() {
       final title = t.widget<Text>(find.byKey(const Key('auth_title')));
       expect(title.data, 'Log in with WhatsApp');
       expect(title.style!.color, EmColors.accent);
-      final field = t.widget<TextField>(find.byType(TextField)).decoration!;
+      // the teacher's on-dark field: transparent, 1 px light border, accent when focused, 10 dp corners
+      final tf = t.widget<EmTextField>(find.byType(EmTextField));
+      expect(tf.label, 'WhatsApp number');
+      expect(tf.radius, EmRadius.control);
+      expect(EmOnDark.of(t.element(find.byType(EmTextField))), isTrue);
+      final field = t.widget<InputDecorator>(find.descendant(of: find.byType(EmTextField), matching: find.byType(InputDecorator))).decoration;
       expect(field.filled, isFalse);
       expect((field.enabledBorder! as OutlineInputBorder).borderSide.color, EmColors.primaryLight);
-      expect((field.enabledBorder! as OutlineInputBorder).borderSide.width, 1);
-      expect((field.enabledBorder! as OutlineInputBorder).borderRadius, BorderRadius.circular(EmRadius.control));
       expect((field.focusedBorder! as OutlineInputBorder).borderSide.color, EmColors.accent);
+      expect((field.enabledBorder! as OutlineInputBorder).borderRadius, BorderRadius.circular(EmRadius.control));
       expect(EmRadius.control, 10, reason: 'every field and button is 10 dp');
       final fill = t.widget<AnimatedContainer>(find.descendant(of: find.byType(EmMorphButton), matching: find.byType(AnimatedContainer))).decoration! as BoxDecoration;
       expect(fill.color, EmColors.accent);
@@ -207,9 +211,19 @@ void main() {
     testWidgets('create account: the terms checkbox and every field keep their hints', (t) async {
       setUpAuthDeps();
       await pumpScreen(t, const CreateAccountScreen());
-      for (final hint in ['Enter your full name', "Your child's school name", 'Enter your email', '+92 300 1234567', 'Create a password', 'Confirm your password']) {
-        await t.ensureVisible(find.text(hint));
-        expect(find.text(hint), findsOneWidget, reason: hint);
+      // every field keeps its hint (shown when the label floats) and gains its former heading as the label
+      final fields = {
+        'Full Name': 'Enter your full name',
+        'School Name': "Your child's school name",
+        'Email Address': 'Enter your email',
+        'Phone Number': '+92 300 1234567',
+        'Password': 'Create a password',
+        'Confirm Password': 'Confirm your password',
+      };
+      for (final e in fields.entries) {
+        final f = find.byWidgetPredicate((w) => w is EmTextField && w.label == e.key && w.hint == e.value);
+        await t.ensureVisible(f);
+        expect(f, findsOneWidget, reason: e.key);
       }
       expect(find.text('I agree to the Terms & Conditions and Privacy Policy'), findsOneWidget);
       expect(find.byType(Checkbox), findsOneWidget);
