@@ -19,10 +19,10 @@ class CoursesScreen extends GetView<CoursesController> {
         if (controller.loading.value && controller.courses.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
                 const ShimmerScreenIntroSkeleton(withChip: false),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(4),
               ],
             ),
@@ -38,15 +38,15 @@ class CoursesScreen extends GetView<CoursesController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenIntro( caption: 'Lessons published by your child\'s teachers'),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: 'Lessons published by your child\'s teachers'),
+              const SizedBox(height: EmSpacing.s16),
               StatsRow(items: [
                 ('${courses.length}', 'Courses', null),
                 ('$done/$total', 'Lessons done', null),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               if (courses.isEmpty)
                 const AppEmptyView(
                   icon: Icons.school_outlined,
@@ -82,8 +82,8 @@ class _CourseCard extends GetView<CoursesController> {
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          tilePadding: const EdgeInsets.all(14),
-          childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+          tilePadding: EmSpacing.cardPad,
+          childrenPadding: const EdgeInsetsDirectional.fromSTEB(EmSpacing.s16, 0, EmSpacing.s16, EmSpacing.s12),
           title: CustomText(
               text: course['subjectName']?.toString() ?? 'Course',
               fontWeight: FontWeight.w800,

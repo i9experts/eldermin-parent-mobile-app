@@ -29,13 +29,12 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
         if (controller.loading.value && controller.tasks.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.md, AppSpacing.md, AppSpacing.md, 90),
+              padding: EmSpacing.listPaddingFab,
               children: [
                 const ShimmerScreenIntroSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerStatsRowSkeleton(count: 2),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 ...shimmerListRows(4),
               ],
             ),
@@ -56,18 +55,17 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md, AppSpacing.md, AppSpacing.md, 90),
+            padding: EmSpacing.listPaddingFab,
             children: [
               const ScreenIntro(
                 caption: 'Small Tarbiyah tasks to practice at home',
               ),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               StatsRow(items: [
                 ('${tasks.length}', 'Assigned', null),
                 ('$completed', 'Completed', null),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               const SectionRow(title: 'Tasks'),
               if (tasks.isEmpty)
                 const AppEmptyView(

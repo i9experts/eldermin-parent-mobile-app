@@ -35,17 +35,18 @@ class DatesheetScreen extends GetView<DatesheetController> {
         if (controller.loading.value && controller.assessments.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
                 const ShimmerScreenIntroSkeleton(withChip: false),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(4),
               ],
             ),
           );
         }
         if (controller.error.value != null) {
-          return AppErrorView(message: controller.error.value!, onRetry: controller.fetch);
+          return AppErrorView(
+              message: controller.error.value!, onRetry: controller.fetch);
         }
 
         final assessments = controller.assessments;
@@ -53,26 +54,30 @@ class DatesheetScreen extends GetView<DatesheetController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenIntro( caption: 'Upcoming and ongoing assessments'),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: 'Upcoming and ongoing assessments'),
+              const SizedBox(height: EmSpacing.s16),
               if (assessments.isEmpty)
                 const AppEmptyView(
                   icon: Icons.event_note_outlined,
                   title: 'No exams scheduled',
-                  subtitle: 'Scheduled assessments will appear here once published.',
+                  subtitle:
+                      'Scheduled assessments will appear here once published.',
                 )
               else
                 ...assessments.map((raw) {
                   final a = Map<String, dynamic>.from(raw as Map);
                   final title = a['title']?.toString() ?? 'Assessment';
-                  final type = (a['type']?.toString() ?? '').replaceAll('_', ' ');
+                  final type =
+                      (a['type']?.toString() ?? '').replaceAll('_', ' ');
                   final term = a['term']?.toString();
                   final status = a['status']?.toString() ?? 'scheduled';
                   final subjects = (a['subjects'] as List<dynamic>?) ?? [];
-                  final startDate = DateTime.tryParse(a['startDate']?.toString() ?? '');
-                  final endDate = DateTime.tryParse(a['endDate']?.toString() ?? '');
+                  final startDate =
+                      DateTime.tryParse(a['startDate']?.toString() ?? '');
+                  final endDate =
+                      DateTime.tryParse(a['endDate']?.toString() ?? '');
 
                   return AppCard(
                     child: Column(
@@ -95,7 +100,10 @@ class DatesheetScreen extends GetView<DatesheetController> {
                                   ),
                                   const SizedBox(height: 3),
                                   CustomText(
-                                    text: [if (type.isNotEmpty) type, if (term != null) term].join(' · '),
+                                    text: [
+                                      if (type.isNotEmpty) type,
+                                      if (term != null) term
+                                    ].join(' · '),
                                     color: AppColors.muted,
                                     fontSize: 9.5,
                                     maxLines: 1,
@@ -104,7 +112,8 @@ class DatesheetScreen extends GetView<DatesheetController> {
                                 ],
                               ),
                             ),
-                            AppTag(status.replaceAll('_', ' '), style: _statusStyle(status)),
+                            AppTag(status.replaceAll('_', ' '),
+                                style: _statusStyle(status)),
                           ],
                         ),
                         const SizedBox(height: 10),
@@ -119,43 +128,33 @@ class DatesheetScreen extends GetView<DatesheetController> {
                           )
                         else
                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: subjects.map((raw2) {
                               final s = Map<String, dynamic>.from(raw2 as Map);
-                              final date = DateTime.tryParse(s['date']?.toString() ?? '');
+                              final date = DateTime.tryParse(
+                                  s['date']?.toString() ?? '');
                               final startTime = s['startTime']?.toString();
                               final duration = s['duration'];
                               final venue = s['venue']?.toString();
+                              final detail = [
+                                _fmt(date),
+                                if (startTime != null) startTime,
+                                if (duration != null) '${duration}min',
+                                if (venue != null && venue.isNotEmpty) venue,
+                              ].join(' · ');
                               return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 5),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                padding: const EdgeInsetsDirectional.symmetric(
+                                    vertical: EmSpacing.s8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Expanded(
-                                      child: CustomText(
-                                        text: s['subject']?.toString() ?? '—',
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 11.5,
-                                        color: AppColors.ink,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: CustomText(
-                                        text: [
-                                          _fmt(date),
-                                          if (startTime != null) startTime,
-                                          if (duration != null) '${duration}min',
-                                          if (venue != null && venue.isNotEmpty) venue,
-                                        ].join(' · '),
-                                        color: AppColors.muted,
-                                        fontSize: 9.5,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.right,
-                                      ),
-                                    ),
+                                    Text(s['subject']?.toString() ?? '—',
+                                        style: EmType.body
+                                            .copyWith(color: EmColors.ink)),
+                                    Text(detail,
+                                        style: EmType.label.copyWith(
+                                            color: EmColors.textSecondary,
+                                            fontWeight: FontWeight.w400)),
                                   ],
                                 ),
                               );

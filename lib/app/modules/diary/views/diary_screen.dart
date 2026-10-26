@@ -22,10 +22,10 @@ class DiaryScreen extends GetView<DiaryController> {
         if (controller.loading.value && controller.entries.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
                 const ShimmerScreenIntroSkeleton(withChip: false),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(4),
               ],
             ),
@@ -42,10 +42,10 @@ class DiaryScreen extends GetView<DiaryController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenIntro( caption: "Daily classwork & homework from your child's teachers"),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: "Daily classwork & homework from your child's teachers"),
+              const SizedBox(height: EmSpacing.s16),
               if (entries.isEmpty)
                 const AppEmptyView(
                   icon: Icons.auto_stories_outlined,
@@ -79,7 +79,7 @@ class _DiaryCard extends GetView<DiaryController> {
         .toList();
 
     return AppCard(
-      padding: const EdgeInsets.all(14),
+      padding: EmSpacing.cardPad,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

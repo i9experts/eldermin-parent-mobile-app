@@ -36,16 +36,16 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
             controller.behaviourRecords.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
                 const ShimmerScreenIntroSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerHeroCardSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerStatsRowSkeleton(count: 3),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 const ShimmerChartSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 ...shimmerListRows(4),
               ],
             ),
@@ -69,7 +69,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
               const ScreenIntro(
                 caption: 'Character, wellbeing and positive habits',
@@ -86,7 +86,6 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                       : (assessment['teacherObservations']?.toString() ??
                           'Consistent positive development'),
                   percent: overallPct ?? 0,
-                  ringColor: AppColors.amber,
                   metrics: [
                     (
                       '${records.where((r) => (r['points'] ?? 0) > 0).length}',
@@ -105,7 +104,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                     title: 'No tarbiyah assessment yet',
                     subtitle:
                         'Character assessments will appear here once recorded.'),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               if (traits.isNotEmpty) ...[
                 StatsRow(items: [
                   for (final t in traits.take(3))
@@ -115,7 +114,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                       null,
                     ),
                 ]),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 const SectionRow(title: 'Character development'),
                 AppCard(
                   child: Column(
@@ -161,7 +160,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                   ),
                 ),
               ],
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               const SectionRow(title: 'Teacher notes & observations'),
               if (records.isEmpty)
                 const AppEmptyView(

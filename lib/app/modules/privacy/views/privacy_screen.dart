@@ -78,7 +78,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
     return EmScaffold(
       appBar: EmAppBar(title: 'Privacy policy'),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: EmSpacing.listPadding,
         children: [
           AppCard(
             child: Column(
@@ -103,7 +103,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: EmSpacing.s8),
           ..._sections.map((s) => AppCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,7 +123,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               maxLines: 2,
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: EmSpacing.s12),
         ],
       ),
     );

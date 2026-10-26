@@ -20,14 +20,14 @@ class ConsentScreen extends GetView<ConsentController> {
         if (controller.loading.value && controller.requests.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
                 const ShimmerScreenIntroSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerStatsRowSkeleton(count: 3),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerChartSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 ...shimmerListRows(4),
               ],
             ),
@@ -45,7 +45,7 @@ class ConsentScreen extends GetView<ConsentController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
               const ScreenIntro(
                 caption: 'Review requests and protect your choices',
@@ -56,7 +56,7 @@ class ConsentScreen extends GetView<ConsentController> {
                 ('$responded', 'Completed', null),
                 ('$pending', 'Pending', pending == 0 ? 'None' : null),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               if (requests.isNotEmpty) ...[
                 AppCard(
                   child: Column(
@@ -91,7 +91,7 @@ class ConsentScreen extends GetView<ConsentController> {
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
               ],
               const SectionRow(title: 'Consent requests'),
               if (requests.isEmpty)
@@ -148,58 +148,66 @@ class ConsentScreen extends GetView<ConsentController> {
                           const SizedBox(height: 12),
                           Obx(() {
                             final busy = controller.respondingId.value == id;
-                            return Row(
-                              children: [
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: busy
-                                        ? null
-                                        : () async {
-                                            final ok = await controller
-                                                .respond(id, 'declined');
-                                            if (ok) {
-                                              CustomAppSnackbar.success(
-                                                  'Response recorded — consent declined.');
-                                            } else {
-                                              CustomAppSnackbar.error(
-                                                  controller.error.value ??
-                                                      'Could not submit your response. Please try again.');
-                                            }
-                                          },
-                                    child: const CustomText(text: 'Decline'),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: CustomButton(
-                                    label: busy ? '' : 'Grant consent',
-                                    height: 42,
-                                    color: AppColors.primaryColor,
-                                    enabled: !busy,
-                                    onPressed: () async {
+                            final decline = EmSecondaryButton(
+                              label: 'Decline',
+                              expand: true,
+                              onPressed: busy
+                                  ? null
+                                  : () async {
                                       final ok = await controller.respond(
-                                          id, 'granted');
+                                          id, 'declined');
                                       if (ok) {
                                         CustomAppSnackbar.success(
-                                            'Response recorded — consent granted.');
+                                            'Response recorded — consent declined.');
                                       } else {
-                                        CustomAppSnackbar.error(
-                                            controller.error.value ??
-                                                'Could not submit your response. Please try again.');
+                                        CustomAppSnackbar.error(controller
+                                                .error.value ??
+                                            'Could not submit your response. Please try again.');
                                       }
                                     },
-                                    prefix: busy
-                                        ? const SizedBox(
-                                            width: 16,
-                                            height: 16,
-                                            child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                                color: Colors.white))
-                                        : null,
-                                  ),
-                                ),
-                              ],
                             );
+                            final grant = CustomButton(
+                              label: busy ? '' : 'Grant consent',
+                              height: 42,
+                              color: AppColors.primaryColor,
+                              enabled: !busy,
+                              onPressed: () async {
+                                final ok =
+                                    await controller.respond(id, 'granted');
+                                if (ok) {
+                                  CustomAppSnackbar.success(
+                                      'Response recorded — consent granted.');
+                                } else {
+                                  CustomAppSnackbar.error(controller
+                                          .error.value ??
+                                      'Could not submit your response. Please try again.');
+                                }
+                              },
+                              prefix: busy
+                                  ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2, color: Colors.white))
+                                  : null,
+                            );
+                            // side by side; stacked at large text sizes so neither label is cut off
+                            if (MediaQuery.textScalerOf(context).scale(1) >
+                                1.15) {
+                              return Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    decline,
+                                    const SizedBox(height: EmSpacing.s8),
+                                    grant
+                                  ]);
+                            }
+                            return Row(children: [
+                              Expanded(child: decline),
+                              const SizedBox(width: EmSpacing.s8),
+                              Expanded(child: grant),
+                            ]);
                           }),
                         ],
                       ],

@@ -3,7 +3,6 @@ import '../../../../core/design/design.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../components/custom_text.dart';
-import '../../../config/app_images.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -28,35 +27,22 @@ class AboutScreen extends StatelessWidget {
     return EmScaffold(
       appBar: EmAppBar(title: 'About us'),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: EmSpacing.listPadding,
         children: [
           Center(
             child: Column(
-              children: [
-                Container(
-                  width: 76,
-                  height: 76,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.primaryColor.withOpacity(0.15)),
-                    boxShadow: [
-                      BoxShadow(color: AppColors.primaryColor.withOpacity(0.06), blurRadius: 16, offset: const Offset(0, 6)),
-                    ],
-                  ),
-                  child: Image.asset(AppImages.fullLogo, fit: BoxFit.contain),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                const CustomText(
+              children: const [
+                EmLogoTile(size: 76),
+                SizedBox(height: EmSpacing.s8),
+                CustomText(
                   text: 'Eldermin',
                   color: AppColors.primaryColor,
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.5,
                 ),
-                const SizedBox(height: 2),
-                const CustomText(
+                SizedBox(height: 2),
+                CustomText(
                   text: 'Parent app · Version 1.0.4',
                   color: AppColors.muted,
                   fontSize: 11.5,
@@ -64,7 +50,7 @@ class AboutScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: EmSpacing.s16),
           AppCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +75,7 @@ class AboutScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: EmSpacing.s12),
           const SectionRow(title: 'What you can do here'),
           ..._capabilities.map((c) => AppCard(
                 child: Row(
@@ -115,7 +101,7 @@ class AboutScreen extends StatelessWidget {
                   ],
                 ),
               )),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: EmSpacing.s8),
           Center(
             child: CustomText(
               text: '© ${DateTime.now().year} Eldermin. Built for families who want '
@@ -126,7 +112,7 @@ class AboutScreen extends StatelessWidget {
               maxLines: 3,
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: EmSpacing.s12),
         ],
       ),
     );

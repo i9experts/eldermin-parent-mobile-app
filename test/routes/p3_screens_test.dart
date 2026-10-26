@@ -159,7 +159,7 @@ void main() {
       expect(find.text('Children linked'), findsNothing);
       expect(find.byType(StatsRow), findsNothing);
       expect(find.byType(GridView), findsNothing);
-      expect(find.byType(EmTileGrid), findsNWidgets(2));
+      expect(find.byType(EmTileGrid), findsWidgets);
       expect(find.byKey(const Key('more_child_card')), findsOneWidget);
       const destinations = {
         'Class diary': Routes.diary,

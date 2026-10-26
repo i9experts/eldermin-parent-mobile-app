@@ -17,6 +17,16 @@ import '../../auth/controllers/auth_controller.dart';
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
 
+  /// Section title -> the services in it (titles as in the list below).
+  static const _groups = <(String, List<String>)>[
+    ('Learning', ['Class diary', 'My courses', 'Online quizzes', 'Learning resources', 'Library', 'Datesheet']),
+    // EARLY YEARS: when `phase-ey-parent` is merged, its conditional 'Early Years' tile (shown only when
+    // EarlyYearsController.eligible) goes at the END of this section. Not added yet.
+    ('My child', ['Behaviour & Tarbiyah', 'Student profile', 'Medical', 'Academic documents', 'Home tasks']),
+    ('School & family', ['Consent', 'My leaves', 'Parent-teacher meetings', 'Circulars', 'Inbox', 'Feedback']),
+    ('Account', ['Switch user', 'Privacy policy', 'About us', 'Help', 'Logout']),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final students = Get.find<StudentController>();
@@ -176,10 +186,18 @@ class MoreScreen extends StatelessWidget {
             ]),
             const SizedBox(height: EmSpacing.s16),
           ],
-          const SectionRow(title: 'All services'),
-          EmTileGrid(tiles: [
-            for (final m in modules) EmTile(label: m.$2, leading: m.$1, destructive: m.$2 == 'Logout', onTap: m.$3, tileKey: Key('service_${m.$2}')),
-          ]),
+          // The 22 services in sections, as the teacher More screen separates 'Modules' from 'Account'
+          // (teacher `more_screen.dart:25` and `:27`; its destructive rows come last, `:32-45`). Each tile keeps its
+          // destination and the order it had in the old single grid.
+          for (final g in _groups) ...[
+            SectionRow(title: g.$1),
+            EmTileGrid(tiles: [
+              for (final title in g.$2)
+                for (final m in modules.where((m) => m.$2 == title))
+                  EmTile(label: m.$2, leading: m.$1, destructive: m.$2 == 'Logout', onTap: m.$3, tileKey: Key('service_${m.$2}')),
+            ]),
+            const SizedBox(height: EmSpacing.s16),
+          ],
         ],
       );
     });

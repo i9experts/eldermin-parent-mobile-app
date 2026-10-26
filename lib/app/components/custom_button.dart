@@ -1,14 +1,20 @@
-// ignore_for_file: deprecated_member_use
-
-import 'package:eldermin_parent_app/core/theme/app_theme.dart';
-
-import 'custom_text.dart';
-// import '../config/app_colors.dart';
-import '../config/app_text_styles.dart';
-import '../config/app_font_size.dart';
-import '../config/app_dimens.dart';
 import 'package:flutter/material.dart';
+import '../../core/design/design.dart';
+import '../config/app_dimens.dart';
+import '../config/app_font_size.dart';
+import '../config/app_text_styles.dart';
+import '../../core/theme/app_theme.dart';
 
+/// The app's long-standing button, now a wrapper over the kit's [EmMorphButton] (same constructor, no call-site change).
+///
+/// Mapping: [label] -> label; [onPressed] / [enabled] -> `onPressed` (null while disabled: dimmed and not tappable);
+/// [width] -> a fixed width (default: the available width). Loading: the call sites pass an empty [label] and a spinner
+/// as [prefix] while the request runs - that pattern is the kit's loading phase (the button morphs into a spinner and
+/// ignores taps).
+///
+/// No kit equivalent (accepted and ignored): [fontFamily], [color], [textColor], [fontSize], [fontWeight], [borderColor],
+/// [borderRadius], [height] (the kit button is 52 dp, accent fill, ink label, 10 dp corners) and a [prefix] / [suffix]
+/// next to a non-empty label (no call site does that).
 class CustomButton extends StatelessWidget {
   const CustomButton({
     super.key,
@@ -45,52 +51,13 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: width,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          disabledBackgroundColor: AppColors.buttonDisableColor,
-          disabledForegroundColor: AppColors.black.withOpacity(0.5),
-          // every button in the app is the theme yellow with a dark label (`color` / `textColor` are kept for old call sites)
-          foregroundColor: AppColors.accentColor,
-          backgroundColor: AppColors.accentColor,
-          elevation: 0,
-          side: BorderSide(
-            width: 0.8,
-            color: enabled ? borderColor : borderColor.withOpacity(0.5),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
-        ),
-        onPressed: enabled ? onPressed : null,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (prefix != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: prefix,
-              ),
-            CustomText(
-              text: label,
-              color: enabled ? AppColors.black : AppColors.black.withOpacity(0.5),
-              fontSize: fontSize,
-              fontWeight: fontWeight,
-              fontFamily: fontFamily,
-            ),
-            if (suffix != null)
-              Padding(
-                padding: const EdgeInsets.only(left: 5),
-                child: suffix,
-              ),
-          ],
-        ),
-      ),
+    final loading = label.isEmpty && prefix != null;
+    final button = EmMorphButton(
+      label: label,
+      loadingLabel: 'Please wait',
+      phase: loading ? EmMorphPhase.loading : EmMorphPhase.idle,
+      onPressed: enabled ? onPressed : null,
     );
+    return width == null ? button : SizedBox(width: width, child: button);
   }
 }

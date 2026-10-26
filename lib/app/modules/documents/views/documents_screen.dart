@@ -60,10 +60,10 @@ class DocumentsScreen extends GetView<DocumentsController> {
         if (controller.loading.value && controller.documents.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
                 const ShimmerScreenIntroSkeleton(withChip: false),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(6),
               ],
             ),
@@ -78,10 +78,10 @@ class DocumentsScreen extends GetView<DocumentsController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenIntro( caption: 'Certificates and records on file'),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: 'Certificates and records on file'),
+              const SizedBox(height: EmSpacing.s16),
               StatsRow(items: [
                 ('${documents.length}', 'Documents', null),
                 (
@@ -95,7 +95,7 @@ class DocumentsScreen extends GetView<DocumentsController> {
                   null
                 ),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               if (documents.isEmpty)
                 const AppEmptyView(
                   icon: Icons.folder_off_outlined,

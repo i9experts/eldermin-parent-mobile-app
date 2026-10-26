@@ -20,12 +20,12 @@ class CircularsScreen extends GetView<CircularsController> {
         if (controller.loading.value && controller.circulars.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
                 const ShimmerScreenIntroSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerStatsRowSkeleton(count: 3),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 ...shimmerListRows(6),
               ],
             ),
@@ -51,7 +51,7 @@ class CircularsScreen extends GetView<CircularsController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
               ScreenIntro(
                 caption: 'Circulars, notices and acknowledgements',
@@ -73,7 +73,7 @@ class CircularsScreen extends GetView<CircularsController> {
                   null
                 ),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               const SectionRow(title: 'Notices'),
               if (circularsForSelectedMonth.isEmpty)
                 const AppEmptyView(
@@ -111,7 +111,7 @@ class CircularsScreen extends GetView<CircularsController> {
       context: context,
       isScrollControlled: true,
       builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: EmSpacing.listPadding,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,

@@ -17,10 +17,10 @@ class LearningResourcesScreen extends GetView<LearningResourcesController> {
         if (controller.loading.value && controller.plans.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
                 const ShimmerScreenIntroSkeleton(withChip: false),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(6),
               ],
             ),
@@ -35,10 +35,10 @@ class LearningResourcesScreen extends GetView<LearningResourcesController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenIntro( caption: 'Lesson plans and shared materials'),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: 'Lesson plans and shared materials'),
+              const SizedBox(height: EmSpacing.s16),
               StatsRow(items: [
                 ('${plans.length}', 'Lesson plans', null),
                 (
@@ -47,7 +47,7 @@ class LearningResourcesScreen extends GetView<LearningResourcesController> {
                   null
                 ),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               if (plans.isEmpty)
                 const AppEmptyView(
                   icon: Icons.folder_open_outlined,

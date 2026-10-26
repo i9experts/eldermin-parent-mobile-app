@@ -51,14 +51,14 @@ class LibraryScreen extends GetView<LibraryController> {
         if (controller.loading.value && controller.issues.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
                 const ShimmerScreenIntroSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerStatsRowSkeleton(count: 3),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerChartSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 ...shimmerListRows(5),
               ],
             ),
@@ -79,7 +79,7 @@ class LibraryScreen extends GetView<LibraryController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
               ScreenIntro(
                 caption: 'Resources, reading and borrowed books',
@@ -98,7 +98,7 @@ class LibraryScreen extends GetView<LibraryController> {
                 ('$overdue', 'Overdue', overdue > 0 ? null : 'Clear'),
                 ('$returned', 'Returned', null),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               if (issues.isNotEmpty) ...[
                 AppCard(
                   child: Row(
@@ -136,7 +136,7 @@ class LibraryScreen extends GetView<LibraryController> {
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
               ],
               const SectionRow(title: 'Borrowed & returned books'),
               if (issues.isEmpty)

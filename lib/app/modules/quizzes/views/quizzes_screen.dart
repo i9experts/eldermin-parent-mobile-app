@@ -19,10 +19,10 @@ class QuizzesScreen extends GetView<QuizzesController> {
         if (controller.loading.value && controller.quizzes.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
                 const ShimmerScreenIntroSkeleton(withChip: false),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(4),
               ],
             ),
@@ -38,10 +38,10 @@ class QuizzesScreen extends GetView<QuizzesController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenIntro( caption: 'Self-paced quizzes set by your child\'s school'),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: 'Self-paced quizzes set by your child\'s school'),
+              const SizedBox(height: EmSpacing.s16),
               if (quizzes.isEmpty)
                 const AppEmptyView(
                   icon: Icons.quiz_outlined,

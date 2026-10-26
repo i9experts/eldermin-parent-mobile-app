@@ -54,7 +54,7 @@ class HelpScreen extends StatelessWidget {
     return EmScaffold(
       appBar: EmAppBar(title: 'Help & support'),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: EmSpacing.listPadding,
         children: [
           const SectionRow(title: 'Frequently asked questions'),
           ..._faqs.map((f) => AppCard(
@@ -67,7 +67,7 @@ class HelpScreen extends StatelessWidget {
                   ],
                 ),
               )),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: EmSpacing.s8),
           const SectionRow(title: 'Still need help?'),
           ListCardRow(
             icon: Icons.forum_outlined,
@@ -75,7 +75,7 @@ class HelpScreen extends StatelessWidget {
             title: 'Message your school',
             subtitle: 'Reach staff directly from the Messages tab.',
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: EmSpacing.s8),
           ListCardRow(
             icon: Icons.feedback_outlined,
             iconColor: AppColors.secondryColor,
@@ -83,7 +83,7 @@ class HelpScreen extends StatelessWidget {
             subtitle: 'Report a problem or suggest an improvement.',
             onTap: () => Get.toNamed(Routes.feedback),
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: EmSpacing.s12),
         ],
       ),
     );

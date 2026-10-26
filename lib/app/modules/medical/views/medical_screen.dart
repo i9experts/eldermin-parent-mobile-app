@@ -40,7 +40,7 @@ class MedicalScreen extends GetView<MedicalController> {
   Widget _chipList(String title, List<dynamic> items, TagStyle style) {
     if (items.isEmpty) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.s12),
       child: AppCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,10 +70,10 @@ class MedicalScreen extends GetView<MedicalController> {
         if (controller.loading.value && controller.medical.value == null) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: const [
                 ShimmerScreenIntroSkeleton(withChip: false),
-                SizedBox(height: AppSpacing.md),
+                SizedBox(height: EmSpacing.s12),
                 ShimmerListRowSkeleton(),
                 ShimmerListRowSkeleton(),
                 ShimmerListRowSkeleton(),
@@ -115,10 +115,10 @@ class MedicalScreen extends GetView<MedicalController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenIntro( caption: 'Health record on file with the school'),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: 'Health record on file with the school'),
+              const SizedBox(height: EmSpacing.s16),
               if (bloodGroup != null && bloodGroup.isNotEmpty) ...[
                 AppCard(
                   child: Row(
@@ -133,7 +133,7 @@ class MedicalScreen extends GetView<MedicalController> {
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
               ],
               _chipList('Allergies', allergies, TagStyle.red),
               _chipList('Medications', medications, TagStyle.amber),
@@ -149,7 +149,7 @@ class MedicalScreen extends GetView<MedicalController> {
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
               ],
               if ((insuranceProvider?.isNotEmpty ?? false) || (insurancePolicyNumber?.isNotEmpty ?? false)) ...[
                 const SectionRow(title: 'Insurance'),
@@ -162,7 +162,7 @@ class MedicalScreen extends GetView<MedicalController> {
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
               ],
               if (specialNeedsDetail != null && specialNeedsDetail.isNotEmpty) ...[
                 const SectionRow(title: 'Special needs'),

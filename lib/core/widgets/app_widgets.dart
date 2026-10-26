@@ -136,18 +136,49 @@ class ListCardRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // the leading icon keeps the colour the call site chose (blue by default), on the kit's 44 dp tinted circle
+    final leading = Container(
+      width: 44,
+      height: 44,
+      decoration:
+          BoxDecoration(color: iconColor.withAlpha(31), shape: BoxShape.circle),
+      child: ExcludeSemantics(child: Icon(icon, size: 22, color: iconColor)),
+    );
+    // At large text sizes a trailing tag would squeeze the title and subtitle into a few letters per line: the same
+    // content is stacked instead (title, subtitle, then the tag), nothing is cut off.
+    if (trailing != null && MediaQuery.textScalerOf(context).scale(1) > 1.15) {
+      return Padding(
+        padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.row),
+        child: EmCard(
+          onTap: onTap,
+          padding: const EdgeInsetsDirectional.fromSTEB(
+              EmSpacing.s16, EmSpacing.s12, EmSpacing.s16, EmSpacing.s12),
+          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            leading,
+            const SizedBox(width: EmSpacing.s12),
+            Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: EmType.bodyLarge.copyWith(color: EmColors.ink)),
+                    if (subtitle.isNotEmpty)
+                      Text(subtitle,
+                          style: EmType.body.copyWith(
+                              color: EmColors.textSecondary,
+                              fontWeight: FontWeight.w400)),
+                    const SizedBox(height: EmSpacing.s8),
+                    trailing!,
+                  ]),
+            ),
+          ]),
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.row),
       child: EmListRow(
-        // the icon keeps the colour the call site chose (blue by default), on the kit's 44 dp tinted circle
-        leading: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-              color: iconColor.withAlpha(31), shape: BoxShape.circle),
-          child:
-              ExcludeSemantics(child: Icon(icon, size: 22, color: iconColor)),
-        ),
+        leading: leading,
         title: title,
         subtitle: subtitle.isEmpty ? null : subtitle,
         trailing: trailing,

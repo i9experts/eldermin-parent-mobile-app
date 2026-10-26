@@ -73,7 +73,7 @@ class _QuestionView extends GetView<QuizAttemptController> {
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
                 Row(children: [
                   CustomText(
@@ -86,7 +86,7 @@ class _QuestionView extends GetView<QuizAttemptController> {
                 ]),
                 const SizedBox(height: 6),
                 AppProgressBar(percent: ((i + 1) * 100 / qs.length).round(), color: AppColors.blue),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 CustomText(
                     text: q['questionText']?.toString() ?? '',
                     fontSize: 15,
@@ -98,7 +98,7 @@ class _QuestionView extends GetView<QuizAttemptController> {
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(q['questionImage'].toString(), errorBuilder: (_, __, ___) => const SizedBox.shrink())),
                 ],
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 if (type == 'mcq')
                   for (var o = 0; o < options.length; o++)
                     AppCard(
@@ -127,12 +127,8 @@ class _QuestionView extends GetView<QuizAttemptController> {
                     initialValue: selected?['textAnswer']?.toString() ?? '',
                     maxLines: 6,
                     onChanged: (t) => controller.setText(id, t),
-                    decoration: InputDecoration(
-                      hintText: 'Type your answer',
-                      filled: true,
-                      fillColor: AppColors.surface,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
+                    // the kit input style comes from the theme
+                    decoration: const InputDecoration(hintText: 'Type your answer'),
                   ),
               ],
             ),
@@ -140,7 +136,7 @@ class _QuestionView extends GetView<QuizAttemptController> {
           SafeArea(
             top: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.md, 8, AppSpacing.md, 12),
+              padding: const EdgeInsetsDirectional.fromSTEB(EmSpacing.screenH, EmSpacing.s8, EmSpacing.screenH, EmSpacing.s12),
               child: Row(children: [
                 if (i > 0)
                   Expanded(
@@ -180,14 +176,14 @@ class _QuestionView extends GetView<QuizAttemptController> {
     final unanswered = controller.questions.length - controller.answeredCount;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Submit quiz?'),
-        content: Text(unanswered > 0
+      builder: (ctx) => EmDialog(
+        title: 'Submit quiz?',
+        message: unanswered > 0
             ? '$unanswered question(s) are unanswered and will score 0. You cannot change answers after submitting.'
-            : 'You cannot change answers after submitting.'),
+            : 'You cannot change answers after submitting.',
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Review')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Submit')),
+          EmDialogAction(label: 'Review', onPressed: () => Navigator.pop(ctx, false)),
+          EmDialogAction(label: 'Submit', tone: EmDialogTone.primary, onPressed: () => Navigator.pop(ctx, true)),
         ],
       ),
     );
@@ -209,7 +205,7 @@ class _ResultView extends StatelessWidget {
     final obtained = result['obtainedMarks'];
     final passed = graded && obtained is num && passing is num && obtained >= passing;
     return ListView(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: EmSpacing.listPadding,
       children: [
         const SizedBox(height: 40),
         Icon(graded ? (passed ? Icons.emoji_events_rounded : Icons.flag_outlined) : Icons.hourglass_top_rounded,

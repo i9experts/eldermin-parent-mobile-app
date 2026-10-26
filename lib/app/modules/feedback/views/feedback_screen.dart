@@ -22,10 +22,10 @@ class FeedbackScreen extends GetView<FeedbackController> {
     return EmScaffold(
       appBar: EmAppBar(title: 'Send feedback'),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: EmSpacing.listPadding,
         children: [
-          const ScreenIntro( caption: "Tell the school what's on your mind"),
-          const SizedBox(height: AppSpacing.lg),
+          const ScreenIntro(caption: "Tell the school what's on your mind"),
+          const SizedBox(height: EmSpacing.s16),
           AppCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

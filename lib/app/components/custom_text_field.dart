@@ -1,10 +1,19 @@
-// import '../config/app_colors.dart';
-import 'package:eldermin_parent_app/core/theme/app_theme.dart';
-
-import '../config/app_dimens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
+import '../../core/design/design.dart';
+import '../../core/theme/app_theme.dart';
+import '../config/app_dimens.dart';
+
+/// The app's long-standing text field, now a wrapper over the kit's [EmTextField] (same constructor, no call-site change).
+///
+/// Mapping: [label] (falls back to [hintText] when null, since the kit field is always labelled) -> label; [hintText] ->
+/// hint (only when there is a label); [controller], [focusNode], [obscureText], [keyboardType], [maxLines], [validator],
+/// [onChanged], [onFieldSubmitted] -> the same; [errorText] -> errorText; [suffixIcon] -> suffix; an [Icon] given as
+/// [prefixIcon] -> prefixIcon; [inputFormatters] -> the same, plus a length limit for [maxLength] (the kit shows no
+/// counter); [fillColor] -> fillColor; [borderBorderradius] -> radius.
+///
+/// No kit equivalent (accepted and ignored): [isDecoration], [color], [textColor], [filled], [borderRadius], [ispadding],
+/// [isborder] (the kit field always has its own outline), [contentPadding], and a [prefixIcon] that is not an [Icon].
 
 // ignore: must_be_immutable
 class CustomTextField extends StatelessWidget {
@@ -65,87 +74,28 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isTablet = size.width >= 600;
-
-    return Container(
-      margin: ispadding ? EdgeInsets.only(bottom: 2) : null,
-      decoration: isDecoration
-          ? BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(borderBorderradius),
-              // border: Border.all(
-              //   color: AppColors.primaryColor.withOpacity(0.55),
-              // ),
-            )
-          : null,
-      child: TextFormField(
-        style: TextStyle(color: textColor),
-        onFieldSubmitted: onFieldSubmitted,
-        maxLength: maxLength,
-        maxLines: maxLines,
-        validator: validator,
-        onChanged: onChanged,
-        keyboardType: keyboardType,
-        controller: controller,
-        focusNode: focusNode,
-        obscureText: obscureText,
-        inputFormatters: inputFormatters,
-        decoration: InputDecoration(
-          prefixIcon: prefixIcon == null
-              ? null
-              : Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: prefixIcon,
-                ),
-          prefixIconColor: AppColors.grey,
-          labelText: label,
-          labelStyle: TextStyle(
-            color: AppColors.grey,
-            fontSize: isTablet ? 18 : 14,
-          ),
-          hintText: hintText?.tr,
-          hintStyle: TextStyle(color: AppColors.grey),
-          errorText: errorText,
-          suffixIcon: suffixIcon == null
-              ? null
-              : Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: suffixIcon,
-                ),
-          suffixIconColor: AppColors.grey,
-          filled: filled,
-          fillColor: fillColor,
-          contentPadding: contentPadding ??
-              EdgeInsets.only(
-                left: 12,
-                right: 18,
-                top: isTablet ? 20 : 16,
-                bottom: isTablet ? 20 : 16,
-              ),
-          enabledBorder: isborder
-              ? OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(borderBorderradius),
-                  borderSide: BorderSide(
-                    color: AppColors.lightGrey,
-                    width: 0.3,
-                  ),
-                )
-              : OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(borderBorderradius),
-                  borderSide: BorderSide.none,
-                ),
-          focusedBorder: isborder
-              ? OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(borderBorderradius),
-                  borderSide: BorderSide(color: AppColors.primaryColor),
-                )
-              : OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(borderBorderradius),
-                  borderSide: BorderSide.none,
-                ),
-        ),
-      ),
+    // the kit field's prefix is an icon: an [Icon] passed here keeps its glyph
+    final prefix = prefixIcon is Icon ? (prefixIcon as Icon).icon : null;
+    return EmTextField(
+      label: label ?? hintText ?? '',
+      hint: label == null ? null : hintText,
+      controller: controller,
+      focusNode: focusNode,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      validator: validator,
+      onChanged: onChanged,
+      onSubmitted: onFieldSubmitted == null ? null : (v) => onFieldSubmitted!(v),
+      errorText: errorText,
+      prefixIcon: prefix,
+      suffix: suffixIcon,
+      inputFormatters: [
+        ...?inputFormatters,
+        if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),
+      ],
+      fillColor: fillColor,
+      radius: borderBorderradius,
     );
   }
 }
