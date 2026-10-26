@@ -87,7 +87,7 @@ class CircularsScreen extends GetView<CircularsController> {
                   final category = c['category']?.toString() ?? 'notice';
                   return ListCardRow(
                     icon: Icons.description_outlined,
-                    iconColor: AppColors.blue,
+                    iconColor: EmColors.primary,
                     title: c['title']?.toString() ?? 'Notice',
                     subtitle: [
                       if (date != null)
@@ -121,14 +121,14 @@ class CircularsScreen extends GetView<CircularsController> {
                   text: c['title']?.toString() ?? 'Notice',
                   fontWeight: FontWeight.w800,
                   fontSize: 16,
-                  color: AppColors.primaryColor),
+                  color: EmColors.primaryDark),
               const SizedBox(height: 10),
               CustomText(
                   text: (c['body']?.toString().isNotEmpty ?? false)
                       ? c['body'].toString()
                       : 'No further details.',
                   fontSize: 13,
-                  color: AppColors.ink),
+                  color: EmColors.ink),
               if (needsAck && c['_id'] != null) ...[
                 const SizedBox(height: 16),
                 SizedBox(

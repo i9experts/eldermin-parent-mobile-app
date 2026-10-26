@@ -1,16 +1,16 @@
 import 'package:eldermin_parent_app/app/common/controllers/toast_controller.dart';
 import 'package:eldermin_parent_app/app/components/custom_toast.dart';
 // import 'package:eldermin_parent_app/app/config/app_colors.dart';
-import 'package:eldermin_parent_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import '../../core/design/design.dart';
 import 'package:get/get.dart';
 
 class ToastUtil {
   static void showToast(
     String message, {
     String? imagePath,
-    Color bgColor = AppColors.black,
-    Color textColor = AppColors.white,
+    Color bgColor = EmColors.ink,
+    Color textColor = EmColors.surface,
     Duration duration = const Duration(seconds: 2),
   }) {
     final context = Get.overlayContext;

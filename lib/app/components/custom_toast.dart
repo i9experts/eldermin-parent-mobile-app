@@ -1,10 +1,10 @@
-import 'package:eldermin_parent_app/core/theme/app_theme.dart';
 
 import 'common_image_view.dart';
 import 'custom_text.dart';
 // import '../config/app_colors.dart';
 import '../config/app_images.dart';
 import 'package:flutter/material.dart';
+import '../../core/design/design.dart';
 import 'package:get/get.dart';
 
 /// A lightweight, branded toast for a short one-line status update — for
@@ -28,14 +28,14 @@ class CustomToast extends StatelessWidget {
   static void show(String message, {Color? bgColor, Color? textColor}) {
     Get.rawSnackbar(
       snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: AppColors.transparent,
+      backgroundColor: Colors.transparent,
       duration: const Duration(seconds: 2),
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       padding: EdgeInsets.zero,
       messageText: CustomToast(
         message: message,
-        bgColor: bgColor ?? AppColors.blackColor,
-        textColor: textColor ?? AppColors.white,
+        bgColor: bgColor ?? EmColors.primaryDark,
+        textColor: textColor ?? EmColors.surface,
       ),
     );
   }
@@ -43,7 +43,7 @@ class CustomToast extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.transparent,
+      color: Colors.transparent,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -52,7 +52,7 @@ class CustomToast extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withOpacity(0.25),
+              color: EmColors.ink.withOpacity(0.25),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

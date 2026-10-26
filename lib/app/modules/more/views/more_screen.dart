@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
 import '../../../../core/design/design.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/em_tab_heading.dart';
 import '../../../../core/widgets/em_tile_grid.dart';
@@ -147,10 +146,10 @@ class MoreScreen extends StatelessWidget {
     ];
 
     final quickAccessTiles = <(IconData, String, Color, VoidCallback)>[
-      (Icons.check_circle_outline_rounded, 'Attendance', AppColors.blue, () => Get.toNamed(Routes.attendance)),
-      (Icons.menu_book_rounded, 'Homework', AppColors.amber, () => Get.toNamed(Routes.homework)),
-      (Icons.account_balance_wallet_outlined, 'Dues', AppColors.secondryColor, () => Get.toNamed(Routes.dues)),
-      (Icons.schedule_rounded, 'Timetable', AppColors.purple, () => Get.toNamed(Routes.timetable)),
+      (Icons.check_circle_outline_rounded, 'Attendance', EmColors.primary, () => Get.toNamed(Routes.attendance)),
+      (Icons.menu_book_rounded, 'Homework', EmColors.accent, () => Get.toNamed(Routes.homework)),
+      (Icons.account_balance_wallet_outlined, 'Dues', EmColors.success, () => Get.toNamed(Routes.dues)),
+      (Icons.schedule_rounded, 'Timetable', EmColors.statusLeave, () => Get.toNamed(Routes.timetable)),
     ];
 
     return Obx(() {

@@ -3,7 +3,6 @@ import '../../core/design/design.dart';
 import '../config/app_dimens.dart';
 import '../config/app_font_size.dart';
 import '../config/app_text_styles.dart';
-import '../../core/theme/app_theme.dart';
 
 /// The app's long-standing button, now a wrapper over the kit's buttons (same constructor, no call-site change). The
 /// variant follows the colours a call site asks for:
@@ -28,15 +27,15 @@ class CustomButton extends StatelessWidget {
     super.key,
     required this.label,
     this.fontFamily = AppTextStyles.fontFamily,
-    this.color = AppColors.appBarColor,
+    this.color = EmColors.primaryDark,
     required this.onPressed,
     this.enabled = true,
-    this.textColor = AppColors.white,
+    this.textColor = EmColors.surface,
     this.fontSize = AppFontSize.small,
     this.fontWeight = FontWeight.w500,
     this.prefix,
     this.suffix,
-    this.borderColor = AppColors.transparent,
+    this.borderColor = Colors.transparent,
     this.borderRadius = AppDimen.borderRadius,
     this.width,
     this.height = 45,
@@ -75,7 +74,7 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final loading = label.isEmpty && prefix != null;
     final onTap = enabled ? onPressed : null;
-    final outlined = borderColor != AppColors.transparent;
+    final outlined = borderColor != Colors.transparent;
     final Widget button;
     if (_isError(color)) {
       button = EmPrimaryButton(label: label.isEmpty ? 'Please wait' : label, onPressed: onTap, loading: loading, destructive: true);

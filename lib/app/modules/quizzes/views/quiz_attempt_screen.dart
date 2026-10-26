@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../components/custom_text.dart';
 import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/locked_feature_view.dart';
 import '../../../components/custom_app_snack_bar.dart';
@@ -78,20 +77,20 @@ class _QuestionView extends GetView<QuizAttemptController> {
                 Row(children: [
                   CustomText(
                       text: 'Question ${i + 1} of ${qs.length}',
-                      color: AppColors.muted,
+                      color: EmColors.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w700),
                   const Spacer(),
                   AppTag('${q['marks'] ?? ''} marks'),
                 ]),
                 const SizedBox(height: 6),
-                AppProgressBar(percent: ((i + 1) * 100 / qs.length).round(), color: AppColors.blue),
+                AppProgressBar(percent: ((i + 1) * 100 / qs.length).round(), color: EmColors.primary),
                 const SizedBox(height: EmSpacing.s12),
                 CustomText(
                     text: q['questionText']?.toString() ?? '',
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.ink),
+                    color: EmColors.ink),
                 if ((q['questionImage']?.toString() ?? '').startsWith('http')) ...[
                   const SizedBox(height: 10),
                   ClipRRect(
@@ -105,9 +104,9 @@ class _QuestionView extends GetView<QuizAttemptController> {
                       onTap: () => controller.selectOption(id, o),
                       child: Row(children: [
                         Icon(selected?['selectedOptionIndex'] == o ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                            color: selected?['selectedOptionIndex'] == o ? AppColors.blue : AppColors.muted),
+                            color: selected?['selectedOptionIndex'] == o ? EmColors.primary : EmColors.textSecondary),
                         const SizedBox(width: 10),
-                        Expanded(child: CustomText(text: options[o], fontSize: 13, color: AppColors.ink)),
+                        Expanded(child: CustomText(text: options[o], fontSize: 13, color: EmColors.ink)),
                       ]),
                     )
                 else if (type == 'true_false')
@@ -116,9 +115,9 @@ class _QuestionView extends GetView<QuizAttemptController> {
                       onTap: () => controller.setText(id, v),
                       child: Row(children: [
                         Icon(selected?['textAnswer'] == v ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                            color: selected?['textAnswer'] == v ? AppColors.blue : AppColors.muted),
+                            color: selected?['textAnswer'] == v ? EmColors.primary : EmColors.textSecondary),
                         const SizedBox(width: 10),
-                        CustomText(text: v, fontSize: 13, color: AppColors.ink),
+                        CustomText(text: v, fontSize: 13, color: EmColors.ink),
                       ]),
                     )
                 else
@@ -143,7 +142,7 @@ class _QuestionView extends GetView<QuizAttemptController> {
                       child: CustomButton(
                           label: 'Previous',
                           height: 46,
-                          color: AppColors.muted,
+                          color: EmColors.textSecondary,
                           onPressed: () => controller.goTo(i - 1))),
                 if (i > 0) const SizedBox(width: 10),
                 Expanded(
@@ -151,7 +150,7 @@ class _QuestionView extends GetView<QuizAttemptController> {
                       ? CustomButton(
                           label: controller.submitting.value ? '' : 'Submit (${controller.answeredCount}/${qs.length})',
                           height: 46,
-                          color: AppColors.primaryColor,
+                          color: EmColors.primaryDark,
                           enabled: !controller.submitting.value,
                           prefix: controller.submitting.value
                               ? const SizedBox(
@@ -162,7 +161,7 @@ class _QuestionView extends GetView<QuizAttemptController> {
                           onPressed: () => _confirmSubmit(context),
                         )
                       : CustomButton(
-                          label: 'Next', height: 46, color: AppColors.primaryColor, onPressed: () => controller.goTo(i + 1)),
+                          label: 'Next', height: 46, color: EmColors.primaryDark, onPressed: () => controller.goTo(i + 1)),
                 ),
               ]),
             ),
@@ -209,14 +208,14 @@ class _ResultView extends StatelessWidget {
       children: [
         const SizedBox(height: 40),
         Icon(graded ? (passed ? Icons.emoji_events_rounded : Icons.flag_outlined) : Icons.hourglass_top_rounded,
-            size: 64, color: graded ? (passed ? AppColors.secondryColor : AppColors.amber) : AppColors.blue),
+            size: 64, color: graded ? (passed ? EmColors.success : EmColors.accent) : EmColors.primary),
         const SizedBox(height: 16),
         Center(
           child: CustomText(
               text: graded ? '$obtained / $total' : 'Quiz submitted',
               fontSize: 28,
               fontWeight: FontWeight.w800,
-              color: AppColors.primaryColor),
+              color: EmColors.primaryDark),
         ),
         const SizedBox(height: 8),
         Center(
@@ -224,7 +223,7 @@ class _ResultView extends StatelessWidget {
               text: graded
                   ? (passed ? 'Well done - you passed!' : 'Passing marks are $passing. Keep practising!')
                   : 'Some answers need your teacher to mark them. Your score will appear in the quiz list once they do.',
-              color: AppColors.muted,
+              color: EmColors.textSecondary,
               fontSize: 13,
               textAlign: TextAlign.center),
         ),
@@ -232,10 +231,10 @@ class _ResultView extends StatelessWidget {
           const SizedBox(height: 8),
           Center(
               child: CustomText(
-                  text: 'Auto-marked so far: ${result['autoGradedMarks']}', color: AppColors.muted, fontSize: 12)),
+                  text: 'Auto-marked so far: ${result['autoGradedMarks']}', color: EmColors.textSecondary, fontSize: 12)),
         ],
         const SizedBox(height: 32),
-        CustomButton(label: 'Back to quizzes', height: 48, color: AppColors.primaryColor, onPressed: () => Get.back()),
+        CustomButton(label: 'Back to quizzes', height: 48, color: EmColors.primaryDark, onPressed: () => Get.back()),
       ],
     );
   }

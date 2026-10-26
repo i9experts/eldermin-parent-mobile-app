@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/design/design.dart';
-import '../../core/theme/app_theme.dart';
 import '../config/app_dimens.dart';
 
 /// The app's long-standing text field, now a wrapper over the kit's [EmTextField] (same constructor, no call-site change).
@@ -54,15 +53,15 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.suffixIcon,
     this.filled = true,
-    this.fillColor = AppColors.white,
+    this.fillColor = EmColors.surface,
     this.borderRadius,
     this.ispadding = false,
     this.isborder = false,
     this.controller,
     this.focusNode,
     this.onChanged,
-    this.color = AppColors.white,
-    this.textColor = AppColors.black,
+    this.color = EmColors.surface,
+    this.textColor = EmColors.ink,
     this.keyboardType,
     this.validator,
     this.maxLines = 1,

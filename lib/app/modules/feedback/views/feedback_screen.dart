@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../components/custom_app_snack_bar.dart';
 import '../../../components/custom_button.dart';
@@ -35,7 +34,7 @@ class FeedbackScreen extends GetView<FeedbackController> {
                   label: 'Subject',
                   hintText: 'A short summary',
                   isborder: true,
-                  fillColor: AppColors.background,
+                  fillColor: EmColors.background,
                 ),
                 const SizedBox(height: 14),
                 CustomTextField(
@@ -44,12 +43,12 @@ class FeedbackScreen extends GetView<FeedbackController> {
                   hintText: 'Share the details',
                   maxLines: 5,
                   isborder: true,
-                  fillColor: AppColors.background,
+                  fillColor: EmColors.background,
                 ),
                 const SizedBox(height: 14),
                 const CustomText(
                   text: 'Priority',
-                  color: AppColors.muted,
+                  color: EmColors.textSecondary,
                   fontSize: 10.5,
                   fontWeight: FontWeight.w700,
                 ),
@@ -67,7 +66,7 @@ class FeedbackScreen extends GetView<FeedbackController> {
                     padding: const EdgeInsets.only(bottom: 12),
                     child: CustomText(
                       text: error,
-                      color: AppColors.red,
+                      color: EmColors.error,
                       fontSize: 11,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
@@ -78,7 +77,7 @@ class FeedbackScreen extends GetView<FeedbackController> {
                       label: controller.submitting.value ? '' : 'Submit feedback',
                       width: double.infinity,
                       height: 48,
-                      color: AppColors.primaryColor,
+                      color: EmColors.primaryDark,
                       enabled: !controller.submitting.value,
                       prefix: controller.submitting.value
                           ? const SizedBox(

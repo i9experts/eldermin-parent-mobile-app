@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:eldermin_parent_app/core/theme/app_theme.dart';
 
 import 'custom_text.dart';
 import 'custom_text_field.dart';
@@ -8,6 +7,7 @@ import 'svg_icon.dart';
 import '../config/app_icons.dart';
 import '../config/app_dimens.dart';
 import 'package:flutter/material.dart';
+import '../../core/design/design.dart';
 import 'package:get/get.dart';
 
 /// Shared search field for the Home search bar and the dedicated Search
@@ -69,9 +69,9 @@ class AppSearchField extends StatelessWidget {
           height: 50,
           padding: EdgeInsets.symmetric(horizontal: 5),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: EmColors.surface,
             borderRadius: BorderRadius.circular(AppDimen.borderRadius),
-            border: Border.all(color: AppColors.primaryColor, width: 0.2),
+            border: Border.all(color: EmColors.primaryDark, width: 0.2),
           ),
           child: Row(
             children: [
@@ -80,7 +80,7 @@ class AppSearchField extends StatelessWidget {
                 child: SvgIcon(
                     assetName: AppIcons.searchIcon,
                     size: 18,
-                    color: AppColors.grey),
+                    color: EmColors.textSecondary),
               ),
               const SizedBox(width: 6),
               Expanded(
@@ -120,7 +120,7 @@ class AppSearchField extends StatelessWidget {
                             child: CustomText(
                               key: ValueKey(hintController.currentHint),
                               text: hintController.currentHint,
-                              color: AppColors.iosGrey,
+                              color: EmColors.textSecondary,
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               overflow: TextOverflow.ellipsis,

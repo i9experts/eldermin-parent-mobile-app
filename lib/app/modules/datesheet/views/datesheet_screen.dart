@@ -94,7 +94,7 @@ class DatesheetScreen extends GetView<DatesheetController> {
                                     text: title,
                                     fontWeight: FontWeight.w800,
                                     fontSize: 13,
-                                    color: AppColors.primaryColor,
+                                    color: EmColors.primaryDark,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -104,7 +104,7 @@ class DatesheetScreen extends GetView<DatesheetController> {
                                       if (type.isNotEmpty) type,
                                       if (term != null) term
                                     ].join(' · '),
-                                    color: AppColors.muted,
+                                    color: EmColors.textSecondary,
                                     fontSize: 9.5,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -120,7 +120,7 @@ class DatesheetScreen extends GetView<DatesheetController> {
                         if (subjects.isEmpty)
                           CustomText(
                             text: '${_fmt(startDate)} – ${_fmt(endDate)}',
-                            color: AppColors.ink,
+                            color: EmColors.ink,
                             fontSize: 11.5,
                             fontWeight: FontWeight.w600,
                             maxLines: 1,

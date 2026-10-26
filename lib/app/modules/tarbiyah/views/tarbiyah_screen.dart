@@ -134,7 +134,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                                 Expanded(
                                   child: CustomText(
                                       text: key,
-                                      color: AppColors.muted,
+                                      color: EmColors.textSecondary,
                                       fontSize: 9.5,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis),
@@ -142,7 +142,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                                 const SizedBox(width: 8),
                                 CustomText(
                                     text: '$score%',
-                                    color: AppColors.primaryColor,
+                                    color: EmColors.primaryDark,
                                     fontSize: 9,
                                     fontWeight: FontWeight.w800),
                               ],
@@ -151,8 +151,8 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                             AppProgressBar(
                                 percent: score,
                                 color: score < 88
-                                    ? AppColors.amber
-                                    : AppColors.secondryColor),
+                                    ? EmColors.accent
+                                    : EmColors.success),
                           ],
                         ),
                       );
@@ -176,8 +176,8 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                   return ListCardRow(
                     icon: Icons.favorite_rounded,
                     iconColor: neutral
-                        ? AppColors.muted
-                        : (positive ? AppColors.secondryColor : AppColors.red),
+                        ? EmColors.textSecondary
+                        : (positive ? EmColors.success : EmColors.error),
                     title: rec['title']?.toString() ??
                         rec['category']?.toString() ??
                         'Observation',

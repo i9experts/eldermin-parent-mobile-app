@@ -1,4 +1,3 @@
-import 'package:eldermin_parent_app/core/theme/app_theme.dart';
 
 import 'common_image_view.dart';
 import 'custom_text.dart';
@@ -7,6 +6,7 @@ import 'svg_icon.dart';
 import '../config/app_icons.dart';
 import '../config/app_images.dart';
 import 'package:flutter/material.dart';
+import '../../core/design/design.dart';
 import 'package:get/get.dart';
 
 class CustomAppSnackbar {
@@ -14,15 +14,15 @@ class CustomAppSnackbar {
     required String title,
     required String message,
     String imagePath = AppImages.logoImage,
-    Color textColor = AppColors.black,
-    Color backgroundColor = AppColors.white,
-    Color accentColor = AppColors.accentColor,
+    Color textColor = EmColors.ink,
+    Color backgroundColor = EmColors.surface,
+    Color accentColor = EmColors.accent,
     String? actionLabel,
     VoidCallback? onAction,
   }) {
     Get.rawSnackbar(
       snackPosition: SnackPosition.TOP,
-      backgroundColor: AppColors.transparent,
+      backgroundColor: Colors.transparent,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       padding: EdgeInsets.zero,
       duration: const Duration(seconds: 3),
@@ -32,12 +32,11 @@ class CustomAppSnackbar {
       messageText: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          // gradient: AppColors.appbarGradient,
           color: backgroundColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withOpacity(0.25),
+              color: EmColors.ink.withOpacity(0.25),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
@@ -53,7 +52,7 @@ class CustomAppSnackbar {
               margin: const EdgeInsets.only(right: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color: AppColors.white.withOpacity(0.1),
+                color: EmColors.surface.withOpacity(0.1),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
@@ -110,14 +109,14 @@ class CustomAppSnackbar {
   }
 
   static void success(String message) {
-    show(title: "Success", message: message, accentColor: AppColors.seaGreen);
+    show(title: "Success", message: message, accentColor: EmColors.success);
   }
 
   static void error(String message) {
-    show(title: "Error", message: message, accentColor: AppColors.red);
+    show(title: "Error", message: message, accentColor: EmColors.error);
   }
 
   static void warning(String message) {
-    show(title: "Warning", message: message, accentColor: AppColors.orange);
+    show(title: "Warning", message: message, accentColor: EmColors.accent);
   }
 }

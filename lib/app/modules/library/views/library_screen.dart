@@ -33,7 +33,7 @@ class LibraryScreen extends GetView<LibraryController> {
         Expanded(
           child: CustomText(
               text: label,
-              color: AppColors.muted,
+              color: EmColors.textSecondary,
               fontSize: 9.5,
               fontWeight: FontWeight.w600,
               maxLines: 1,
@@ -106,7 +106,7 @@ class LibraryScreen extends GetView<LibraryController> {
                     children: [
                       DonutRing(
                         percent: ((returned / issues.length) * 100).round(),
-                        color: AppColors.purple,
+                        color: EmColors.statusLeave,
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -117,19 +117,19 @@ class LibraryScreen extends GetView<LibraryController> {
                                 text: 'Books completed',
                                 fontWeight: FontWeight.w800,
                                 fontSize: 12,
-                                color: AppColors.primaryColor),
+                                color: EmColors.primaryDark),
                             const SizedBox(height: 4),
                             CustomText(
                                 text:
                                     '$returned of ${issues.length} borrowed books returned',
-                                color: AppColors.muted,
+                                color: EmColors.textSecondary,
                                 fontSize: 10.5,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis),
                             const SizedBox(height: 10),
-                            _legendItem(AppColors.purple, 'Returned · $returned'),
+                            _legendItem(EmColors.statusLeave, 'Returned · $returned'),
                             const SizedBox(height: 6),
-                            _legendItem(AppColors.line, 'Outstanding · ${issues.length - returned}'),
+                            _legendItem(EmColors.border, 'Outstanding · ${issues.length - returned}'),
                           ],
                         ),
                       ),
@@ -160,7 +160,7 @@ class LibraryScreen extends GetView<LibraryController> {
                           : '');
                   return ListCardRow(
                     icon: Icons.menu_book_rounded,
-                    iconColor: AppColors.purple,
+                    iconColor: EmColors.statusLeave,
                     title: b['bookTitle']?.toString() ?? 'Book',
                     subtitle: subtitle,
                     trailing: AppTag(

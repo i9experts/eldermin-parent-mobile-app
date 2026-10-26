@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../components/custom_text.dart';
 import '../../../routes/app_routes.dart';
@@ -61,9 +60,9 @@ class HelpScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomText(text: f.$1, color: AppColors.primaryColor, fontSize: 12, fontWeight: FontWeight.w800, height: 1.35),
+                    CustomText(text: f.$1, color: EmColors.primaryDark, fontSize: 12, fontWeight: FontWeight.w800, height: 1.35),
                     const SizedBox(height: 6),
-                    CustomText(text: f.$2, color: AppColors.muted, fontSize: 11, height: 1.5),
+                    CustomText(text: f.$2, color: EmColors.textSecondary, fontSize: 11, height: 1.5),
                   ],
                 ),
               )),
@@ -71,14 +70,14 @@ class HelpScreen extends StatelessWidget {
           const SectionRow(title: 'Still need help?'),
           ListCardRow(
             icon: Icons.forum_outlined,
-            iconColor: AppColors.blue,
+            iconColor: EmColors.primary,
             title: 'Message your school',
             subtitle: 'Reach staff directly from the Messages tab.',
           ),
           const SizedBox(height: EmSpacing.s8),
           ListCardRow(
             icon: Icons.feedback_outlined,
-            iconColor: AppColors.secondryColor,
+            iconColor: EmColors.success,
             title: 'Send feedback',
             subtitle: 'Report a problem or suggest an improvement.',
             onTap: () => Get.toNamed(Routes.feedback),

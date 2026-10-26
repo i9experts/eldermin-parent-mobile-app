@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/locked_feature_view.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
@@ -89,11 +88,11 @@ class _DiaryCard extends GetView<DiaryController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomText(text: dateLabel, fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.ink),
+                    CustomText(text: dateLabel, fontSize: 15, fontWeight: FontWeight.w700, color: EmColors.ink),
                     if (teacher.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
-                        child: CustomText(text: 'By $teacher', fontSize: 12, color: AppColors.muted),
+                        child: CustomText(text: 'By $teacher', fontSize: 12, color: EmColors.textSecondary),
                       ),
                   ],
                 ),
@@ -109,7 +108,7 @@ class _DiaryCard extends GetView<DiaryController> {
                       )
                     : IconButton(
                         tooltip: 'Open PDF',
-                        icon: const Icon(Icons.picture_as_pdf_outlined, color: AppColors.blue),
+                        icon: const Icon(Icons.picture_as_pdf_outlined, color: EmColors.primary),
                         onPressed: id.isEmpty ? null : () => controller.openPdf(id),
                       );
               }),
@@ -140,11 +139,11 @@ class _PeriodBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomText(text: _s('subject'), fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.blue),
+        CustomText(text: _s('subject'), fontSize: 14, fontWeight: FontWeight.w700, color: EmColors.primary),
         if (title.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: CustomText(text: title, fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.ink),
+            child: CustomText(text: title, fontSize: 13, fontWeight: FontWeight.w600, color: EmColors.ink),
           ),
         if (description.isNotEmpty) _line(null, description),
         if (classwork.isNotEmpty) _line('Classwork', classwork),
@@ -159,8 +158,8 @@ class _PeriodBlock extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (label != null)
-              CustomText(text: label, fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.muted),
-            CustomText(text: text, fontSize: 13, color: AppColors.ink),
+              CustomText(text: label, fontSize: 11, fontWeight: FontWeight.w700, color: EmColors.textSecondary),
+            CustomText(text: text, fontSize: 13, color: EmColors.ink),
           ],
         ),
       );

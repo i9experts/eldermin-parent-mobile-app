@@ -63,7 +63,7 @@ class LearningResourcesScreen extends GetView<LearningResourcesController> {
                   final resources = (p['resources'] as List<dynamic>?) ?? [];
                   return ListCardRow(
                     icon: Icons.menu_book_outlined,
-                    iconColor: AppColors.blue,
+                    iconColor: EmColors.primary,
                     title: topic,
                     subtitle: [
                       if (subject.isNotEmpty) subject,

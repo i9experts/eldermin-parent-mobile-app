@@ -69,7 +69,7 @@ class ConsentScreen extends GetView<ConsentController> {
                               text: 'Consent completion',
                               fontWeight: FontWeight.w800,
                               fontSize: 12,
-                              color: AppColors.primaryColor),
+                              color: EmColors.primaryDark),
                           AppTag(
                               '${((responded / requests.length) * 100).round()}%',
                               style: TagStyle.info),
@@ -78,13 +78,13 @@ class ConsentScreen extends GetView<ConsentController> {
                       const SizedBox(height: 10),
                       AppProgressBar(
                         percent: ((responded / requests.length) * 100).round(),
-                        color: AppColors.blue,
+                        color: EmColors.primary,
                       ),
                       const SizedBox(height: 6),
                       CustomText(
                           text:
                               '$responded of ${requests.length} requests responded',
-                          color: AppColors.muted,
+                          color: EmColors.textSecondary,
                           fontSize: 9.5,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis),
@@ -118,7 +118,7 @@ class ConsentScreen extends GetView<ConsentController> {
                                         'Consent request',
                                     fontWeight: FontWeight.w800,
                                     fontSize: 12,
-                                    color: AppColors.primaryColor,
+                                    color: EmColors.primaryDark,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis)),
                             if (decision != null)
@@ -140,7 +140,7 @@ class ConsentScreen extends GetView<ConsentController> {
                         const SizedBox(height: 4),
                         CustomText(
                             text: r['description']?.toString() ?? '',
-                            color: AppColors.muted,
+                            color: EmColors.textSecondary,
                             fontSize: 10.5,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis),
@@ -169,7 +169,7 @@ class ConsentScreen extends GetView<ConsentController> {
                             final grant = CustomButton(
                               label: busy ? '' : 'Grant consent',
                               height: 42,
-                              color: AppColors.primaryColor,
+                              color: EmColors.primaryDark,
                               enabled: !busy,
                               onPressed: () async {
                                 final ok =

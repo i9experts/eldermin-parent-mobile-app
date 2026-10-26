@@ -88,19 +88,19 @@ class _CourseCard extends GetView<CoursesController> {
               text: course['subjectName']?.toString() ?? 'Course',
               fontWeight: FontWeight.w800,
               fontSize: 14,
-              color: AppColors.primaryColor),
+              color: EmColors.primaryDark),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (subtitle.isNotEmpty)
-                  CustomText(text: subtitle, color: AppColors.muted, fontSize: 11),
+                  CustomText(text: subtitle, color: EmColors.textSecondary, fontSize: 11),
                 const SizedBox(height: 8),
                 Row(children: [
-                  Expanded(child: AppProgressBar(percent: pct, color: AppColors.blue)),
+                  Expanded(child: AppProgressBar(percent: pct, color: EmColors.primary)),
                   const SizedBox(width: 8),
-                  CustomText(text: '$pct%', fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.primaryColor),
+                  CustomText(text: '$pct%', fontSize: 11, fontWeight: FontWeight.w800, color: EmColors.primaryDark),
                 ]),
               ],
             ),
@@ -115,7 +115,7 @@ class _CourseCard extends GetView<CoursesController> {
                       text: 'Unit ${u['unitNo']}: ${u['unitName'] ?? ''}',
                       fontWeight: FontWeight.w800,
                       fontSize: 12,
-                      color: AppColors.blue),
+                      color: EmColors.primary),
                 ),
               ),
               for (final t in ((u['topics'] as List<dynamic>?) ?? []).map((t) => Map<String, dynamic>.from(t as Map))) ...[
@@ -127,7 +127,7 @@ class _CourseCard extends GetView<CoursesController> {
                         text: t['topicName']?.toString() ?? '',
                         fontWeight: FontWeight.w700,
                         fontSize: 11.5,
-                        color: AppColors.ink),
+                        color: EmColors.ink),
                   ),
                 ),
                 for (final l in ((t['lessons'] as List<dynamic>?) ?? []).map((l) => Map<String, dynamic>.from(l as Map)))
@@ -182,7 +182,7 @@ class _LessonRow extends GetView<CoursesController> {
                 : IconButton(
                     tooltip: completed ? 'Mark as not done' : 'Mark as done',
                     icon: Icon(completed ? Icons.check_circle_rounded : Icons.radio_button_unchecked,
-                        color: completed ? AppColors.secondryColor : AppColors.muted),
+                        color: completed ? EmColors.success : EmColors.textSecondary),
                     onPressed: () =>
                         controller.setLessonStatus(syllabusId, unitNo, topicNo, lessonNo, completed ? 'not_started' : 'completed'),
                   ),
@@ -194,12 +194,12 @@ class _LessonRow extends GetView<CoursesController> {
                       text: lesson['title']?.toString() ?? 'Lesson',
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink),
+                      color: EmColors.ink),
                   if ((lesson['description']?.toString() ?? '').isNotEmpty)
                     CustomText(
                         text: lesson['description'].toString(),
                         fontSize: 11,
-                        color: AppColors.muted,
+                        color: EmColors.textSecondary,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis),
                   if (status == 'in_progress') const AppTag('In progress', style: TagStyle.amber),
@@ -209,7 +209,7 @@ class _LessonRow extends GetView<CoursesController> {
             if (link != null)
               IconButton(
                 tooltip: 'Open',
-                icon: const Icon(Icons.open_in_new_rounded, color: AppColors.blue, size: 20),
+                icon: const Icon(Icons.open_in_new_rounded, color: EmColors.primary, size: 20),
                 onPressed: () async {
                   await launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication);
                   if (status == 'not_started') {

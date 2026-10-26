@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../core/design/design.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../controllers/otp_verify_controller.dart';
 import '../widgets/auth_page_shell.dart';
 
@@ -48,15 +47,15 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
           if (controller.devCode != null) ...[
             Container(
               padding: const EdgeInsets.all(EmSpacing.s12),
-              decoration: BoxDecoration(color: AppColors.amberBg, borderRadius: BorderRadius.circular(EmRadius.md)),
+              decoration: BoxDecoration(color: EmColors.warningContainer, borderRadius: BorderRadius.circular(EmRadius.md)),
               child: Row(children: [
-                const Icon(Icons.science_outlined, color: AppColors.amberText, size: 20),
+                const Icon(Icons.science_outlined, color: EmColors.warning, size: 20),
                 const SizedBox(width: EmSpacing.s8),
                 Expanded(
                     child: Text('Dev mode code: ${controller.devCode}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: EmType.body.copyWith(color: AppColors.amberText, fontWeight: FontWeight.w600))),
+                        style: EmType.body.copyWith(color: EmColors.warning, fontWeight: FontWeight.w600))),
               ]),
             ),
             const SizedBox(height: EmSpacing.s20),

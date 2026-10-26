@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/design/design.dart';
-import '../../core/theme/app_theme.dart';
 import '../config/app_font_size.dart';
 import '../config/app_text_styles.dart';
 
@@ -27,7 +26,7 @@ class CustomText extends StatelessWidget {
   const CustomText({
     super.key,
     required this.text,
-    this.color = AppColors.black,
+    this.color = EmColors.ink,
     this.fontSize = AppFontSize.extraSmall,
     this.fontWeight = FontWeight.w400,
     this.overflow,

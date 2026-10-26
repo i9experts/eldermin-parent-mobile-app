@@ -1,7 +1,6 @@
 import 'package:eldermin_parent_app/app/components/custom_button.dart';
 import 'package:eldermin_parent_app/app/components/custom_text_field.dart';
 import 'package:eldermin_parent_app/core/design/design.dart';
-import 'package:eldermin_parent_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -21,7 +20,7 @@ void main() {
 
   group('CustomButton variants', () {
     testWidgets('navy (what every form passes) -> the primary accent button', (t) async {
-      await pump(t, CustomButton(label: 'Save', color: AppColors.primaryColor, onPressed: () {}));
+      await pump(t, CustomButton(label: 'Save', color: EmColors.primaryDark, onPressed: () {}));
       expect(find.byType(EmMorphButton), findsOneWidget);
       expect(find.byType(EmPrimaryButton), findsNothing);
       await disposeApp(t);
@@ -29,7 +28,7 @@ void main() {
 
     testWidgets('red / danger colour -> EmPrimaryButton(destructive), error fill; taps work; loading ignores taps', (t) async {
       var taps = 0;
-      await pump(t, CustomButton(label: 'Delete', color: AppColors.red, onPressed: () => taps++));
+      await pump(t, CustomButton(label: 'Delete', color: EmColors.error, onPressed: () => taps++));
       final b = t.widget<EmPrimaryButton>(find.byType(EmPrimaryButton));
       expect(b.destructive, isTrue);
       final style = t.widget<ElevatedButton>(find.byType(ElevatedButton)).style!;
@@ -39,7 +38,7 @@ void main() {
       await disposeApp(t);
 
       taps = 0;
-      await pump(t, CustomButton(label: '', color: AppColors.delete, prefix: const SizedBox(), onPressed: () => taps++));
+      await pump(t, CustomButton(label: '', color: EmColors.error, prefix: const SizedBox(), onPressed: () => taps++));
       expect(t.widget<EmPrimaryButton>(find.byType(EmPrimaryButton)).loading, isTrue);
       await t.tap(find.byType(EmPrimaryButton), warnIfMissed: false);
       expect(taps, 0);
@@ -48,7 +47,7 @@ void main() {
 
     testWidgets('disabled danger button is not tappable', (t) async {
       var taps = 0;
-      await pump(t, CustomButton(label: 'Delete', color: AppColors.red, enabled: false, onPressed: () => taps++));
+      await pump(t, CustomButton(label: 'Delete', color: EmColors.error, enabled: false, onPressed: () => taps++));
       expect(t.widget<EmPrimaryButton>(find.byType(EmPrimaryButton)).onPressed, isNull);
       await t.tap(find.text('Delete'), warnIfMissed: false);
       expect(taps, 0);
@@ -56,7 +55,7 @@ void main() {
     });
 
     testWidgets('white / transparent / muted fill -> EmSecondaryButton (white with the accent border)', (t) async {
-      for (final c in [AppColors.white, AppColors.transparent, AppColors.muted]) {
+      for (final c in [EmColors.surface, Colors.transparent, EmColors.textSecondary]) {
         await pump(t, CustomButton(label: 'Back', color: c, onPressed: () {}));
         final b = t.widget<EmSecondaryButton>(find.byType(EmSecondaryButton));
         expect(b.destructive, isFalse);
@@ -68,10 +67,10 @@ void main() {
     });
 
     testWidgets('an outlined button (borderColor set) is secondary; with red text or border it is the destructive secondary', (t) async {
-      await pump(t, CustomButton(label: 'Cancel', borderColor: AppColors.grey, onPressed: () {}));
+      await pump(t, CustomButton(label: 'Cancel', borderColor: EmColors.textSecondary, onPressed: () {}));
       expect(t.widget<EmSecondaryButton>(find.byType(EmSecondaryButton)).destructive, isFalse);
       await disposeApp(t);
-      await pump(t, CustomButton(label: 'Remove', color: AppColors.white, textColor: AppColors.red, onPressed: () {}));
+      await pump(t, CustomButton(label: 'Remove', color: EmColors.surface, textColor: EmColors.error, onPressed: () {}));
       final b = t.widget<EmSecondaryButton>(find.byType(EmSecondaryButton));
       expect(b.destructive, isTrue);
       expect(t.widget<OutlinedButton>(find.byType(OutlinedButton)).style!.side!.resolve({})!.color, EmColors.error);
@@ -80,7 +79,7 @@ void main() {
 
     testWidgets('secondary loading shows a spinner and ignores taps', (t) async {
       var taps = 0;
-      await pump(t, CustomButton(label: '', color: AppColors.white, prefix: const SizedBox(), onPressed: () => taps++));
+      await pump(t, CustomButton(label: '', color: EmColors.surface, prefix: const SizedBox(), onPressed: () => taps++));
       expect(t.widget<EmSecondaryButton>(find.byType(EmSecondaryButton)).loading, isTrue);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       await t.tap(find.byType(EmSecondaryButton), warnIfMissed: false);

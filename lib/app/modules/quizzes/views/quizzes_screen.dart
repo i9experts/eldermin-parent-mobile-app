@@ -76,7 +76,7 @@ class QuizzesScreen extends GetView<QuizzesController> {
 
                   return ListCardRow(
                     icon: Icons.quiz_outlined,
-                    iconColor: AppColors.blue,
+                    iconColor: EmColors.primary,
                     title: '${q['subject']} - ${q['assessmentTitle'] ?? 'Quiz'}',
                     subtitle: 'Total ${q['totalMarks']} · Pass ${q['passingMarks']} · Attempts $used/$allowed',
                     trailing: AppTag(tag, style: style),

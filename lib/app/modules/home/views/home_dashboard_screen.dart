@@ -128,7 +128,7 @@ class HomeDashboardScreen extends StatelessWidget {
                   final due = h['dueDate'] != null ? DateTime.tryParse(h['dueDate'].toString()) : null;
                   return ListCardRow(
                     icon: Icons.menu_book_rounded,
-                    iconColor: AppColors.amber,
+                    iconColor: EmColors.accent,
                     title: h['subject'] ?? h['title'] ?? 'Homework',
                     subtitle: h['title'] ?? '',
                     trailing: due != null ? AppTag('Due ${due.day}/${due.month}', style: TagStyle.amber) : null,
@@ -158,7 +158,7 @@ class HomeDashboardScreen extends StatelessWidget {
               ];
               return ListCardRow(
                 icon: Icons.calendar_month_rounded,
-                iconColor: AppColors.purple,
+                iconColor: EmColors.statusLeave,
                 title: e['title']?.toString() ?? 'School event',
                 subtitle: subtitleParts.isEmpty ? 'Upcoming' : subtitleParts.join(' • '),
                 trailing: AppTag((e['category'] ?? 'event').toString()),
@@ -206,10 +206,10 @@ class _QuickAccessGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return EmTileGrid(tiles: [
-      EmTile(label: 'Attendance', icon: Icons.check_circle_outline_rounded, color: AppColors.blue, onTap: () => Get.toNamed(Routes.attendance), tileKey: const Key('quick_Attendance')),
-      EmTile(label: 'Homework', icon: Icons.menu_book_rounded, color: AppColors.amber, onTap: () => Get.toNamed(Routes.homework), tileKey: const Key('quick_Homework')),
-      EmTile(label: 'Fees & dues', icon: Icons.account_balance_wallet_outlined, color: AppColors.secondryColor, onTap: () => Get.toNamed(Routes.dues), tileKey: const Key('quick_Fees & dues')),
-      EmTile(label: 'Timetable', icon: Icons.schedule_rounded, color: AppColors.purple, onTap: () => Get.toNamed(Routes.timetable), tileKey: const Key('quick_Timetable')),
+      EmTile(label: 'Attendance', icon: Icons.check_circle_outline_rounded, color: EmColors.primary, onTap: () => Get.toNamed(Routes.attendance), tileKey: const Key('quick_Attendance')),
+      EmTile(label: 'Homework', icon: Icons.menu_book_rounded, color: EmColors.accent, onTap: () => Get.toNamed(Routes.homework), tileKey: const Key('quick_Homework')),
+      EmTile(label: 'Fees & dues', icon: Icons.account_balance_wallet_outlined, color: EmColors.success, onTap: () => Get.toNamed(Routes.dues), tileKey: const Key('quick_Fees & dues')),
+      EmTile(label: 'Timetable', icon: Icons.schedule_rounded, color: EmColors.statusLeave, onTap: () => Get.toNamed(Routes.timetable), tileKey: const Key('quick_Timetable')),
     ]);
   }
 }

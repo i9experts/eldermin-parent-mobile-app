@@ -103,7 +103,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                                         'Home task',
                                     fontWeight: FontWeight.w800,
                                     fontSize: 13,
-                                    color: AppColors.primaryColor,
+                                    color: EmColors.primaryDark,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis),
                               ),
@@ -119,7 +119,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                             const SizedBox(height: 4),
                             CustomText(
                                 text: t['description'].toString(),
-                                color: AppColors.muted,
+                                color: EmColors.textSecondary,
                                 fontSize: 11.5,
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis),
@@ -133,7 +133,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                                   if (completedAt != null)
                                     'Done ${completedAt.toLocal().day}/${completedAt.toLocal().month}/${completedAt.toLocal().year}',
                                 ].join(' · '),
-                                color: AppColors.muted,
+                                color: EmColors.textSecondary,
                                 fontSize: 9.5),
                           ],
                           if (!isCompleted) ...[
@@ -142,7 +142,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                               label: isSubmitting ? '' : 'Mark complete',
                               width: double.infinity,
                               height: 40,
-                              color: AppColors.primaryColor,
+                              color: EmColors.primaryDark,
                               enabled: !isSubmitting,
                               prefix: isSubmitting
                                   ? const SizedBox(
@@ -159,7 +159,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                             const SizedBox(height: 6),
                             CustomText(
                                 text: '"${t['parentNotes']}"',
-                                color: AppColors.muted,
+                                color: EmColors.textSecondary,
                                 fontSize: 10.5),
                           ],
                           if (isCompleted && (rating != null || reviewNotes.isNotEmpty)) ...[
@@ -169,13 +169,13 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                                 if (rating != null)
                                   for (var i = 1; i <= 5; i++)
                                     Icon(i <= rating ? Icons.star_rounded : Icons.star_outline_rounded,
-                                        size: 16, color: AppColors.amber),
+                                        size: 16, color: EmColors.accent),
                                 if (reviewNotes.isNotEmpty) ...[
                                   const SizedBox(width: 6),
                                   Expanded(
                                     child: CustomText(
                                         text: 'Teacher: $reviewNotes',
-                                        color: AppColors.muted,
+                                        color: EmColors.textSecondary,
                                         fontSize: 10.5,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis),
@@ -214,7 +214,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                 maxLines: 4,
                 label: 'How did it go? (optional)',
                 isborder: true,
-                fillColor: AppColors.background,
+                fillColor: EmColors.background,
               ),
               const SizedBox(height: 18),
               Obx(() => CustomButton(
@@ -223,7 +223,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                         : 'Done',
                     width: double.infinity,
                     height: 48,
-                    color: AppColors.primaryColor,
+                    color: EmColors.primaryDark,
                     enabled: controller.completingId.value != taskId,
                     prefix: controller.completingId.value == taskId
                         ? const SizedBox(

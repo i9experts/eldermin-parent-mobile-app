@@ -86,12 +86,12 @@ class HomeworkScreen extends GetView<HomeworkController> {
                             Text('Weekly completion', style: EmType.label.copyWith(color: EmColors.ink)),
                             const SizedBox(height: EmSpacing.s8),
                             _LegendRow(
-                                color: AppColors.secondryColor,
+                                color: EmColors.success,
                                 label: 'Submitted',
                                 value: '$completedCount'),
                             const SizedBox(height: EmSpacing.s4),
                             _LegendRow(
-                                color: AppColors.amber,
+                                color: EmColors.accent,
                                 label: 'Pending',
                                 value: '$pendingCount'),
                           ],

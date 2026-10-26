@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:eldermin_parent_app/core/theme/app_theme.dart';
 
 import 'custom_text.dart';
 import 'package:flutter/material.dart';
+import '../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -148,25 +148,25 @@ class AppImagePicker {
           text: '$permissionName Access',
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: AppColors.black,
+          color: EmColors.ink,
         ),
         content: CustomText(
           text:
               'This app needs access to your $permissionName to let you upload photos.',
           fontSize: 14,
-          color: AppColors.grey,
+          color: EmColors.textSecondary,
           height: 1.5,
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const CustomText(text: 'Not Now', color: AppColors.grey),
+            child: const CustomText(text: 'Not Now', color: EmColors.textSecondary),
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
             child: const CustomText(
               text: 'Allow',
-              color: AppColors.primaryColor,
+              color: EmColors.primaryDark,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -185,19 +185,19 @@ class AppImagePicker {
           text: '$permissionName Blocked',
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: AppColors.black,
+          color: EmColors.ink,
         ),
         content: CustomText(
           text:
               '$permissionName access was denied. Please enable it in your device settings to upload photos.',
           fontSize: 14,
-          color: AppColors.grey,
+          color: EmColors.textSecondary,
           height: 1.5,
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const CustomText(text: 'Cancel', color: AppColors.grey),
+            child: const CustomText(text: 'Cancel', color: EmColors.textSecondary),
           ),
           TextButton(
             onPressed: () {
@@ -206,7 +206,7 @@ class AppImagePicker {
             },
             child: const CustomText(
               text: 'Open Settings',
-              color: AppColors.primaryColor,
+              color: EmColors.primaryDark,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -238,7 +238,7 @@ class _PickerSheet extends StatelessWidget {
     final bottom = MediaQuery.of(context).padding.bottom;
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.white,
+        color: EmColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.fromLTRB(0, 12, 0, bottom + 8),
@@ -250,7 +250,7 @@ class _PickerSheet extends StatelessWidget {
             height: 4,
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: AppColors.lightGrey2,
+              color: EmColors.border,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -262,24 +262,24 @@ class _PickerSheet extends StatelessWidget {
                 text: title,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: AppColors.black,
+                color: EmColors.ink,
               ),
             ),
           ),
-          const Divider(height: 1, color: AppColors.lightGrey2),
+          const Divider(height: 1, color: EmColors.border),
           _Option(
             icon: Icons.camera_alt_rounded,
             label: 'Take Photo',
             onTap: onCamera,
           ),
-          const Divider(height: 1, indent: 72, color: AppColors.lightGrey2),
+          const Divider(height: 1, indent: 72, color: EmColors.border),
           _Option(
             icon: Icons.photo_library_rounded,
             label: 'Choose from Gallery',
             onTap: onGallery,
           ),
           if (onRemove != null) ...[
-            const Divider(height: 1, indent: 72, color: AppColors.lightGrey2),
+            const Divider(height: 1, indent: 72, color: EmColors.border),
             _Option(
               icon: Icons.delete_outline_rounded,
               label: 'Remove Photo',
@@ -308,7 +308,7 @@ class _Option extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = danger ? AppColors.red : AppColors.primaryColor;
+    final color = danger ? EmColors.error : EmColors.primaryDark;
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -330,7 +330,7 @@ class _Option extends StatelessWidget {
               text: label,
               fontSize: 15,
               fontWeight: FontWeight.w500,
-              color: danger ? AppColors.red : AppColors.black,
+              color: danger ? EmColors.error : EmColors.ink,
             ),
           ],
         ),

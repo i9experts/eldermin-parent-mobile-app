@@ -1,4 +1,3 @@
-import 'package:eldermin_parent_app/core/theme/app_theme.dart';
 
 import 'custom_text.dart';
 import 'svg_icon.dart';
@@ -6,6 +5,7 @@ import '../config/app_icons.dart';
 import '../config/app_text_styles.dart';
 import '../config/app_font_size.dart';
 import 'package:flutter/material.dart';
+import '../../core/design/design.dart';
 import 'package:get/get.dart';
 
 class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
@@ -25,7 +25,7 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBarTwo({
     super.key,
     this.title,
-    this.color = AppColors.black,
+    this.color = EmColors.ink,
     this.centerTitle = false,
     this.showBackButton = true,
     this.showLeading = true,
@@ -46,12 +46,12 @@ class CustomAppBarTwo extends StatelessWidget implements PreferredSizeWidget {
     final bool isTablet = MediaQuery.of(context).size.width >= 600;
 
     return AppBar(
-      foregroundColor: backgroundColor ?? AppColors.white,
-      backgroundColor: backgroundColor ?? AppColors.white,
+      foregroundColor: backgroundColor ?? EmColors.surface,
+      backgroundColor: backgroundColor ?? EmColors.surface,
       centerTitle: centerTitle,
       scrolledUnderElevation: 0, // ← add this line
       elevation: 0,
-      surfaceTintColor: AppColors.transparent,
+      surfaceTintColor: Colors.transparent,
       automaticallyImplyLeading: showLeading,
       leading: !showLeading
           ? null

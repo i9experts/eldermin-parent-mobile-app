@@ -12,14 +12,14 @@ import '../../../../core/widgets/tab_state_list.dart';
 import '../controllers/events_controller.dart';
 
 const _categoryColors = {
-  'academic': AppColors.blue,
-  'sports': AppColors.amber,
-  'exam': AppColors.red,
-  'cultural': AppColors.purple,
-  'religious': AppColors.secondryColor,
-  'parents': AppColors.blue,
-  'holiday': AppColors.secondryColor,
-  'trip': AppColors.purple,
+  'academic': EmColors.primary,
+  'sports': EmColors.accent,
+  'exam': EmColors.error,
+  'cultural': EmColors.statusLeave,
+  'religious': EmColors.success,
+  'parents': EmColors.primary,
+  'holiday': EmColors.success,
+  'trip': EmColors.statusLeave,
 };
 
 /// Calendar tab root (teacher tab-root pattern: [TabHeading] + [TabStateList], teacher `calendar_screen.dart:75-93` for the
@@ -106,7 +106,7 @@ class EventsCalendarScreen extends StatelessWidget {
           else
             ...events.map((e) {
               final range = controller.rangeOf(e);
-              final color = _categoryColors[e['category']] ?? AppColors.blue;
+              final color = _categoryColors[e['category']] ?? EmColors.primary;
               return ListCardRow(
                 icon: Icons.calendar_month_rounded,
                 iconColor: color,

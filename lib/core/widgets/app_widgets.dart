@@ -96,7 +96,7 @@ class AppProgressBar extends StatelessWidget {
   final int percent;
   final Color color;
   const AppProgressBar(
-      {super.key, required this.percent, this.color = AppColors.blue});
+      {super.key, required this.percent, this.color = EmColors.primary});
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +128,7 @@ class ListCardRow extends StatelessWidget {
   const ListCardRow(
       {super.key,
       required this.icon,
-      this.iconColor = AppColors.blue,
+      this.iconColor = EmColors.primary,
       required this.title,
       required this.subtitle,
       this.trailing,
@@ -310,7 +310,7 @@ class DonutRing extends StatelessWidget {
   const DonutRing(
       {super.key,
       required this.percent,
-      this.color = AppColors.blue,
+      this.color = EmColors.primary,
       this.size = 84});
 
   @override

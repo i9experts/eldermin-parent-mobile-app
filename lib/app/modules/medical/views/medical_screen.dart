@@ -18,7 +18,7 @@ class MedicalScreen extends GetView<MedicalController> {
         children: [
           CustomText(
               text: label,
-              color: AppColors.muted,
+              color: EmColors.textSecondary,
               fontSize: 10.5,
               maxLines: 1,
               overflow: TextOverflow.ellipsis),
@@ -26,7 +26,7 @@ class MedicalScreen extends GetView<MedicalController> {
             child: CustomText(
                 text: value,
                 textAlign: TextAlign.right,
-                color: AppColors.primaryColor,
+                color: EmColors.primaryDark,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 maxLines: 2,
@@ -49,7 +49,7 @@ class MedicalScreen extends GetView<MedicalController> {
                 text: title,
                 fontWeight: FontWeight.w800,
                 fontSize: 12,
-                color: AppColors.primaryColor),
+                color: EmColors.primaryDark),
             const SizedBox(height: 8),
             Wrap(
               spacing: 6,
@@ -128,7 +128,7 @@ class MedicalScreen extends GetView<MedicalController> {
                           text: 'Blood group',
                           fontWeight: FontWeight.w800,
                           fontSize: 12,
-                          color: AppColors.primaryColor),
+                          color: EmColors.primaryDark),
                       AppTag(bloodGroup, style: TagStyle.red),
                     ],
                   ),
@@ -169,7 +169,7 @@ class MedicalScreen extends GetView<MedicalController> {
                 AppCard(
                     child: CustomText(
                         text: specialNeedsDetail,
-                        color: AppColors.ink,
+                        color: EmColors.ink,
                         fontSize: 12.5)),
               ],
             ],
