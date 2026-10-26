@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../core/design/design.dart';
-import '../config/app_dimens.dart';
-import '../config/app_font_size.dart';
-import '../config/app_text_styles.dart';
 
 /// The app's long-standing button, now a wrapper over the kit's buttons (same constructor, no call-site change). The
 /// variant follows the colours a call site asks for:
@@ -26,17 +23,17 @@ class CustomButton extends StatelessWidget {
   const CustomButton({
     super.key,
     required this.label,
-    this.fontFamily = AppTextStyles.fontFamily,
+    this.fontFamily = EmType.family,
     this.color = EmColors.primaryDark,
     required this.onPressed,
     this.enabled = true,
     this.textColor = EmColors.surface,
-    this.fontSize = AppFontSize.small,
+    this.fontSize = 12,
     this.fontWeight = FontWeight.w500,
     this.prefix,
     this.suffix,
     this.borderColor = Colors.transparent,
-    this.borderRadius = AppDimen.borderRadius,
+    this.borderRadius = EmRadius.control,
     this.width,
     this.height = 45,
   });
@@ -67,8 +64,7 @@ class CustomButton extends StatelessWidget {
       c == EmColors.outline ||
       c == EmColors.textSecondary ||
       c == EmColors.textTertiary ||
-      c == Colors.transparent ||
-      c == Colors.white;
+      c == Colors.transparent; // (white is EmColors.surface, the same value)
 
   @override
   Widget build(BuildContext context) {

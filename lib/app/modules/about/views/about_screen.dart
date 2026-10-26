@@ -81,7 +81,7 @@ class AboutScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      margin: const EdgeInsets.only(top: 4),
+                      margin: const EdgeInsetsDirectional.only(top: EmSpacing.s4),
                       width: 6,
                       height: 6,
                       decoration: const BoxDecoration(color: EmColors.primary, shape: BoxShape.circle),

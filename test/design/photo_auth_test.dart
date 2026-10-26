@@ -73,7 +73,7 @@ void main() {
     test('the global theme is the Eldermin theme with the bundled font; legacy CustomText resolves to it', () {
       expect(File('lib/core/theme/app_theme.dart').readAsStringSync(), contains('buildEmTheme()'));
       expect(buildEmTheme().textTheme.bodyMedium!.fontFamily, EmType.family);
-      expect(File('lib/app/config/app_text_styles.dart').readAsStringSync(), contains('EmType.family'));
+      expect(File('lib/app/components/custom_text.dart').readAsStringSync(), contains('EmType.family'));
       for (final f in Directory('lib').listSync(recursive: true).whereType<File>().where((f) => f.path.endsWith('.dart'))) {
         expect(f.readAsStringSync(), isNot(contains('google_fonts')), reason: f.path);
       }

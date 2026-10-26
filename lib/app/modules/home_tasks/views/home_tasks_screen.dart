@@ -150,7 +150,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                                       height: 16,
                                       child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          color: Colors.white))
+                                          color: EmColors.onPrimary))
                                   : null,
                               onPressed: () => _openCompleteSheet(context, id),
                             ),
@@ -230,7 +230,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                             width: 18,
                             height: 18,
                             child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white))
+                                strokeWidth: 2, color: EmColors.onPrimary))
                         : null,
                     onPressed: () async {
                       final ok = await controller.complete(taskId,

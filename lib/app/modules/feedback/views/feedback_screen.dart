@@ -63,7 +63,7 @@ class FeedbackScreen extends GetView<FeedbackController> {
                   final error = controller.error.value;
                   if (error == null) return const SizedBox.shrink();
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.s12),
                     child: CustomText(
                       text: error,
                       color: EmColors.error,
@@ -83,7 +83,7 @@ class FeedbackScreen extends GetView<FeedbackController> {
                           ? const SizedBox(
                               width: 18,
                               height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                              child: CircularProgressIndicator(strokeWidth: 2, color: EmColors.onPrimary))
                           : null,
                       onPressed: () async {
                         final ok = await controller.submit(

@@ -90,7 +90,7 @@ class _CourseCard extends GetView<CoursesController> {
               fontSize: 14,
               color: EmColors.primaryDark),
           subtitle: Padding(
-            padding: const EdgeInsets.only(top: 6),
+            padding: const EdgeInsetsDirectional.only(top: EmSpacing.s4 + EmSpacing.s2),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -110,7 +110,7 @@ class _CourseCard extends GetView<CoursesController> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 6, bottom: 4),
+                  padding: const EdgeInsetsDirectional.only(top: EmSpacing.s4 + EmSpacing.s2, bottom: EmSpacing.s4),
                   child: CustomText(
                       text: 'Unit ${u['unitNo']}: ${u['unitName'] ?? ''}',
                       fontWeight: FontWeight.w800,
@@ -122,7 +122,7 @@ class _CourseCard extends GetView<CoursesController> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 4, bottom: 2),
+                    padding: const EdgeInsetsDirectional.only(top: EmSpacing.s4, bottom: EmSpacing.s2),
                     child: CustomText(
                         text: t['topicName']?.toString() ?? '',
                         fontWeight: FontWeight.w700,
@@ -172,12 +172,12 @@ class _LessonRow extends GetView<CoursesController> {
     return Obx(() {
       final busy = controller.updatingKey.value == key;
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsetsDirectional.symmetric(vertical: EmSpacing.s2),
         child: Row(
           children: [
             busy
                 ? const Padding(
-                    padding: EdgeInsets.all(12),
+                    padding: EdgeInsetsDirectional.all(EmSpacing.s12),
                     child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)))
                 : IconButton(
                     tooltip: completed ? 'Mark as not done' : 'Mark as done',

@@ -12,7 +12,7 @@ class MedicalScreen extends GetView<MedicalController> {
 
   Widget _row(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsetsDirectional.symmetric(vertical: EmSpacing.s8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

@@ -188,7 +188,7 @@ class ConsentScreen extends GetView<ConsentController> {
                                       width: 16,
                                       height: 16,
                                       child: CircularProgressIndicator(
-                                          strokeWidth: 2, color: Colors.white))
+                                          strokeWidth: 2, color: EmColors.onPrimary))
                                   : null,
                             );
                             // side by side; stacked at large text sizes so neither label is cut off

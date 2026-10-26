@@ -94,7 +94,7 @@ class _QuestionView extends GetView<QuizAttemptController> {
                 if ((q['questionImage']?.toString() ?? '').startsWith('http')) ...[
                   const SizedBox(height: 10),
                   ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: EmRadius.smAll,
                       child: Image.network(q['questionImage'].toString(), errorBuilder: (_, __, ___) => const SizedBox.shrink())),
                 ],
                 const SizedBox(height: EmSpacing.s12),
@@ -156,7 +156,7 @@ class _QuestionView extends GetView<QuizAttemptController> {
                               ? const SizedBox(
                                   width: 18,
                                   height: 18,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                                  child: CircularProgressIndicator(strokeWidth: 2, color: EmColors.onPrimary))
                               : null,
                           onPressed: () => _confirmSubmit(context),
                         )

@@ -91,7 +91,7 @@ class _DiaryCard extends GetView<DiaryController> {
                     CustomText(text: dateLabel, fontSize: 15, fontWeight: FontWeight.w700, color: EmColors.ink),
                     if (teacher.isNotEmpty)
                       Padding(
-                        padding: const EdgeInsets.only(top: 2),
+                        padding: const EdgeInsetsDirectional.only(top: EmSpacing.s2),
                         child: CustomText(text: 'By $teacher', fontSize: 12, color: EmColors.textSecondary),
                       ),
                   ],
@@ -103,7 +103,7 @@ class _DiaryCard extends GetView<DiaryController> {
                 final busy = controller.downloadingId.value == id;
                 return busy
                     ? const Padding(
-                        padding: EdgeInsets.all(12),
+                        padding: EdgeInsetsDirectional.all(EmSpacing.s12),
                         child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
                       )
                     : IconButton(
@@ -142,7 +142,7 @@ class _PeriodBlock extends StatelessWidget {
         CustomText(text: _s('subject'), fontSize: 14, fontWeight: FontWeight.w700, color: EmColors.primary),
         if (title.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 2),
+            padding: const EdgeInsetsDirectional.only(top: EmSpacing.s2),
             child: CustomText(text: title, fontSize: 13, fontWeight: FontWeight.w600, color: EmColors.ink),
           ),
         if (description.isNotEmpty) _line(null, description),
@@ -153,7 +153,7 @@ class _PeriodBlock extends StatelessWidget {
   }
 
   Widget _line(String? label, String text) => Padding(
-        padding: const EdgeInsets.only(top: 6),
+        padding: const EdgeInsetsDirectional.only(top: EmSpacing.s4 + EmSpacing.s2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

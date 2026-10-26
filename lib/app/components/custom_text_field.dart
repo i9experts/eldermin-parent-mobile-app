@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/design/design.dart';
-import '../config/app_dimens.dart';
 
 /// The app's long-standing text field, now a wrapper over the kit's [EmTextField] (same constructor, no call-site change).
 ///
@@ -45,7 +44,7 @@ class CustomTextField extends StatelessWidget {
 
   const CustomTextField({
     super.key,
-    this.borderBorderradius = AppDimen.borderRadius,
+    this.borderBorderradius = EmRadius.control,
     this.label,
     this.hintText,
     this.prefixIcon,

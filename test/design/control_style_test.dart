@@ -1,5 +1,4 @@
 import 'package:eldermin_parent_app/app/components/custom_button.dart';
-import 'package:eldermin_parent_app/app/config/app_dimens.dart';
 import 'package:eldermin_parent_app/core/design/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// Every field and button is 10 dp rounded; every button is the accent with a dark label (the kit's EmMorphButton).
 void main() {
   test('the radius token is 10 for fields and buttons', () {
-    expect(AppDimen.borderRadius, 10);
+    expect(const CustomButton(label: 'x', onPressed: null).borderRadius, 10, reason: 'the button default');
     expect(EmRadius.control, 10);
   });
 

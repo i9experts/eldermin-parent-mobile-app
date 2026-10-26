@@ -124,7 +124,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                       final score = _traitPct(t);
                       final key = _traitName(t);
                       return Padding(
-                        padding: EdgeInsets.only(top: e.key == 0 ? 0 : 10),
+                        padding: EdgeInsetsDirectional.only(top: e.key == 0 ? 0 : EmSpacing.s8 + EmSpacing.s2),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

@@ -36,12 +36,12 @@ class CustomAppSnackbar {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: EmColors.ink.withOpacity(0.25),
+              color: EmColors.ink.withAlpha(64),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
           ],
-          border: Border.all(color: accentColor.withOpacity(0.3), width: 1),
+          border: Border.all(color: accentColor.withAlpha(77), width: 1),
         ),
         child: Row(
           children: [
@@ -52,7 +52,7 @@ class CustomAppSnackbar {
               margin: const EdgeInsets.only(right: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color: EmColors.surface.withOpacity(0.1),
+                color: EmColors.surface.withAlpha(26),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
@@ -74,7 +74,7 @@ class CustomAppSnackbar {
                   const SizedBox(height: 4),
                   CustomText(
                     text: message,
-                    color: textColor.withOpacity(0.75),
+                    color: textColor.withAlpha(191),
                     fontSize: 12,
                   ),
                 ],
@@ -92,7 +92,7 @@ class CustomAppSnackbar {
                 padding: const EdgeInsets.all(5),
                 // margin: const EdgeInsets.only(left: 8),
                 decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.15),
+                  color: accentColor.withAlpha(38),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: SvgIcon(

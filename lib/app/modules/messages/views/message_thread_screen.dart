@@ -69,8 +69,8 @@ class MessageThreadScreen extends GetView<MessageThreadController> {
                           borderRadius: BorderRadiusDirectional.only(
                             topStart: const Radius.circular(EmRadius.md),
                             topEnd: const Radius.circular(EmRadius.md),
-                            bottomStart: Radius.circular(isGuardian ? EmRadius.md : 4),
-                            bottomEnd: Radius.circular(isGuardian ? 4 : EmRadius.md),
+                            bottomStart: Radius.circular(isGuardian ? EmRadius.md : EmSpacing.s4),
+                            bottomEnd: Radius.circular(isGuardian ? EmSpacing.s4 : EmRadius.md),
                           ),
                         ),
                         child: Column(
