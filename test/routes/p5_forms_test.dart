@@ -79,8 +79,27 @@ void main() {
       await fillValid(t);
       await _tapAndSettle(t, find.byKey(const Key('ptm_submit')));
       expect(posts(), 1);
+      // body = parent_api_service.dart:222-228 (requestPTM): teacherId, scheduledDate (the picked day as ISO), startTime only when
+      // a time was chosen (none here), reason only when not empty (ptm_controller.dart:50-56 passes them through unchanged)
+      expect(client.postedTo('/ptm').single, {
+        'teacherId': 'TID-SENT-9',
+        'scheduledDate': DateTime(2026, 10, 26).toIso8601String(),
+        'reason': 'Progress in maths',
+      });
       expect(find.text('Request a meeting'), findsNothing, reason: 'closed on success');
       expect(find.text('Meeting request sent to the school.'), findsOneWidget);
+      await t.pump(const Duration(seconds: 5));
+      await disposeApp(t);
+    });
+
+    testWidgets('without a reason the body has only teacherId and scheduledDate (no startTime, no reason key)', (t) async {
+      await open(t);
+      await _tapAndSettle(t, find.byKey(const Key('ptm_teacher')));
+      await _tapAndSettle(t, find.textContaining('PickTeacherSent').last);
+      await _tapAndSettle(t, find.byKey(const Key('ptm_date')));
+      await _tapAndSettle(t, find.text('Jump to today'));
+      await _tapAndSettle(t, find.byKey(const Key('ptm_submit')));
+      expect((client.postedTo('/ptm').single as Map).keys.toSet(), {'teacherId', 'scheduledDate'});
       await t.pump(const Duration(seconds: 5));
       await disposeApp(t);
     });
@@ -184,10 +203,31 @@ void main() {
       await fillValid(t);
       await _tapAndSettle(t, find.byKey(const Key('leave_submit')));
       expect(posts(), 1);
-      final body = client.calls.firstWhere((c) => c.startsWith('POST') && c.endsWith('/leaves'));
-      expect(body, isNotEmpty);
+      // body = parent_api_service.dart:177-180 (createStudentLeave): fromDate, toDate (ISO), reason (trimmed), leaveType
+      // (the form's default 'other'); leaves_controller.dart:55-62 passes them through unchanged
+      expect(client.postedTo('/leaves').single, {
+        'fromDate': DateTime(2026, 10, 26).toIso8601String(),
+        'toDate': DateTime(2026, 10, 26).toIso8601String(),
+        'reason': 'Family wedding',
+        'leaveType': 'other',
+      });
       expect(find.text('New leave request'), findsNothing);
       expect(find.text('Your leave request has been submitted.'), findsOneWidget);
+      await t.pump(const Duration(seconds: 5));
+      await disposeApp(t);
+    });
+
+    testWidgets('the chosen leave type and a padded reason are posted (reason trimmed)', (t) async {
+      await open(t);
+      await fillValid(t);
+      await t.enterText(find.descendant(of: find.byKey(const Key('leave_reason')), matching: find.byType(TextField)), '  Doctor visit  ');
+      await _tapAndSettle(t, find.byKey(const Key('leave_type')));
+      await _tapAndSettle(t, find.text('Sick').last);
+      await _tapAndSettle(t, find.byKey(const Key('leave_submit')));
+      final body = client.postedTo('/leaves').single as Map;
+      expect(body['reason'], 'Doctor visit');
+      expect(body['leaveType'], 'sick');
+      expect(body.keys.toSet(), {'fromDate', 'toDate', 'reason', 'leaveType'});
       await t.pump(const Duration(seconds: 5));
       await disposeApp(t);
     });

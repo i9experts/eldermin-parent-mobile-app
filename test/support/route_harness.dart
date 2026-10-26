@@ -26,8 +26,15 @@ class FakeClient extends BaseClient {
   final FutureOr<dynamic> Function(String method, String url) respond;
   final calls = <String>[];
 
-  Future<Response<T>> _answer<T>(String method, String url) async {
+  /// Every request with the body it carried (null for a GET), in order.
+  final requests = <({String method, String url, dynamic data})>[];
+
+  /// The bodies POSTed to a url ending with [suffix].
+  List<dynamic> postedTo(String suffix) => [for (final r in requests) if (r.method == 'POST' && r.url.endsWith(suffix)) r.data];
+
+  Future<Response<T>> _answer<T>(String method, String url, [dynamic data]) async {
     calls.add('$method $url');
+    requests.add((method: method, url: url, data: data));
     final body = await respond(method, url);
     return Response<T>(requestOptions: RequestOptions(path: url), data: body as T?, statusCode: 200);
   }
@@ -36,10 +43,10 @@ class FakeClient extends BaseClient {
   Future<Response> get(String url, {Map<String, dynamic>? queryParameters, bool requiresAuth = true}) => _answer('GET', url);
 
   @override
-  Future<Response> post(String url, {data, Map<String, dynamic>? queryParameters, bool requiresAuth = true}) => _answer('POST', url);
+  Future<Response> post(String url, {data, Map<String, dynamic>? queryParameters, bool requiresAuth = true}) => _answer('POST', url, data);
 
   @override
-  Future<Response> patch(String url, {data, Map<String, dynamic>? queryParameters, bool requiresAuth = true}) => _answer('PATCH', url);
+  Future<Response> patch(String url, {data, Map<String, dynamic>? queryParameters, bool requiresAuth = true}) => _answer('PATCH', url, data);
 }
 
 DioException networkError(String url) => DioException(requestOptions: RequestOptions(path: url), type: DioExceptionType.connectionError);
