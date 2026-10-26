@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../../../../core/services/app_preferences.dart';
 import '../../../../core/services/device_activation_service.dart';
+import '../../early_years/controllers/early_years_controller.dart';
 import '../../students/controllers/student_controller.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
@@ -87,6 +88,7 @@ class AuthController extends GetxController {
     isParentLead.value = false;
     schoolOnboarded.value = false;
     Get.find<StudentController>().reset();
+    if (Get.isRegistered<EarlyYearsController>()) Get.find<EarlyYearsController>().reset();
     status.value = AuthStatus.unauthenticated;
   }
 }

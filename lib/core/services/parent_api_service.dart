@@ -87,6 +87,21 @@ class ParentApiService {
       });
 
   // ── Per-student ─────────────────────────────────────────────
+  // ── Early Years (read-only) ─────────────────────────────────
+  // Raw maps on purpose, like the rest of this class: parsing (and ignoring
+  // every field the app does not show) lives in core/models/early_years_models.dart.
+  Future<Map<String, dynamic>> getEarlyYearsSummary(String studentId) async =>
+      _asMap(await _get(ApiConstants.earlyYearsSummary(studentId)));
+
+  Future<Map<String, dynamic>> getEarlyYearsPortfolio(String studentId, {int page = 1, int limit = 20}) async =>
+      _asMap(await _get(ApiConstants.earlyYearsPortfolio(studentId), query: {'page': page, 'limit': limit}));
+
+  Future<Map<String, dynamic>> getEarlyYearsEntry(String studentId, String entryId) async =>
+      _asMap(await _get(ApiConstants.earlyYearsPortfolioEntry(studentId, entryId)));
+
+  Future<Map<String, dynamic>> getEarlyYearsObservations(String studentId, {int page = 1, int limit = 20}) async =>
+      _asMap(await _get(ApiConstants.earlyYearsObservations(studentId), query: {'page': page, 'limit': limit}));
+
   Future<Map<String, dynamic>> getStudentProfile(String studentId) async =>
       _asMap(await _get(ApiConstants.studentProfile(studentId)));
 

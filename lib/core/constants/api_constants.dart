@@ -45,6 +45,12 @@ class ApiConstants {
   static String startQuiz(String id) => '$parentPortal/students/$id/quizzes/start';
   static String submitQuiz(String id, String attemptId) =>
       '$parentPortal/students/$id/quizzes/$attemptId/submit';
+  // Early Years (read-only, parent-only; see eldermin-backend src/parent-portal/parent-early-years.*)
+  static String earlyYearsSummary(String id) => '$parentPortal/students/$id/early-years/summary';
+  static String earlyYearsPortfolio(String id) => '$parentPortal/students/$id/early-years/portfolio';
+  static String earlyYearsPortfolioEntry(String id, String entryId) =>
+      '$parentPortal/students/$id/early-years/portfolio/$entryId';
+  static String earlyYearsObservations(String id) => '$parentPortal/students/$id/early-years/observations';
   static String classDiary(String id) => '$parentPortal/students/$id/class-diary';
   static String classDiaryPdf(String id, String diaryId) => '$parentPortal/students/$id/class-diary/$diaryId/pdf';
   static String results(String id) => '$parentPortal/students/$id/results';

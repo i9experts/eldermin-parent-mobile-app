@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_widgets.dart';
 import '../../../components/custom_text.dart';
 import '../../../components/svg_icon.dart';
 import '../../../config/app_icons.dart';
+import '../../early_years/controllers/early_years_controller.dart';
 import '../../shared/views/coming_soon_screen.dart';
 import '../../students/controllers/student_controller.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -139,6 +140,18 @@ class MoreScreen extends StatelessWidget {
 
     return Obx(() {
       final student = students.selectedStudent;
+      // Early Years appears only when the summary for the selected child says the child is in an
+      // Early Years programme; while loading, on any error, or for other children it stays hidden.
+      final showEarlyYears = Get.isRegistered<EarlyYearsController>() && Get.find<EarlyYearsController>().eligible;
+      final visibleModules = [
+        if (showEarlyYears)
+          (
+            const Icon(Icons.child_care_rounded, color: AppColors.blue) as Widget,
+            'Early Years',
+            () => Get.toNamed(Routes.earlyYears)
+          ),
+        ...modules,
+      ];
       return ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
@@ -151,7 +164,7 @@ class MoreScreen extends StatelessWidget {
           const AppWeekDateStrip(),
           const SizedBox(height: AppSpacing.md),
           StatsRow(items: [
-            ('${modules.length}', 'Services', null),
+            ('${visibleModules.length}', 'Services', null),
             ('${quickAccessTiles.length}', 'Quick access', null),
             ('${students.students.length}', 'Children linked', null),
           ]),
@@ -186,7 +199,7 @@ class MoreScreen extends StatelessWidget {
                 crossAxisSpacing: 9,
                 mainAxisSpacing: 9,
                 childAspectRatio: 0.95,
-                children: modules.map((m) {
+                children: visibleModules.map((m) {
                   return Material(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(AppRadius.lg),
