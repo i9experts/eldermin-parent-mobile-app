@@ -52,9 +52,10 @@ class CustomButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           disabledBackgroundColor: AppColors.buttonDisableColor,
-          disabledForegroundColor: AppColors.buttonDisableColor,
-          foregroundColor: color,
-          backgroundColor: color,
+          disabledForegroundColor: AppColors.black.withOpacity(0.5),
+          // every button in the app is the theme yellow with a dark label (`color` / `textColor` are kept for old call sites)
+          foregroundColor: AppColors.accentColor,
+          backgroundColor: AppColors.accentColor,
           elevation: 0,
           side: BorderSide(
             width: 0.8,
@@ -77,7 +78,7 @@ class CustomButton extends StatelessWidget {
               ),
             CustomText(
               text: label,
-              color: enabled ? textColor : textColor.withOpacity(0.5),
+              color: enabled ? AppColors.black : AppColors.black.withOpacity(0.5),
               fontSize: fontSize,
               fontWeight: fontWeight,
               fontFamily: fontFamily,

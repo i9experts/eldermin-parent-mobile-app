@@ -69,7 +69,7 @@ void main() {
   });
 
   group('look', () {
-    testWidgets('login: navy page, photo header (cover) with the logo tile, accent heading, pill fields, accent button with an ink label', (t) async {
+    testWidgets('login: navy page, photo header (cover) with the logo tile, accent heading, outlined fields, accent button with an ink label', (t) async {
       setUpAuthDeps();
       await pumpScreen(t, const PhoneEntryScreen());
       expect(t.widget<Scaffold>(find.byType(Scaffold)).backgroundColor, EmColors.primaryDark);
@@ -83,11 +83,13 @@ void main() {
       expect(field.filled, isFalse);
       expect((field.enabledBorder! as OutlineInputBorder).borderSide.color, EmColors.primaryLight);
       expect((field.enabledBorder! as OutlineInputBorder).borderSide.width, 1);
-      expect((field.enabledBorder! as OutlineInputBorder).borderRadius, BorderRadius.circular(EmRadius.pill));
+      expect((field.enabledBorder! as OutlineInputBorder).borderRadius, BorderRadius.circular(EmRadius.control));
       expect((field.focusedBorder! as OutlineInputBorder).borderSide.color, EmColors.accent);
+      expect(EmRadius.control, 10, reason: 'every field and button is 10 dp');
       final fill = t.widget<AnimatedContainer>(find.descendant(of: find.byType(EmMorphButton), matching: find.byType(AnimatedContainer))).decoration! as BoxDecoration;
       expect(fill.color, EmColors.accent);
       expect(t.widget<Text>(find.descendant(of: find.byType(EmMorphButton), matching: find.text('Send Verification Code'))).style!.color, EmColors.ink);
+      expect(fill.borderRadius, BorderRadius.circular(10));
     });
 
     testWidgets('keyboard open: the photo collapses to a strip that still holds the logo tile', (t) async {

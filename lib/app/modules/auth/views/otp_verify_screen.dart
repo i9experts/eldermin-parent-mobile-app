@@ -72,7 +72,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
             textStyle: EmType.heading.copyWith(color: EmColors.onPrimaryDark),
             pinTheme: PinTheme(
               shape: PinCodeFieldShape.box,
-              borderRadius: BorderRadius.circular(EmRadius.md),
+              borderRadius: BorderRadius.circular(EmRadius.control),
               fieldHeight: 52,
               fieldWidth: 44,
               borderWidth: 1,

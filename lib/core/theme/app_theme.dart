@@ -182,6 +182,7 @@ class AppColors {
 class AppRadius {
   AppRadius._();
   static const double sm = 10;
+  static const double control = 10; // every field and button
   static const double md = 13;
   static const double lg = 19;
   static const double xl = 23;
@@ -266,22 +267,22 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryColor,
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.accentColor,
+          foregroundColor: AppColors.black,
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadius.md)),
+              borderRadius: BorderRadius.circular(AppRadius.control)),
           textStyle: textTheme.labelLarge,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primaryColor,
-          side: const BorderSide(color: AppColors.line),
+          foregroundColor: AppColors.black,
+          side: const BorderSide(color: AppColors.accentColor, width: 1.5),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadius.md)),
+              borderRadius: BorderRadius.circular(AppRadius.control)),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -292,16 +293,16 @@ class AppTheme {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderRadius: BorderRadius.circular(AppRadius.control),
             borderSide: const BorderSide(color: AppColors.line)),
         enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderRadius: BorderRadius.circular(AppRadius.control),
             borderSide: const BorderSide(color: AppColors.line)),
         focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderRadius: BorderRadius.circular(AppRadius.control),
             borderSide: const BorderSide(color: AppColors.primaryColor, width: 1.5)),
         errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderRadius: BorderRadius.circular(AppRadius.control),
             borderSide: const BorderSide(color: AppColors.red)),
         hintStyle: const TextStyle(color: AppColors.faint),
       ),

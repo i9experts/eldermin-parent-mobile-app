@@ -286,7 +286,7 @@ class AuthTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     OutlineInputBorder border(Color c, double w) =>
-        OutlineInputBorder(borderRadius: BorderRadius.circular(EmRadius.pill), borderSide: BorderSide(color: c, width: w));
+        OutlineInputBorder(borderRadius: BorderRadius.circular(EmRadius.control), borderSide: BorderSide(color: c, width: w));
     return TextField(
       controller: controller,
       keyboardType: keyboardType,

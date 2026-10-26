@@ -5,5 +5,5 @@
 class AppDimen {
   AppDimen._();
 
-  static const double borderRadius = 13;
+  static const double borderRadius = 10; // every field and button
 }

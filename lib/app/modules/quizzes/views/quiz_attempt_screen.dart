@@ -137,7 +137,7 @@ class _QuestionView extends GetView<QuizAttemptController> {
                       hintText: 'Type your answer',
                       filled: true,
                       fillColor: AppColors.surface,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
               ],
