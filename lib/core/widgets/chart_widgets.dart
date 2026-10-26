@@ -24,7 +24,7 @@ class AppLineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (points.length < 2) {
-      return const SizedBox(height: 118);
+      return const SizedBox(height: 150);
     }
     final spots = [
       for (var i = 0; i < points.length; i++) FlSpot(i.toDouble(), points[i].$2)
@@ -34,21 +34,42 @@ class AppLineChart extends StatelessWidget {
       final slot = constraints.maxWidth.isFinite
           ? constraints.maxWidth / points.length
           : 80.0;
+      final halfSlot = slot / 2;
       return SizedBox(
-        height: 118,
+        height: 150,
         // inset by half a label slot so the first and last labels are centred under their points without clipping
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: slot / 2),
+          padding: EdgeInsetsDirectional.fromSTEB(halfSlot, EmSpacing.s8, halfSlot, 0),
           child: LineChart(
             LineChartData(
               minY: 0,
               maxY: 100,
-              gridData: const FlGridData(show: false),
+              // the kit chart look (as `EmBarChart`): dashed horizontal guides at 0 / 50 / 100 in the border colour, no frame
+              gridData: FlGridData(
+                drawVerticalLine: false,
+                horizontalInterval: 50,
+                getDrawingHorizontalLine: (_) => const FlLine(
+                    color: EmColors.border, strokeWidth: 1, dashArray: [4, 4]),
+              ),
               borderData: FlBorderData(show: false),
+              backgroundColor: Colors.transparent,
               lineTouchData: const LineTouchData(enabled: false),
               titlesData: FlTitlesData(
-                leftTitles:
-                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    interval: 50,
+                    reservedSize: 40,
+                    getTitlesWidget: (v, meta) => Padding(
+                      padding:
+                          const EdgeInsetsDirectional.only(end: EmSpacing.s4),
+                      child: Text('${v.round()}',
+                          textAlign: TextAlign.end,
+                          style: EmType.caption
+                              .copyWith(color: EmColors.textSecondary)),
+                    ),
+                  ),
+                ),
                 rightTitles:
                     const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 topTitles:
@@ -67,7 +88,7 @@ class AppLineChart extends StatelessWidget {
                         return const SizedBox.shrink();
                       }
                       return Padding(
-                        padding: const EdgeInsets.only(top: 5),
+                        padding: const EdgeInsets.only(top: EmSpacing.s4),
                         child: SizedBox(
                             width: slot,
                             child: Text(points[i].$1,
@@ -85,9 +106,20 @@ class AppLineChart extends StatelessWidget {
                 LineChartBarData(
                   spots: spots,
                   isCurved: true,
+                  curveSmoothness: 0.3,
+                  isStrokeCapRound: true,
                   color: EmColors.primary,
                   barWidth: 3,
-                  dotData: const FlDotData(show: true),
+                  // the points: filled primary with a surface ring, so they read on the tinted area
+                  dotData: FlDotData(
+                    show: true,
+                    getDotPainter: (spot, percent, bar, index) =>
+                        FlDotCirclePainter(
+                            radius: 5,
+                            color: EmColors.primary,
+                            strokeColor: EmColors.surface,
+                            strokeWidth: 2),
+                  ),
                   belowBarData: BarAreaData(
                     show: true,
                     gradient: LinearGradient(

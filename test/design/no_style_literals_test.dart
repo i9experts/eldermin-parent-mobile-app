@@ -10,9 +10,6 @@ import 'package:flutter_test/flutter_test.dart';
 ///
 /// Justified exceptions live in [_allow]: path -> rule -> reason. An entry that is no longer needed fails the test too, so the list cannot rot.
 const _allow = <String, Map<String, String>>{
-  'lib/core/widgets/chart_widgets.dart': {
-    'inset-literal': 'TEMPORARY: the line chart label inset (half a slot) and its 5 dp label gap; removed by the line-chart restyle commit that follows',
-  },
   'lib/app/components/custom_app_snack_bar.dart': {
     'inset-literal': 'transient overlay chrome (the success / error / warning toast): its 5, 10 and 12 dp paddings are the exact values it always had',
     'radius-literal': 'same overlay: 8, 15 and 16 dp radii have no kit token (the kit sizes are 10 / 12 / 16 / 20); kept so the toast looks unchanged',
