@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/greeting.dart';
 import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -81,7 +82,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
                   final isCompleted = status == 'completed';
                   final due = DateTime.tryParse(t['dueDate']?.toString() ?? '');
                   final id = t['_id']?.toString() ?? '';
-                  final today = DateTime.now();
+                  final today = uiNow();
                   final overdue = !isCompleted &&
                       due != null &&
                       due.toLocal().isBefore(DateTime(today.year, today.month, today.day));

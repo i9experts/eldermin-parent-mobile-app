@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/greeting.dart';
 import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/widgets/app_date_picker.dart';
@@ -29,7 +30,7 @@ DateTime? _parsePeriodTime(String? raw) {
   final upper = raw.toUpperCase();
   if (upper.contains('PM') && hour < 12) hour += 12;
   if (upper.contains('AM') && hour == 12) hour = 0;
-  final now = DateTime.now();
+  final now = uiNow();
   return DateTime(now.year, now.month, now.day, hour, minute);
 }
 
@@ -84,7 +85,7 @@ class TimetableScreen extends GetView<TimetableController> {
             .length;
         final specialCount = allToday.length - periods.length - breaksCount;
 
-        final now = DateTime.now();
+        final now = uiNow();
         final completed = periods.where((p) {
           final end = _parsePeriodTime(p['endTime']?.toString());
           return end != null && end.isBefore(now);
@@ -108,7 +109,7 @@ class TimetableScreen extends GetView<TimetableController> {
               ),
               Text(
                   '${timetable['gradeLevel'] ?? ''} ${timetable['sectionName'] ?? ''}'
-                  '${controller.selectedDay.value == DateTime.now().weekday - 1 ? ' • Today' : ' • ${_weekdayNames[controller.selectedDay.value]}'}',
+                  '${controller.selectedDay.value == uiNow().weekday - 1 ? ' • Today' : ' • ${_weekdayNames[controller.selectedDay.value]}'}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: EmType.body.copyWith(color: EmColors.textSecondary)),

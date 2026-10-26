@@ -1,6 +1,13 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:eldermin_parent_app/app/modules/attendance/controllers/attendance_controller.dart';
 import 'package:eldermin_parent_app/app/modules/auth/controllers/auth_controller.dart';
+import 'package:eldermin_parent_app/app/modules/circulars/controllers/circulars_controller.dart';
+import 'package:eldermin_parent_app/app/modules/events/controllers/events_controller.dart';
+import 'package:eldermin_parent_app/app/modules/homework/controllers/homework_controller.dart';
+import 'package:eldermin_parent_app/app/modules/library/controllers/library_controller.dart';
+import 'package:eldermin_parent_app/app/modules/timetable/controllers/timetable_controller.dart';
+import 'package:eldermin_parent_app/core/utils/greeting.dart';
 import 'package:eldermin_parent_app/app/modules/students/controllers/student_controller.dart';
 import 'package:eldermin_parent_app/app/routes/app_pages.dart';
 import 'package:eldermin_parent_app/core/design/design.dart';
@@ -40,11 +47,17 @@ DioException networkError(String url) => DioException(requestOptions: RequestOpt
 /// The suspended-feature placeholder (HTTP 200) the backend sends for a paused premium feature.
 const suspendedBody = {'suspended': true, 'feature': 'paused', 'reason': 'paused by the school'};
 
+/// Monday 26 October 2026, 09:30: the pinned "now" of every screen test and golden.
+final pinnedNow = DateTime(2026, 10, 26, 9, 30);
+final _pinned = <Object>{};
+
 final testStudent = Student(id: 's1', firstName: 'Ayesha', lastName: 'Khan', currentGrade: '5', currentSection: 'A', admissionNo: '1001');
 
 /// Registers the app's global singletons on a fake API, exactly like InitialBinding but with no storage/network.
 FakeClient setUpRouteDeps(FutureOr<dynamic> Function(String method, String url) respond, {bool withStudent = true}) {
   EmAuthPhotos.precacheImpl = (_, __) async {};
+  uiNow = () => pinnedNow;
+  _pinned.clear();
   Get.reset();
   Get.testMode = true;
   final client = FakeClient(respond);
@@ -81,11 +94,47 @@ Future<void> pumpRoute(WidgetTester t, String route, {Object? arguments, double 
 Future<void> settle(WidgetTester t) async {
   for (var i = 0; i < 8; i++) {
     await t.pump(const Duration(milliseconds: 250));
+    _pinDates();
+  }
+}
+
+/// The controllers start their month / weekday selection from the wall clock; once each exists, pin it (once) to the
+/// pinned date so month filters, labels and goldens are deterministic. Test-only: no controller code is involved.
+void _pinDates() {
+  void once(Object c, void Function() pin) {
+    if (_pinned.add(c)) pin();
+  }
+
+  final month = DateTime(pinnedNow.year, pinnedNow.month);
+  if (Get.isRegistered<AttendanceController>()) {
+    final c = Get.find<AttendanceController>();
+    once(c, () => c.selectedMonth.value = month);
+  }
+  if (Get.isRegistered<HomeworkController>()) {
+    final c = Get.find<HomeworkController>();
+    once(c, () => c.selectedMonth.value = month);
+  }
+  if (Get.isRegistered<EventsController>()) {
+    final c = Get.find<EventsController>();
+    once(c, () => c.selectedMonth.value = month);
+  }
+  if (Get.isRegistered<LibraryController>()) {
+    final c = Get.find<LibraryController>();
+    once(c, () => c.selectedMonth.value = month);
+  }
+  if (Get.isRegistered<CircularsController>()) {
+    final c = Get.find<CircularsController>();
+    once(c, () => c.selectedMonth.value = month);
+  }
+  if (Get.isRegistered<TimetableController>()) {
+    final c = Get.find<TimetableController>();
+    once(c, () => c.selectedDay.value = pinnedNow.weekday - 1);
   }
 }
 
 /// Tears the screen down so periodic timers (OTP resend) are cancelled before the test ends.
 Future<void> disposeApp(WidgetTester t) async {
+  uiNow = DateTime.now;
   await t.pump(const Duration(seconds: 3)); // error toasts hold a 2 s timer
   await t.pumpWidget(const SizedBox());
   Get.reset();

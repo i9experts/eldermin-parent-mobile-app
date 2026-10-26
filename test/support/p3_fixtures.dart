@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:eldermin_parent_app/core/constants/api_constants.dart';
 import 'package:flutter/foundation.dart';
 
-/// Realistic answers for the P3 screens, relative to "now" so month filters still match. Unknown endpoints answer [].
-final _now = DateTime.now();
+/// Realistic answers for the screen tests. Every date is fixed around [fixedNow] (Monday 26 October 2026) so renders and
+/// goldens never depend on the wall clock. Unknown endpoints answer [].
+final fixedNow = DateTime(2026, 10, 26, 9, 30);
+final _now = fixedNow;
 String _iso(DateTime d) => DateTime(d.year, d.month, d.day, 12).toIso8601String();
 DateTime _inMonth(int day) => DateTime(_now.year, _now.month, day);
 
@@ -11,7 +13,7 @@ List<dynamic> attendanceRows() => [
       for (var d = 1; d <= 20; d++) {'date': _iso(_inMonth(d)), 'status': d % 7 == 0 ? 'absent' : (d % 5 == 0 ? 'late' : 'present')},
     ];
 
-// due dates are fixed days of the CURRENT month (the screen filters by the selected month); day 1 is always overdue
+// due dates are fixed days of October 2026 (the screen filters by the selected month); day 1 is overdue, 27/28 are not
 String _due(int day) => DateTime(_now.year, _now.month, day).toIso8601String();
 
 List<dynamic> homeworkRows() => [

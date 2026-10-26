@@ -13,19 +13,15 @@ import 'package:get/get.dart';
 import '../support/auth_harness.dart';
 import '../support/p3_fixtures.dart';
 import '../support/route_harness.dart';
-import '../support/tolerant_golden.dart';
 
 /// Goldens of the P3 screens at 390x844, text scale 1.0 and 1.3: the four tab roots inside the shell (Progress, Calendar,
 /// Messages, More) and the converted pushed screens (attendance, homework, timetable, notifications, message thread), plus
-/// the homework sheet and the month picker. macOS baselines (other hosts skip). The comparator tolerates 2 % of the pixels
-/// because the month / date text changes with the calendar.
+/// the homework sheet and the month picker. macOS baselines (other hosts skip).  Deterministic: the clock and the
+/// controllers' month / weekday are pinned (`test/support/route_harness.dart`), no tolerance.
 ///
 ///   Update:  flutter test test/design/p3_goldens_test.dart --tags golden --update-goldens
 void main() {
-  setUpAll(() async {
-    await loadAuthFonts();
-    useTolerantGoldens(Uri.parse('test/design/p3_goldens_test.dart'));
-  });
+  setUpAll(loadAuthFonts);
   tearDown(() {
     uiNow = DateTime.now;
     Get.reset();
@@ -38,8 +34,7 @@ void main() {
     for (final (i, name) in ['progress', 'calendar', 'messages', 'more'].indexed) {
       testWidgets('tab $name / ${tag(scale)}', (t) async {
         setUpRouteDeps(p3Api());
-        uiNow = () => DateTime(2026, 10, 26, 9, 30);
-        await pumpApp(t, home: const HomeShell(), textScale: scale);
+            await pumpApp(t, home: const HomeShell(), textScale: scale);
         await settle(t);
         Get.find<HomeShellController>().tabIndex.value = i + 1;
         await settle(t);

@@ -138,7 +138,7 @@ class HomeDashboardScreen extends StatelessWidget {
             }),
             Obx(() {
               if (controller.eventsLoading.value) return const SizedBox.shrink();
-              final now = DateTime.now();
+              final now = uiNow();
               final today = DateTime(now.year, now.month, now.day);
               final upcoming = controller.events.cast<Map>().where((e) {
                 final d = e['startDate'] != null ? DateTime.tryParse(e['startDate'].toString()) : null;

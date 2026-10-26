@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/greeting.dart';
 import '../design/design.dart';
 import '../theme/app_theme.dart';
 import 'em_section_header.dart';
@@ -447,7 +448,7 @@ class _AppWeekDateStripState extends State<AppWeekDateStrip> {
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
+    final now = uiNow();
     _days = EmDateStrip.weekOf(now);
     _selected = DateTime(now.year, now.month, now.day);
   }

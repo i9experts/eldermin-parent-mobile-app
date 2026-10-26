@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/greeting.dart';
 import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -64,7 +65,7 @@ class AttendanceScreen extends GetView<AttendanceController> {
                   final picked = await showAppMonthPicker(
                     context,
                     initialMonth: controller.selectedMonth.value,
-                    maxMonth: DateTime.now(),
+                    maxMonth: uiNow(),
                   );
                   if (picked != null) controller.changeMonth(picked);
                 },

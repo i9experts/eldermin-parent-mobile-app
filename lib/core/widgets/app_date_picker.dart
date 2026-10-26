@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/greeting.dart';
 import '../design/design.dart';
 import 'app_widgets.dart' show AppTag, AppTintIconButton;
 
@@ -114,7 +115,7 @@ class _AppMonthPickerSheetState extends State<_AppMonthPickerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
+    final now = uiNow();
     return _PickerSheetShell(
       title: 'Select month',
       child: Column(
@@ -231,7 +232,7 @@ class _AppDatePickerSheetState extends State<_AppDatePickerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
+    final now = uiNow();
     final today = DateTime(now.year, now.month, now.day);
     final daysInMonth = DateTime(_displayedMonth.year, _displayedMonth.month + 1, 0).day;
     final leadingBlanks = DateTime(_displayedMonth.year, _displayedMonth.month, 1).weekday - 1;
@@ -316,7 +317,7 @@ class _AppWeekdayPickerSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final todayIndex = DateTime.now().weekday - 1;
+    final todayIndex = uiNow().weekday - 1;
     return _PickerSheetShell(
       title: 'Select day',
       child: Column(

@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import '../utils/greeting.dart';
 import '../design/design.dart';
 import 'app_widgets.dart' show AppTintIconButton;
 
@@ -147,7 +148,7 @@ class AppMonthCalendar extends StatelessWidget {
   Widget build(BuildContext context) {
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
     final leadingBlanks = DateTime(month.year, month.month, 1).weekday - 1;
-    final today = DateTime.now();
+    final today = uiNow();
     final isCurrentMonth =
         today.year == month.year && today.month == month.month;
 

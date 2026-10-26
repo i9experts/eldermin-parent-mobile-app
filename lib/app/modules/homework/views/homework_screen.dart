@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/greeting.dart';
 import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -120,7 +121,7 @@ class HomeworkScreen extends GetView<HomeworkController> {
                       ['submitted', 'late', 'graded'].contains((h['mySubmission'] is Map ? h['mySubmission']['status'] : null));
                   final isOverdue = !isSubmitted &&
                       due != null &&
-                      due.isBefore(DateTime.now());
+                      due.isBefore(uiNow());
                   final sub = h['mySubmission'] is Map ? Map<String, dynamic>.from(h['mySubmission'] as Map) : null;
                   final subStatus = sub?['status']?.toString();
                   final graded = subStatus == 'graded';
