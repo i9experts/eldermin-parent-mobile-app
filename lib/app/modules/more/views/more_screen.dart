@@ -8,6 +8,7 @@ import '../../../../core/widgets/em_tab_heading.dart';
 import '../../../../core/widgets/em_tile_grid.dart';
 import '../../../components/svg_icon.dart';
 import '../../../config/app_icons.dart';
+import '../../early_years/controllers/early_years_controller.dart';
 import '../../shared/views/coming_soon_screen.dart';
 import '../../students/controllers/student_controller.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -20,8 +21,7 @@ class MoreScreen extends StatelessWidget {
   /// Section title -> the services in it (titles as in the list below).
   static const _groups = <(String, List<String>)>[
     ('Learning', ['Class diary', 'My courses', 'Online quizzes', 'Learning resources', 'Library', 'Datesheet']),
-    // EARLY YEARS: when `phase-ey-parent` is merged, its conditional 'Early Years' tile (shown only when
-    // EarlyYearsController.eligible) goes at the END of this section. Not added yet.
+    // Early Years: its tile is added at the end of 'My child' while the selected child is eligible (see `showEarlyYears` in build).
     ('My child', ['Behaviour & Tarbiyah', 'Student profile', 'Medical', 'Academic documents', 'Home tasks']),
     ('School & family', ['Consent', 'My leaves', 'Parent-teacher meetings', 'Circulars', 'Inbox', 'Feedback']),
     ('Account', ['Switch user', 'Privacy policy', 'About us', 'Help', 'Logout']),
@@ -32,6 +32,8 @@ class MoreScreen extends StatelessWidget {
     final students = Get.find<StudentController>();
 
     final modules = <(Widget, String, VoidCallback)>[
+      // listed only in 'My child' and only while the child is eligible (see `showEarlyYears` below)
+      (const Icon(Icons.child_care_rounded, color: EmColors.primary), 'Early Years', () => Get.toNamed(Routes.earlyYears)),
       (
         const Icon(Icons.auto_stories_outlined, color: EmColors.primary),
         'Class diary',
@@ -153,6 +155,9 @@ class MoreScreen extends StatelessWidget {
 
     return Obx(() {
       final student = students.selectedStudent;
+      // Early Years appears only when the summary for the selected child says the child is in an Early Years programme; while
+      // loading, on any error, or for other children it stays hidden. Same condition as on main (the merged PR #7).
+      final showEarlyYears = Get.isRegistered<EarlyYearsController>() && Get.find<EarlyYearsController>().eligible;
       return ListView(
         padding: const EdgeInsetsDirectional.fromSTEB(EmSpacing.screenH, EmSpacing.s8, EmSpacing.screenH, EmSpacing.s24),
         children: [
@@ -192,7 +197,7 @@ class MoreScreen extends StatelessWidget {
           for (final g in _groups) ...[
             SectionRow(title: g.$1),
             EmTileGrid(tiles: [
-              for (final title in g.$2)
+              for (final title in [...g.$2, if (g.$1 == 'My child' && showEarlyYears) 'Early Years'])
                 for (final m in modules.where((m) => m.$2 == title))
                   EmTile(label: m.$2, leading: m.$1, destructive: m.$2 == 'Logout', onTap: m.$3, tileKey: Key('service_${m.$2}')),
             ]),
