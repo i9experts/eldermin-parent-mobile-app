@@ -8,7 +8,7 @@ import 'em_section_header.dart';
 /// Mapping (legacy -> kit): AppTag -> EmChip.status, AppCard -> EmCard, StatsRow -> EmCard tiles,
 /// ListCardRow -> EmListRow, SegmentedControl -> EmSegmentedTabs, DateStripWidget -> EmDateStrip,
 /// DonutRing -> EmProgressRing, AppLoader -> EmLoading, AppErrorView -> EmErrorState,
-/// AppEmptyView -> EmEmptyState, SectionRow -> EmSectionHeader, ScreenHeader -> EmType + EmChip.
+/// AppEmptyView -> EmEmptyState, SectionRow -> EmSectionHeader, ScreenHeader (removed: pushed screens use ScreenIntro, tabs use TabHeading).
 /// AppProgressBar and AppTimeline have no kit equivalent: they are drawn from kit tokens.
 
 class AppTag extends StatelessWidget {
@@ -40,6 +40,11 @@ class AppCard extends StatelessWidget {
       child: EmCard(padding: padding, onTap: onTap, child: child));
 }
 
+Widget _fit(Widget text) => FittedBox(
+    fit: BoxFit.scaleDown,
+    alignment: AlignmentDirectional.centerStart,
+    child: text);
+
 class StatsRow extends StatelessWidget {
   final List<(String value, String label, String? trend)> items;
   const StatsRow({super.key, required this.items});
@@ -60,22 +65,20 @@ class StatsRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(item.$1,
+                    // scaled down (never cut off) when the tile is narrow at a large text size
+                    _fit(Text(item.$1,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style:
-                            EmType.value.copyWith(color: EmColors.primaryDark)),
-                    Text(item.$2,
+                        style: EmType.value
+                            .copyWith(color: EmColors.primaryDark))),
+                    _fit(Text(item.$2,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: EmType.caption
-                            .copyWith(color: EmColors.textSecondary)),
+                            .copyWith(color: EmColors.textSecondary))),
                     if (item.$3 != null)
-                      Text(item.$3!,
+                      _fit(Text(item.$3!,
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style:
-                              EmType.caption.copyWith(color: EmColors.success)),
+                          style: EmType.caption
+                              .copyWith(color: EmColors.success))),
                   ],
                 ),
               ),
@@ -226,11 +229,26 @@ class SegmentedControl extends StatelessWidget {
       required this.onChanged});
 
   @override
-  Widget build(BuildContext context) => EmSegmentedTabs<int>(
-        segments: [for (final (i, o) in options.indexed) EmSegment(i, o)],
-        selected: selectedIndex,
-        onChanged: onChanged,
+  Widget build(BuildContext context) {
+    // the kit's segmented tabs keep one line per label; at large text sizes the same choices are kit choice chips that wrap
+    if (MediaQuery.textScalerOf(context).scale(1) > 1.15) {
+      return Wrap(
+        spacing: EmSpacing.s8,
+        children: [
+          for (final (i, o) in options.indexed)
+            EmChip(
+                label: o,
+                selected: i == selectedIndex,
+                onTap: () => onChanged(i))
+        ],
       );
+    }
+    return EmSegmentedTabs<int>(
+      segments: [for (final (i, o) in options.indexed) EmSegment(i, o)],
+      selected: selectedIndex,
+      onChanged: onChanged,
+    );
+  }
 }
 
 class DateStripWidget extends StatelessWidget {
@@ -272,6 +290,35 @@ class DonutRing extends StatelessWidget {
         color: color,
         knob: false,
       );
+}
+
+/// A 48 dp round action tinted on the kit's light fill (month arrows, a sheet's close button) for use on white surfaces,
+/// where the kit's white [EmIconCircleButton] would disappear. Disabled when [onTap] is null.
+class AppTintIconButton extends StatelessWidget {
+  const AppTintIconButton(
+      {super.key,
+      required this.icon,
+      required this.semanticLabel,
+      required this.onTap});
+  final IconData icon;
+  final String semanticLabel;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: semanticLabel,
+      onPressed: onTap,
+      icon: Icon(icon, size: 22),
+      style: IconButton.styleFrom(
+        backgroundColor: EmColors.background,
+        foregroundColor: EmColors.ink,
+        disabledBackgroundColor: EmColors.background,
+        disabledForegroundColor: EmColors.onDisabled,
+        minimumSize: const Size(EmSpacing.minTouch, EmSpacing.minTouch),
+      ),
+    );
+  }
 }
 
 /// A state body inside a scrolling list has unbounded height (no nested scroll view there); as a screen body it is bounded
@@ -325,58 +372,58 @@ class SectionRow extends StatelessWidget {
       EmSectionHeader(title: title, onAction: onSeeAll);
 }
 
-/// The in-body title + caption at the top of a screen's scrolling content, with an optional context chip (a working
-/// selector when [onSelectTap] is set, otherwise an informational tag).
-class ScreenHeader extends StatelessWidget {
-  final String title;
+/// The context line at the top of a pushed screen's scrolling content: the caption and an optional chip (a working
+/// selector when [onSelectTap] is set, otherwise an informational tag). The screen's title is the [EmAppBar]'s, so it is
+/// shown once.
+class ScreenIntro extends StatelessWidget {
   final String? caption;
   final String? selectLabel;
   final VoidCallback? onSelectTap;
-  const ScreenHeader(
-      {super.key,
-      required this.title,
-      this.caption,
-      this.selectLabel,
-      this.onSelectTap});
+  const ScreenIntro(
+      {super.key, this.caption, this.selectLabel, this.onSelectTap});
 
   @override
   Widget build(BuildContext context) {
+    if (caption == null && selectLabel == null) return const SizedBox.shrink();
+    final chip = selectLabel == null
+        ? null
+        : (onSelectTap != null
+            ? EmChip(
+                label: selectLabel!,
+                onTap: onSelectTap,
+                icon: Icons.expand_more_rounded)
+            : EmChip.status(label: selectLabel!, tone: EmTone.info));
+    final text = caption == null
+        ? null
+        : Text(caption!,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: EmType.body.copyWith(color: EmColors.textSecondary));
+    // at large text sizes the chip goes under the caption, on its own line, so neither is cut off
+    final stacked = MediaQuery.textScalerOf(context).scale(1) > 1.15;
     return Padding(
       padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.block),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: Column(
+      child: stacked
+          ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Semantics(
-                    header: true,
-                    child: Text(title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: EmType.title.copyWith(color: EmColors.ink))),
-                if (caption != null)
-                  Text(caption!,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style:
-                          EmType.body.copyWith(color: EmColors.textSecondary)),
+                if (text != null) text,
+                if (chip != null) ...[
+                  const SizedBox(height: EmSpacing.s8),
+                  chip
+                ]
+              ],
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(child: text ?? const SizedBox.shrink()),
+                if (chip != null) ...[
+                  const SizedBox(width: EmSpacing.s12),
+                  Flexible(child: chip)
+                ],
               ],
             ),
-          ),
-          if (selectLabel != null) ...[
-            const SizedBox(width: EmSpacing.s12),
-            if (onSelectTap != null)
-              EmChip(
-                  label: selectLabel!,
-                  onTap: onSelectTap,
-                  icon: Icons.expand_more_rounded)
-            else
-              EmChip.status(label: selectLabel!, tone: EmTone.info),
-          ],
-        ],
-      ),
     );
   }
 }

@@ -72,7 +72,7 @@ class MedicalScreen extends GetView<MedicalController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: const [
-                ShimmerScreenHeaderSkeleton(withChip: false),
+                ShimmerScreenIntroSkeleton(withChip: false),
                 SizedBox(height: AppSpacing.md),
                 ShimmerListRowSkeleton(),
                 ShimmerListRowSkeleton(),
@@ -117,7 +117,7 @@ class MedicalScreen extends GetView<MedicalController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const ScreenHeader(title: 'Medical information', caption: 'Health record on file with the school'),
+              const ScreenIntro( caption: 'Health record on file with the school'),
               const SizedBox(height: AppSpacing.lg),
               if (bloodGroup != null && bloodGroup.isNotEmpty) ...[
                 AppCard(

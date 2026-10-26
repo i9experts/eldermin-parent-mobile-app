@@ -22,9 +22,7 @@ class ConsentScreen extends GetView<ConsentController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
+                const ShimmerScreenIntroSkeleton(),
                 const SizedBox(height: AppSpacing.lg),
                 const ShimmerStatsRowSkeleton(count: 3),
                 const SizedBox(height: AppSpacing.lg),
@@ -49,13 +47,10 @@ class ConsentScreen extends GetView<ConsentController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const ScreenHeader(
-                title: 'Consent centre',
+              const ScreenIntro(
                 caption: 'Review requests and protect your choices',
                 selectLabel: '2026–27',
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
                 ('${requests.length}', 'Requests', null),
                 ('$responded', 'Completed', null),

@@ -6,6 +6,7 @@ import '../../../../core/design/design.dart';
 import '../../../../core/utils/greeting.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
+import '../../../../core/widgets/em_tile_grid.dart';
 import '../../../../core/widgets/hero_card.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -197,57 +198,18 @@ class _InfoCard extends StatelessWidget {
       );
 }
 
-/// Four shortcuts, two per row (four on wide screens, one at large text sizes): icon chip + label in a kit card, so the labels keep room
-/// at large text sizes.
+/// Four shortcuts on the kit tile grid (two per row, four on wide screens, one at large text sizes).
 class _QuickAccessGrid extends StatelessWidget {
   final String studentId;
   const _QuickAccessGrid({required this.studentId});
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      (Icons.check_circle_outline_rounded, 'Attendance', AppColors.blue, () => Get.toNamed(Routes.attendance)),
-      (Icons.menu_book_rounded, 'Homework', AppColors.amber, () => Get.toNamed(Routes.homework)),
-      (Icons.account_balance_wallet_outlined, 'Fees & dues', AppColors.secondryColor, () => Get.toNamed(Routes.dues)),
-      (Icons.schedule_rounded, 'Timetable', AppColors.purple, () => Get.toNamed(Routes.timetable)),
-    ];
-    return LayoutBuilder(builder: (context, constraints) {
-      // one per row at large text sizes, so no label breaks inside a word
-      final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.15;
-      final columns = constraints.maxWidth >= 640 ? 4 : (largeText ? 1 : 2);
-      final rows = <List<(IconData, String, Color, VoidCallback)>>[];
-      for (var i = 0; i < items.length; i += columns) {
-        rows.add(items.sublist(i, i + columns > items.length ? items.length : i + columns));
-      }
-      Widget tile((IconData, String, Color, VoidCallback) item) => EmCard(
-            key: Key('quick_${item.$2}'),
-            onTap: item.$4,
-            radius: EmRadius.tile,
-            padding: EmSpacing.cardPadCompact,
-            child: Row(children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(color: item.$3.withAlpha(31), shape: BoxShape.circle),
-                child: ExcludeSemantics(child: Icon(item.$1, color: item.$3, size: 20)),
-              ),
-              const SizedBox(width: EmSpacing.s8),
-              Expanded(child: Text(item.$2, maxLines: 2, overflow: TextOverflow.ellipsis, style: EmType.label.copyWith(color: EmColors.ink))),
-            ]),
-          );
-      return Column(children: [
-        for (final (r, row) in rows.indexed) ...[
-          if (r > 0) const SizedBox(height: EmSpacing.s8),
-          IntrinsicHeight(
-            child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              for (var c = 0; c < columns; c++) ...[
-                if (c > 0) const SizedBox(width: EmSpacing.s8),
-                Expanded(child: c < row.length ? tile(row[c]) : const SizedBox.shrink()),
-              ],
-            ]),
-          ),
-        ],
-      ]);
-    });
+    return EmTileGrid(tiles: [
+      EmTile(label: 'Attendance', icon: Icons.check_circle_outline_rounded, color: AppColors.blue, onTap: () => Get.toNamed(Routes.attendance), tileKey: const Key('quick_Attendance')),
+      EmTile(label: 'Homework', icon: Icons.menu_book_rounded, color: AppColors.amber, onTap: () => Get.toNamed(Routes.homework), tileKey: const Key('quick_Homework')),
+      EmTile(label: 'Fees & dues', icon: Icons.account_balance_wallet_outlined, color: AppColors.secondryColor, onTap: () => Get.toNamed(Routes.dues), tileKey: const Key('quick_Fees & dues')),
+      EmTile(label: 'Timetable', icon: Icons.schedule_rounded, color: AppColors.purple, onTap: () => Get.toNamed(Routes.timetable), tileKey: const Key('quick_Timetable')),
+    ]);
   }
 }

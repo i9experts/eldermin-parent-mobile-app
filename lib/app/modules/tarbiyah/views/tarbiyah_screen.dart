@@ -38,10 +38,8 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(),
+                const ShimmerScreenIntroSkeleton(),
                 const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
-                const SizedBox(height: AppSpacing.md),
                 const ShimmerHeroCardSkeleton(),
                 const SizedBox(height: AppSpacing.lg),
                 const ShimmerStatsRowSkeleton(count: 3),
@@ -73,13 +71,10 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const ScreenHeader(
-                title: 'Growth & tarbiyah',
+              const ScreenIntro(
                 caption: 'Character, wellbeing and positive habits',
                 selectLabel: 'This month',
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.md),
               if (assessment != null)
                 HeroCard(
                   kicker: 'Holistic growth score',

@@ -43,9 +43,7 @@ class ProfileScreen extends GetView<ProfileController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
+                const ShimmerScreenIntroSkeleton(),
                 const SizedBox(height: AppSpacing.lg),
                 Container(
                   padding: const EdgeInsets.all(14),
@@ -116,13 +114,10 @@ class ProfileScreen extends GetView<ProfileController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const ScreenHeader(
-                title: 'Student profile',
+              const ScreenIntro(
                 caption: 'Identity, contacts and record health',
                 selectLabel: 'Current year',
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.lg),
               AppCard(
                 child: Column(
                   children: [

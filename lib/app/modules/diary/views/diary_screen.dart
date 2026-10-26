@@ -24,7 +24,7 @@ class DiaryScreen extends GetView<DiaryController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(withChip: false),
+                const ShimmerScreenIntroSkeleton(withChip: false),
                 const SizedBox(height: AppSpacing.md),
                 ...shimmerListRows(4),
               ],
@@ -44,7 +44,7 @@ class DiaryScreen extends GetView<DiaryController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const ScreenHeader(title: 'Class diary', caption: "Daily classwork & homework from your child's teachers"),
+              const ScreenIntro( caption: "Daily classwork & homework from your child's teachers"),
               const SizedBox(height: AppSpacing.lg),
               if (entries.isEmpty)
                 const AppEmptyView(

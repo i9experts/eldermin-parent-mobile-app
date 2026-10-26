@@ -8,7 +8,6 @@ import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/chart_widgets.dart';
 import '../../../../core/widgets/hero_card.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_text.dart';
 import '../controllers/attendance_controller.dart';
 
 class AttendanceScreen extends GetView<AttendanceController> {
@@ -22,18 +21,16 @@ class AttendanceScreen extends GetView<AttendanceController> {
         if (controller.loading.value && controller.records.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const ShimmerScreenIntroSkeleton(),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerHeroCardSkeleton(),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 const ShimmerStatsRowSkeleton(count: 3),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 const ShimmerChartSkeleton(),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(6),
               ],
             ),
@@ -57,10 +54,9 @@ class AttendanceScreen extends GetView<AttendanceController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              ScreenHeader(
-                title: 'Attendance',
+              ScreenIntro(
                 caption: 'Consistency and punctuality',
                 selectLabel: DateFormat('MMMM yyyy')
                     .format(controller.selectedMonth.value),
@@ -73,8 +69,6 @@ class AttendanceScreen extends GetView<AttendanceController> {
                   if (picked != null) controller.changeMonth(picked);
                 },
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.lg),
               HeroCard(
                 kicker: 'Monthly attendance',
                 value: total == 0 ? '—' : '$pct%',
@@ -82,37 +76,28 @@ class AttendanceScreen extends GetView<AttendanceController> {
                     ? 'No attendance recorded yet'
                     : '$pct% attendance this month',
                 percent: pct,
-                ringColor: AppColors.secondryColor,
+                metricIcons: const [Icons.check_circle_outline_rounded, Icons.cancel_outlined, Icons.schedule_rounded],
                 metrics: [
                   ('$present', 'Present'),
                   ('$absent', 'Absent'),
                   ('$late', 'Late'),
                 ],
               ),
-              const SizedBox(height: AppSpacing.md),
-              StatsRow(items: [
-                ('$present', 'Present', null),
-                ('$absent', 'Absent', null),
-                ('$late', 'Late', null)
-              ]),
+              const SizedBox(height: EmSpacing.s12),
               if (monthly.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 AppCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const CustomText(
-                          text: '6-month trend',
-                          fontWeight: FontWeight.w800,
-                          fontSize: 12,
-                          color: AppColors.primaryColor),
-                      const SizedBox(height: 10),
+                      Text('6-month trend', style: EmType.label.copyWith(color: EmColors.ink)),
+                      const SizedBox(height: EmSpacing.s12),
                       AppBarChart(data: monthly),
                     ],
                   ),
                 ),
               ],
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: EmSpacing.s12),
               if (records.isEmpty)
                 const AppEmptyView(
                     icon: Icons.event_busy_outlined,
@@ -126,29 +111,19 @@ class AttendanceScreen extends GetView<AttendanceController> {
                   final style = status == 'present'
                       ? TagStyle.green
                       : (status == 'absent' ? TagStyle.red : TagStyle.amber);
-                  return AppCard(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: CustomText(
-                                text: date != null
-                                    ? '${date.day}/${date.month}/${date.year}'
-                                    : '—',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 12,
-                                color: AppColors.primaryColor,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis),
-                          ),
-                          AppTag(
-                              status.isEmpty
-                                  ? '—'
-                                  : (status[0].toUpperCase() +
-                                          status.substring(1))
-                                      .replaceAll('_', ' '),
-                              style: style),
-                        ]),
+                  return Padding(
+                    padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.row),
+                    child: EmCard(
+                      padding: const EdgeInsetsDirectional.symmetric(horizontal: EmSpacing.s16, vertical: EmSpacing.s12),
+                      child: Row(children: [
+                        Expanded(
+                          child: Text(date != null ? '${date.day}/${date.month}/${date.year}' : '—',
+                              maxLines: 1, overflow: TextOverflow.ellipsis, style: EmType.bodyLarge.copyWith(color: EmColors.ink)),
+                        ),
+                        const SizedBox(width: EmSpacing.s8),
+                        AppTag(status.isEmpty ? '—' : (status[0].toUpperCase() + status.substring(1)).replaceAll('_', ' '), style: style),
+                      ]),
+                    ),
                   );
                 }),
             ],

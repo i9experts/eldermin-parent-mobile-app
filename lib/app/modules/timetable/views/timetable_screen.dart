@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_date_picker.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_text.dart';
 import '../controllers/timetable_controller.dart';
 
 const _weekdayNames = [
@@ -46,16 +44,14 @@ class TimetableScreen extends GetView<TimetableController> {
         if (controller.loading.value && controller.timetable.value == null) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const ShimmerScreenIntroSkeleton(),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerStatsRowSkeleton(count: 3),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 const ShimmerChartSkeleton(),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(5),
               ],
             ),
@@ -99,10 +95,9 @@ class TimetableScreen extends GetView<TimetableController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              ScreenHeader(
-                title: 'Timetable',
+              ScreenIntro(
                 caption: "Your child's organised learning day",
                 selectLabel: _weekdayNames[controller.selectedDay.value],
                 onSelectTap: () async {
@@ -111,23 +106,20 @@ class TimetableScreen extends GetView<TimetableController> {
                   if (picked != null) controller.changeDay(picked);
                 },
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.lg),
-              CustomText(
-                  text: '${timetable['gradeLevel'] ?? ''} ${timetable['sectionName'] ?? ''}'
-                      '${controller.selectedDay.value == DateTime.now().weekday - 1 ? ' • Today' : ' • ${_weekdayNames[controller.selectedDay.value]}'}',
-                  color: AppColors.muted,
-                  fontSize: 11,
+              Text(
+                  '${timetable['gradeLevel'] ?? ''} ${timetable['sectionName'] ?? ''}'
+                  '${controller.selectedDay.value == DateTime.now().weekday - 1 ? ' • Today' : ' • ${_weekdayNames[controller.selectedDay.value]}'}',
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis),
-              const SizedBox(height: AppSpacing.md),
+                  overflow: TextOverflow.ellipsis,
+                  style: EmType.body.copyWith(color: EmColors.textSecondary)),
+              const SizedBox(height: EmSpacing.s12),
               StatsRow(items: [
                 ('${periods.length}', 'Periods', null),
                 ('$breaksCount', 'Breaks', null),
                 ('$specialCount', 'Special', null),
               ]),
               if (periods.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 AppCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,31 +127,21 @@ class TimetableScreen extends GetView<TimetableController> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const CustomText(
-                              text: 'Day progress',
-                              fontWeight: FontWeight.w800,
-                              fontSize: 12,
-                              color: AppColors.primaryColor),
-                          const SizedBox(width: 8),
+                          Text('Day progress', style: EmType.label.copyWith(color: EmColors.ink)),
+                          const SizedBox(width: EmSpacing.s8),
                           Flexible(
-                            child: CustomText(
-                                text:
-                                    '$completed of ${periods.length} periods',
-                                color: AppColors.muted,
-                                fontSize: 10,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.right),
+                            child: Text('$completed of ${periods.length} periods',
+                                maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.right, style: EmType.caption.copyWith(color: EmColors.textSecondary)),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: EmSpacing.s12),
                       AppProgressBar(percent: progressPct),
                     ],
                   ),
                 ),
               ],
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: EmSpacing.s12),
               if (periods.isEmpty)
                 const AppEmptyView(
                     icon: Icons.weekend_outlined,
@@ -171,7 +153,7 @@ class TimetableScreen extends GetView<TimetableController> {
                       '${p['startTime'] ?? ''} - ${p['endTime'] ?? ''}',
                       p['subject'] ?? 'Period ${p['periodNo']}',
                       p['roomNo'] != null ? 'Room ${p['roomNo']}' : '',
-                      AppColors.blue,
+                      EmColors.primary,
                     );
                   }).toList(),
                 ),

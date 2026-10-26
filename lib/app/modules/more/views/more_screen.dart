@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
+import '../../../../core/design/design.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
-import '../../../components/custom_text.dart';
+import '../../../../core/widgets/em_tab_heading.dart';
+import '../../../../core/widgets/em_tile_grid.dart';
 import '../../../components/svg_icon.dart';
 import '../../../config/app_icons.dart';
 import '../../shared/views/coming_soon_screen.dart';
 import '../../students/controllers/student_controller.dart';
 import '../../auth/controllers/auth_controller.dart';
 
+/// More tab root (teacher tab-root pattern: [TabHeading] + a list of sections, teacher `more_screen.dart:19-71`; the
+/// child summary card follows the teacher's `_ProfileCard`, `more_screen.dart:75-106`). Every entry keeps its destination.
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
 
@@ -19,112 +23,112 @@ class MoreScreen extends StatelessWidget {
 
     final modules = <(Widget, String, VoidCallback)>[
       (
-        const Icon(Icons.auto_stories_outlined, color: AppColors.blue),
+        const Icon(Icons.auto_stories_outlined, color: EmColors.primary),
         'Class diary',
         () => Get.toNamed(Routes.diary)
       ),
       (
-        const Icon(Icons.school_outlined, color: AppColors.blue),
+        const Icon(Icons.school_outlined, color: EmColors.primary),
         'My courses',
         () => Get.toNamed(Routes.courses)
       ),
       (
-        const Icon(Icons.quiz_outlined, color: AppColors.blue),
+        const Icon(Icons.quiz_outlined, color: EmColors.primary),
         'Online quizzes',
         () => Get.toNamed(Routes.quizzes)
       ),
       (
-        const Icon(Icons.folder_outlined, color: AppColors.blue),
+        const Icon(Icons.folder_outlined, color: EmColors.primary),
         'Learning resources',
         () => Get.toNamed(Routes.learningResources)
       ),
       (
-        const Icon(Icons.local_library_outlined, color: AppColors.blue),
+        const Icon(Icons.local_library_outlined, color: EmColors.primary),
         'Library',
         () => Get.toNamed(Routes.library)
       ),
       (
-        const SvgIcon(assetName: AppIcons.behaviour, size: 22, color: AppColors.blue),
+        const SvgIcon(assetName: AppIcons.behaviour, size: 22, color: EmColors.primary),
         'Behaviour & Tarbiyah',
         () => Get.toNamed(Routes.tarbiyah)
       ),
       (
-        const SvgIcon(assetName: AppIcons.profileIcon, size: 22, color: AppColors.blue),
+        const SvgIcon(assetName: AppIcons.profileIcon, size: 22, color: EmColors.primary),
         'Student profile',
         () => Get.toNamed(Routes.profile)
       ),
       (
-        const Icon(Icons.medical_information_outlined, color: AppColors.blue),
+        const Icon(Icons.medical_information_outlined, color: EmColors.primary),
         'Medical',
         () => Get.toNamed(Routes.medical)
       ),
       (
-        const Icon(Icons.description_outlined, color: AppColors.blue),
+        const Icon(Icons.description_outlined, color: EmColors.primary),
         'Academic documents',
         () => Get.toNamed(Routes.documents)
       ),
       (
-        const SvgIcon(assetName: AppIcons.checkIcon, size: 22, color: AppColors.blue),
+        const SvgIcon(assetName: AppIcons.checkIcon, size: 22, color: EmColors.primary),
         'Consent',
         () => Get.toNamed(Routes.consent)
       ),
       (
-        const Icon(Icons.event_available_outlined, color: AppColors.blue),
+        const Icon(Icons.event_available_outlined, color: EmColors.primary),
         'My leaves',
         () => Get.toNamed(Routes.leaves)
       ),
       (
-        const Icon(Icons.favorite_outline, color: AppColors.blue),
+        const Icon(Icons.favorite_outline, color: EmColors.primary),
         'Home tasks',
         () => Get.toNamed(Routes.homeTasks)
       ),
       (
-        const SvgIcon(assetName: AppIcons.calenderIcon, size: 22, color: AppColors.blue),
+        const SvgIcon(assetName: AppIcons.calenderIcon, size: 22, color: EmColors.primary),
         'Datesheet',
         () => Get.toNamed(Routes.datesheet)
       ),
       (
-        const Icon(Icons.groups_outlined, color: AppColors.blue),
+        const Icon(Icons.groups_outlined, color: EmColors.primary),
         'Parent-teacher meetings',
         () => Get.toNamed(Routes.ptm)
       ),
       (
-        const SvgIcon(assetName: AppIcons.reportIcon, size: 22, color: AppColors.blue),
+        const SvgIcon(assetName: AppIcons.reportIcon, size: 22, color: EmColors.primary),
         'Circulars',
         () => Get.toNamed(Routes.circulars)
       ),
       (
-        const SvgIcon(assetName: AppIcons.messageIcon, size: 22, color: AppColors.blue),
+        const SvgIcon(assetName: AppIcons.messageIcon, size: 22, color: EmColors.primary),
         'Inbox',
         () => Get.toNamed(Routes.notifications)
       ),
       (
-        const SvgIcon(assetName: AppIcons.messageSendIcon, size: 22, color: AppColors.blue),
+        const SvgIcon(assetName: AppIcons.messageSendIcon, size: 22, color: EmColors.primary),
         'Feedback',
         () => Get.toNamed(Routes.feedback)
       ),
       (
-        const Icon(Icons.switch_account_outlined, color: AppColors.blue),
+        const Icon(Icons.switch_account_outlined, color: EmColors.primary),
         'Switch user',
         () => Get.to(() => const ComingSoonScreen(title: 'Switch Account'))
       ),
       (
-        const SvgIcon(assetName: AppIcons.privacy, size: 22, color: AppColors.blue),
+        const SvgIcon(assetName: AppIcons.privacy, size: 22, color: EmColors.primary),
         'Privacy policy',
         () => Get.toNamed(Routes.privacyPolicy)
       ),
       (
-        const SvgIcon(assetName: AppIcons.aboutIcon, size: 22, color: AppColors.blue),
+        const SvgIcon(assetName: AppIcons.aboutIcon, size: 22, color: EmColors.primary),
         'About us',
         () => Get.toNamed(Routes.aboutUs)
       ),
       (
-        const SvgIcon(assetName: AppIcons.faqIcon, size: 22, color: AppColors.blue),
+        const SvgIcon(assetName: AppIcons.faqIcon, size: 22, color: EmColors.primary),
         'Help',
         () => Get.toNamed(Routes.help)
       ),
       (
-        const Icon(Icons.logout_rounded, color: AppColors.red),
+        const Icon(Icons.logout_rounded, color: EmColors.onErrorContainer),
         'Logout',
         () => _confirmLogout()
       ),
@@ -140,96 +144,42 @@ class MoreScreen extends StatelessWidget {
     return Obx(() {
       final student = students.selectedStudent;
       return ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsetsDirectional.fromSTEB(EmSpacing.screenH, EmSpacing.s8, EmSpacing.screenH, EmSpacing.s24),
         children: [
-          ScreenHeader(
-            title: 'All services',
-            caption: 'Everything your family needs',
-            selectLabel: student?.fullName,
-            onSelectTap: () => Get.toNamed(Routes.studentSelector),
-          ),
-          const AppWeekDateStrip(),
-          const SizedBox(height: AppSpacing.md),
-          StatsRow(items: [
-            ('${modules.length}', 'Services', null),
-            ('${quickAccessTiles.length}', 'Quick access', null),
-            ('${students.students.length}', 'Children linked', null),
-          ]),
-          const SizedBox(height: AppSpacing.lg),
-          const SectionRow(title: 'Quick access'),
-          if (student != null)
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final cols = constraints.maxWidth >= 640 ? 6 : 4;
-                return GridView.count(
-                  crossAxisCount: cols,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 0.85,
-                  children: quickAccessTiles
-                      .map((t) => _tile(t.$1, t.$2, t.$3, t.$4))
-                      .toList(),
-                );
-              },
+          const TabHeading(title: 'All services', caption: 'Everything your family needs'),
+          const SizedBox(height: EmSpacing.s8),
+          if (student != null) ...[
+            // the child switcher (same destination as the shell header): who the app is showing
+            EmCard(
+              key: const Key('more_child_card'),
+              elevated: true,
+              onTap: () => Get.toNamed(Routes.studentSelector),
+              padding: const EdgeInsetsDirectional.all(EmSpacing.s16),
+              semanticLabel: 'Switch child, ${student.fullName}, Grade ${student.gradeSection}',
+              child: Row(children: [
+                EmAvatar(initials: student.initials.isEmpty ? '—' : student.initials, imageUrl: student.photoUrl, size: 56),
+                const SizedBox(width: EmSpacing.s16),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(student.fullName, maxLines: 2, overflow: TextOverflow.ellipsis, style: EmType.heading.copyWith(color: EmColors.ink)),
+                    Text('Grade ${student.gradeSection}', maxLines: 1, overflow: TextOverflow.ellipsis, style: EmType.label.copyWith(color: EmColors.textSecondary, fontWeight: FontWeight.w400)),
+                    Text('Tap to switch child', style: EmType.caption.copyWith(color: EmColors.primary)),
+                  ]),
+                ),
+                const Icon(Icons.chevron_right_rounded, color: EmColors.textSecondary),
+              ]),
             ),
-          const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: EmSpacing.s8),
+            const SectionRow(title: 'Quick access'),
+            EmTileGrid(tiles: [
+              for (final t in quickAccessTiles) EmTile(label: t.$2, icon: t.$1, color: t.$3, onTap: t.$4, tileKey: Key('quick_${t.$2}')),
+            ]),
+            const SizedBox(height: EmSpacing.s16),
+          ],
           const SectionRow(title: 'All services'),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final cols = constraints.maxWidth >= 640 ? 5 : 3;
-              return GridView.count(
-                crossAxisCount: cols,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisSpacing: 9,
-                mainAxisSpacing: 9,
-                childAspectRatio: 0.95,
-                children: modules.map((m) {
-                  return Material(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(AppRadius.lg),
-                    child: InkWell(
-                      onTap: m.$3,
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: AppColors.line),
-                          borderRadius: BorderRadius.circular(AppRadius.lg),
-                          boxShadow: [
-                            BoxShadow(
-                                color: AppColors.primaryColor.withOpacity(0.04),
-                                blurRadius: 14,
-                                offset: const Offset(0, 4)),
-                          ],
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 13, horizontal: 6),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            m.$1,
-                            const SizedBox(height: 8),
-                            CustomText(
-                                text: m.$2,
-                                textAlign: TextAlign.center,
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w700,
-                                color: m.$2 == 'Logout'
-                                    ? AppColors.red
-                                    : AppColors.primaryColor,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              );
-            },
-          ),
+          EmTileGrid(tiles: [
+            for (final m in modules) EmTile(label: m.$2, leading: m.$1, destructive: m.$2 == 'Logout', onTap: m.$3, tileKey: Key('service_${m.$2}')),
+          ]),
         ],
       );
     });
@@ -237,78 +187,17 @@ class MoreScreen extends StatelessWidget {
 
   Future<void> _confirmLogout() async {
     final confirmed = await Get.dialog<bool>(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const CustomText(
-            text: 'Logout',
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.black),
-        content: const CustomText(
-            text: 'Are you sure you want to logout?',
-            fontSize: 14,
-            color: AppColors.grey,
-            height: 1.5),
+      EmDialog(
+        title: 'Logout',
+        message: 'Are you sure you want to logout?',
         actions: [
-          TextButton(
-              onPressed: () => Get.back(result: false),
-              child: const CustomText(text: 'Cancel', color: AppColors.grey)),
-          TextButton(
-              onPressed: () => Get.back(result: true),
-              child: const CustomText(
-                  text: 'Logout',
-                  color: AppColors.red,
-                  fontWeight: FontWeight.w600)),
+          EmDialogAction(label: 'Cancel', onPressed: () => Get.back(result: false)),
+          EmDialogAction(label: 'Logout', tone: EmDialogTone.destructive, onPressed: () => Get.back(result: true)),
         ],
       ),
     );
     if (confirmed == true) {
       await Get.find<AuthController>().logout();
     }
-  }
-
-  Widget _tile(IconData icon, String label, Color color, VoidCallback onTap) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(AppRadius.lg),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.line),
-            borderRadius: BorderRadius.circular(AppRadius.lg),
-            boxShadow: [
-              BoxShadow(
-                  color: AppColors.primaryColor.withOpacity(0.04),
-                  blurRadius: 14,
-                  offset: const Offset(0, 4)),
-            ],
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                      color: color.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Icon(icon, color: color, size: 17)),
-              const SizedBox(height: 7),
-              CustomText(
-                  text: label,
-                  textAlign: TextAlign.center,
-                  fontSize: 9,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.ink,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

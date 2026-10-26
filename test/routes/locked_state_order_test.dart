@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:eldermin_parent_app/app/modules/results/views/results_screen.dart';
 import 'package:eldermin_parent_app/app/routes/app_routes.dart';
 import 'package:eldermin_parent_app/core/widgets/app_widgets.dart';
+import 'package:eldermin_parent_app/core/widgets/hero_card.dart';
 import 'package:eldermin_parent_app/core/widgets/locked_feature_view.dart';
 import 'package:eldermin_parent_app/core/widgets/shimmer_widgets.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +90,8 @@ void main() {
         expect(find.byType(LockedFeatureView), findsOneWidget);
         expect(find.text('This feature is currently paused'), findsOneWidget);
         expect(find.byType(AppErrorView), findsNothing);
-        expect(find.byType(ScreenHeader), findsNothing);
+        expect(find.byType(ScreenIntro), findsNothing);
+        expect(find.byType(HeroCard), findsNothing);
         expect(_loading, findsNothing);
         expect(t.takeException(), isNull);
         await disposeApp(t);

@@ -53,9 +53,7 @@ class LibraryScreen extends GetView<LibraryController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
+                const ShimmerScreenIntroSkeleton(),
                 const SizedBox(height: AppSpacing.lg),
                 const ShimmerStatsRowSkeleton(count: 3),
                 const SizedBox(height: AppSpacing.lg),
@@ -83,8 +81,7 @@ class LibraryScreen extends GetView<LibraryController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              ScreenHeader(
-                title: 'Learning library',
+              ScreenIntro(
                 caption: 'Resources, reading and borrowed books',
                 selectLabel:
                     DateFormat('MMMM yyyy').format(controller.selectedMonth.value),
@@ -96,8 +93,6 @@ class LibraryScreen extends GetView<LibraryController> {
                   if (picked != null) controller.changeMonth(picked);
                 },
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
                 ('$active', 'Borrowed', null),
                 ('$overdue', 'Overdue', overdue > 0 ? null : 'Clear'),

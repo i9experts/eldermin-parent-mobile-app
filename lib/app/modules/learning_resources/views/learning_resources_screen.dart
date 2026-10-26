@@ -19,7 +19,7 @@ class LearningResourcesScreen extends GetView<LearningResourcesController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(withChip: false),
+                const ShimmerScreenIntroSkeleton(withChip: false),
                 const SizedBox(height: AppSpacing.md),
                 ...shimmerListRows(6),
               ],
@@ -37,7 +37,7 @@ class LearningResourcesScreen extends GetView<LearningResourcesController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const ScreenHeader(title: 'Learning resources', caption: 'Lesson plans and shared materials'),
+              const ScreenIntro( caption: 'Lesson plans and shared materials'),
               const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
                 ('${plans.length}', 'Lesson plans', null),

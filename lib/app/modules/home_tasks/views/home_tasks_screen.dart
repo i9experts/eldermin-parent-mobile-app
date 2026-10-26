@@ -31,7 +31,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
               padding: const EdgeInsets.fromLTRB(
                   AppSpacing.md, AppSpacing.md, AppSpacing.md, 90),
               children: [
-                const ShimmerScreenHeaderSkeleton(),
+                const ShimmerScreenIntroSkeleton(),
                 const SizedBox(height: AppSpacing.lg),
                 const ShimmerStatsRowSkeleton(count: 2),
                 const SizedBox(height: AppSpacing.lg),
@@ -58,8 +58,7 @@ class HomeTasksScreen extends GetView<HomeTasksController> {
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md, AppSpacing.md, AppSpacing.md, 90),
             children: [
-              const ScreenHeader(
-                title: 'Home tasks',
+              const ScreenIntro(
                 caption: 'Small Tarbiyah tasks to practice at home',
               ),
               const SizedBox(height: AppSpacing.lg),

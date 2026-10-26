@@ -47,9 +47,7 @@ class LeavesScreen extends GetView<LeavesController> {
               padding: const EdgeInsets.fromLTRB(
                   AppSpacing.md, AppSpacing.md, AppSpacing.md, 90),
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
+                const ShimmerScreenIntroSkeleton(),
                 const SizedBox(height: AppSpacing.lg),
                 const ShimmerStatsRowSkeleton(count: 3),
                 const SizedBox(height: AppSpacing.lg),
@@ -75,13 +73,10 @@ class LeavesScreen extends GetView<LeavesController> {
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md, AppSpacing.md, AppSpacing.md, 90),
             children: [
-              const ScreenHeader(
-                title: 'Leave requests',
+              const ScreenIntro(
                 caption: 'Plan, submit and track absences',
                 selectLabel: 'Academic year',
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
                 ('${leaves.length}', 'Requests', null),
                 ('$pending', 'Pending', pending == 0 ? 'None' : null),

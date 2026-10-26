@@ -37,7 +37,7 @@ class DatesheetScreen extends GetView<DatesheetController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(withChip: false),
+                const ShimmerScreenIntroSkeleton(withChip: false),
                 const SizedBox(height: AppSpacing.md),
                 ...shimmerListRows(4),
               ],
@@ -55,7 +55,7 @@ class DatesheetScreen extends GetView<DatesheetController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const ScreenHeader(title: 'Exam datesheet', caption: 'Upcoming and ongoing assessments'),
+              const ScreenIntro( caption: 'Upcoming and ongoing assessments'),
               const SizedBox(height: AppSpacing.lg),
               if (assessments.isEmpty)
                 const AppEmptyView(

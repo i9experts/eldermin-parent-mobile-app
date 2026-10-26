@@ -24,7 +24,7 @@ class FeedbackScreen extends GetView<FeedbackController> {
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
-          const ScreenHeader(title: 'Send feedback', caption: "Tell the school what's on your mind"),
+          const ScreenIntro( caption: "Tell the school what's on your mind"),
           const SizedBox(height: AppSpacing.lg),
           AppCard(
             child: Column(

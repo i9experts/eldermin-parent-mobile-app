@@ -21,7 +21,7 @@ class CoursesScreen extends GetView<CoursesController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(withChip: false),
+                const ShimmerScreenIntroSkeleton(withChip: false),
                 const SizedBox(height: AppSpacing.md),
                 ...shimmerListRows(4),
               ],
@@ -40,7 +40,7 @@ class CoursesScreen extends GetView<CoursesController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const ScreenHeader(title: 'My courses', caption: 'Lessons published by your child\'s teachers'),
+              const ScreenIntro( caption: 'Lessons published by your child\'s teachers'),
               const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
                 ('${courses.length}', 'Courses', null),

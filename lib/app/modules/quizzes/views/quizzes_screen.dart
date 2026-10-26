@@ -21,7 +21,7 @@ class QuizzesScreen extends GetView<QuizzesController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(withChip: false),
+                const ShimmerScreenIntroSkeleton(withChip: false),
                 const SizedBox(height: AppSpacing.md),
                 ...shimmerListRows(4),
               ],
@@ -40,7 +40,7 @@ class QuizzesScreen extends GetView<QuizzesController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const ScreenHeader(title: 'Online quizzes', caption: 'Self-paced quizzes set by your child\'s school'),
+              const ScreenIntro( caption: 'Self-paced quizzes set by your child\'s school'),
               const SizedBox(height: AppSpacing.lg),
               if (quizzes.isEmpty)
                 const AppEmptyView(

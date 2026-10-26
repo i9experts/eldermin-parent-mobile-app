@@ -62,7 +62,7 @@ class DocumentsScreen extends GetView<DocumentsController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(withChip: false),
+                const ShimmerScreenIntroSkeleton(withChip: false),
                 const SizedBox(height: AppSpacing.md),
                 ...shimmerListRows(6),
               ],
@@ -80,7 +80,7 @@ class DocumentsScreen extends GetView<DocumentsController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const ScreenHeader(title: 'Academic documents', caption: 'Certificates and records on file'),
+              const ScreenIntro( caption: 'Certificates and records on file'),
               const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
                 ('${documents.length}', 'Documents', null),

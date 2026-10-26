@@ -22,9 +22,7 @@ class CircularsScreen extends GetView<CircularsController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
+                const ShimmerScreenIntroSkeleton(),
                 const SizedBox(height: AppSpacing.lg),
                 const ShimmerStatsRowSkeleton(count: 3),
                 const SizedBox(height: AppSpacing.lg),
@@ -55,8 +53,7 @@ class CircularsScreen extends GetView<CircularsController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              ScreenHeader(
-                title: 'School updates',
+              ScreenIntro(
                 caption: 'Circulars, notices and acknowledgements',
                 selectLabel: DateFormat('MMMM yyyy').format(selectedMonth),
                 onSelectTap: () async {
@@ -67,8 +64,6 @@ class CircularsScreen extends GetView<CircularsController> {
                   if (picked != null) controller.changeMonth(picked);
                 },
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
                 ('${circulars.length}', 'Published', null),
                 ('$thisMonth', 'This month', null),

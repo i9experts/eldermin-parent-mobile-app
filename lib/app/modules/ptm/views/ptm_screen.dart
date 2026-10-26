@@ -46,7 +46,7 @@ class PtmScreen extends GetView<PtmController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(withChip: false),
+                const ShimmerScreenIntroSkeleton(withChip: false),
                 const SizedBox(height: AppSpacing.md),
                 ...shimmerListRows(5),
               ],
@@ -68,7 +68,7 @@ class PtmScreen extends GetView<PtmController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              const ScreenHeader(title: 'Parent-teacher meetings', caption: 'Requests and meeting history'),
+              const ScreenIntro( caption: 'Requests and meeting history'),
               const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
                 ('${meetings.length}', 'Total', null),

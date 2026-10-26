@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_app_snack_bar.dart';
@@ -61,7 +60,7 @@ class NotificationsScreen extends GetView<NotificationsController> {
         if (controller.loading.value && controller.items.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: shimmerListRows(7),
             ),
           );
@@ -81,7 +80,7 @@ class NotificationsScreen extends GetView<NotificationsController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: items.map((n) {
               final isRead = n['isRead'] == true;
               return ListCardRow(
@@ -92,10 +91,10 @@ class NotificationsScreen extends GetView<NotificationsController> {
                 trailing: isRead
                     ? null
                     : Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                            color: AppColors.amber, shape: BoxShape.circle)),
+                        key: Key('unread_${n['_id']}'),
+                        width: 10,
+                        height: 10,
+                        decoration: const BoxDecoration(color: EmColors.primary, shape: BoxShape.circle)),
                 onTap: () {
                   if (!isRead) controller.markRead(n['_id']);
                   final route = _notificationRoutes[n['type']];

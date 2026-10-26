@@ -23,10 +23,8 @@ class DuesScreen extends GetView<DuesController> {
             child: ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                const ShimmerScreenHeaderSkeleton(),
+                const ShimmerScreenIntroSkeleton(),
                 const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
-                const SizedBox(height: AppSpacing.md),
                 const ShimmerHeroCardSkeleton(),
                 const SizedBox(height: AppSpacing.md),
                 const ShimmerStatsRowSkeleton(count: 3),
@@ -81,13 +79,10 @@ class DuesScreen extends GetView<DuesController> {
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
-              ScreenHeader(
-                title: 'Fees & payments',
+              ScreenIntro(
                 caption: 'Clear, secure and transparent',
                 selectLabel: academicYear,
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.md),
               HeroCard(
                 kicker: 'Current outstanding',
                 value: 'Rs ${totalDue.toStringAsFixed(0)}',

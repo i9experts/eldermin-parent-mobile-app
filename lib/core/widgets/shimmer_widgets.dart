@@ -34,7 +34,7 @@ class ShimmerCircle extends StatelessWidget {
   Widget build(BuildContext context) => EmSkeletonBox(height: size, circle: true);
 }
 
-/// Mirrors [ScreenHeader] - title + caption + optional trailing chip.
+/// Mirrors a tab root's [TabHeading] - title + caption + optional trailing chip.
 class ShimmerScreenHeaderSkeleton extends StatelessWidget {
   final bool withChip;
   const ShimmerScreenHeaderSkeleton({super.key, this.withChip = true});
@@ -59,6 +59,28 @@ class ShimmerScreenHeaderSkeleton extends StatelessWidget {
           if (withChip) ...[
             const SizedBox(width: EmSpacing.s12),
             const EmSkeletonBox(width: 78, height: 28, radius: EmRadius.pill),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Mirrors [ScreenIntro] - one caption line + optional chip (the title is the app bar's).
+class ShimmerScreenIntroSkeleton extends StatelessWidget {
+  final bool withChip;
+  const ShimmerScreenIntroSkeleton({super.key, this.withChip = true});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.block),
+      child: Row(
+        children: [
+          const Expanded(child: Align(alignment: AlignmentDirectional.centerStart, child: EmSkeletonBox(width: 220, height: 14))),
+          if (withChip) ...[
+            const SizedBox(width: EmSpacing.s12),
+            const EmSkeletonBox(width: 110, height: 28, radius: EmRadius.pill),
           ],
         ],
       ),
