@@ -13,7 +13,8 @@ import '../config/app_dimens.dart';
 /// counter); [fillColor] -> fillColor; [borderBorderradius] -> radius.
 ///
 /// No kit equivalent (accepted and ignored): [isDecoration], [color], [textColor], [filled], [borderRadius], [ispadding],
-/// [isborder] (the kit field always has its own outline), [contentPadding], and a [prefixIcon] that is not an [Icon].
+/// [isborder] (the kit field always has its own outline) and [contentPadding]. A [prefixIcon] that is not an [Icon] is shown
+/// in front of the field. A multi-line field keeps its label at the top (wrapper adaptation: `alignLabelWithHint`).
 
 // ignore: must_be_immutable
 class CustomTextField extends StatelessWidget {
@@ -74,9 +75,9 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // the kit field's prefix is an icon: an [Icon] passed here keeps its glyph
-    final prefix = prefixIcon is Icon ? (prefixIcon as Icon).icon : null;
-    return EmTextField(
+    // the kit field's prefix slot is an icon: an [Icon] passed here keeps its glyph
+    final iconPrefix = prefixIcon is Icon ? (prefixIcon as Icon).icon : null;
+    Widget field = EmTextField(
       label: label ?? hintText ?? '',
       hint: label == null ? null : hintText,
       controller: controller,
@@ -88,7 +89,7 @@ class CustomTextField extends StatelessWidget {
       onChanged: onChanged,
       onSubmitted: onFieldSubmitted == null ? null : (v) => onFieldSubmitted!(v),
       errorText: errorText,
-      prefixIcon: prefix,
+      prefixIcon: iconPrefix,
       suffix: suffixIcon,
       inputFormatters: [
         ...?inputFormatters,
@@ -97,5 +98,24 @@ class CustomTextField extends StatelessWidget {
       fillColor: fillColor,
       radius: borderBorderradius,
     );
+    // a multi-line field keeps its label / hint at the top-left (the single-line default centres it vertically)
+    if (maxLines == null || maxLines! > 1) {
+      final theme = Theme.of(context);
+      field = Theme(
+        data: theme.copyWith(inputDecorationTheme: theme.inputDecorationTheme.copyWith(alignLabelWithHint: true)),
+        child: field,
+      );
+    }
+    // a prefix that is not an icon (a country code, a currency, a unit) carries meaning: it is shown in front of the field
+    if (prefixIcon != null && prefixIcon is! Icon) {
+      field = Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 56),
+          child: Padding(padding: const EdgeInsetsDirectional.only(end: EmSpacing.s8), child: Align(alignment: AlignmentDirectional.centerStart, widthFactor: 1, child: prefixIcon)),
+        ),
+        Expanded(child: field),
+      ]);
+    }
+    return field;
   }
 }
