@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/models/early_years_models.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../../components/custom_text.dart';
+import '../../../../core/design/design.dart';
 import '../controllers/early_years_controller.dart';
 
 /// One piece of media. Photos load with [Image.network] on purpose: Flutter's
@@ -23,7 +22,7 @@ class EyMediaView extends StatelessWidget {
     final child = media.isPhoto ? _photo() : _attachment();
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(borderRadius: BorderRadius.circular(AppRadius.md), child: SizedBox(height: height, width: width, child: child)),
+      child: ClipRRect(borderRadius: EmRadius.mdAll, child: SizedBox(height: height, width: width, child: child)),
     );
   }
 
@@ -33,7 +32,7 @@ class EyMediaView extends StatelessWidget {
     return Image.network(
       url,
       fit: fit,
-      loadingBuilder: (c, w, p) => p == null ? w : const Center(child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))),
+      loadingBuilder: (c, w, p) => p == null ? w : const EmShimmer(child: EmSkeletonBox(width: double.infinity, height: double.infinity, radius: 0)),
       errorBuilder: (c, e, s) {
         // Expired or unreachable link: ask for fresh ones (rate limited in the controller).
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -63,13 +62,13 @@ class EyUnavailable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        color: AppColors.background,
+        color: EmColors.primaryTint,
         alignment: Alignment.center,
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsetsDirectional.all(EmSpacing.s8),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(icon, color: AppColors.faint, size: 26),
-          const SizedBox(height: 4),
-          CustomText(text: label, color: AppColors.faint, fontSize: 10, textAlign: TextAlign.center),
+          ExcludeSemantics(child: Icon(icon, color: EmColors.textSecondary, size: 28)),
+          const SizedBox(height: EmSpacing.s4),
+          Text(label, textAlign: TextAlign.center, style: EmType.caption.copyWith(color: EmColors.textSecondary)),
         ]),
       );
 }
@@ -83,15 +82,15 @@ class EyMediaStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     if (media.isEmpty) return const SizedBox.shrink();
     return SizedBox(
-      height: 150,
+      height: 160,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: media.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, __) => const SizedBox(width: EmSpacing.s8),
         itemBuilder: (context, i) => EyMediaView(
           media: media[i],
-          width: 150,
-          height: 150,
+          width: 160,
+          height: 160,
           onTap: media[i].isPhoto && media[i].url != null
               ? () => Get.to(() => EyPhotoViewer(photos: media.where((m) => m.isPhoto && m.url != null).toList(), initial: media[i]))
               : null,
@@ -119,17 +118,18 @@ class _EyPhotoViewerState extends State<EyPhotoViewer> {
     super.dispose();
   }
 
+  // a photo is viewed on a dark ground (the kit's scrim colour), with light controls
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(backgroundColor: Colors.black, foregroundColor: Colors.white),
+        backgroundColor: EmColors.scrim,
+        appBar: AppBar(backgroundColor: EmColors.scrim, foregroundColor: EmColors.onPrimary, iconTheme: const IconThemeData(color: EmColors.onPrimary)),
         body: PageView.builder(
           controller: _page,
           itemCount: widget.photos.length,
           itemBuilder: (c, i) => Column(children: [
             Expanded(child: InteractiveViewer(child: EyMediaView(media: widget.photos[i], fit: BoxFit.contain))),
             if (widget.photos[i].caption != null)
-              Padding(padding: const EdgeInsets.all(12), child: CustomText(text: widget.photos[i].caption!, color: Colors.white, fontSize: 13)),
+              Padding(padding: const EdgeInsetsDirectional.all(EmSpacing.s16), child: Text(widget.photos[i].caption!, style: EmType.body.copyWith(color: EmColors.onPrimary, fontWeight: FontWeight.w400))),
           ]),
         ),
       );

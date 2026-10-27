@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import '../../../../core/widgets/app_widgets.dart';
-import '../../../components/custom_text.dart';
 
 /// Used only for screens genuinely not built yet - never a substitute
 /// for a real screen with fabricated data. Every entry point in the app
@@ -12,17 +12,8 @@ class ComingSoonScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: CustomText(
-          text: title,
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
+    return EmScaffold(
+      appBar: EmAppBar(title: title),
       body: const AppEmptyView(
         icon: Icons.construction_rounded,
         title: 'This screen is still being built',

@@ -18,11 +18,6 @@ class ApiConstants {
   // ── Auth ─────────────────────────────────────────────────────
   static const String requestOtp = '$parentPortal/auth/request-otp';
   static const String verifyOtp = '$parentPortal/auth/verify-otp';
-  // Self-serve email+password signup/login - a separate path from the
-  // phone+OTP flow above, works even when the parent's child's school
-  // isn't an Eldermin customer yet (see ParentLead on the backend).
-  static const String registerLead = '$parentPortal/auth/register';
-  static const String loginLead = '$parentPortal/auth/login';
 
   // ── My Students ──────────────────────────────────────────────
   static const String myStudents = '$parentPortal/my-students';

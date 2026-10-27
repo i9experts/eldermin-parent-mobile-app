@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -11,13 +12,13 @@ class MedicalScreen extends GetView<MedicalController> {
 
   Widget _row(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsetsDirectional.symmetric(vertical: EmSpacing.s8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           CustomText(
               text: label,
-              color: AppColors.muted,
+              color: EmColors.textSecondary,
               fontSize: 10.5,
               maxLines: 1,
               overflow: TextOverflow.ellipsis),
@@ -25,7 +26,7 @@ class MedicalScreen extends GetView<MedicalController> {
             child: CustomText(
                 text: value,
                 textAlign: TextAlign.right,
-                color: AppColors.primaryColor,
+                color: EmColors.primaryDark,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 maxLines: 2,
@@ -39,7 +40,7 @@ class MedicalScreen extends GetView<MedicalController> {
   Widget _chipList(String title, List<dynamic> items, TagStyle style) {
     if (items.isEmpty) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.s12),
       child: AppCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,7 +49,7 @@ class MedicalScreen extends GetView<MedicalController> {
                 text: title,
                 fontWeight: FontWeight.w800,
                 fontSize: 12,
-                color: AppColors.primaryColor),
+                color: EmColors.primaryDark),
             const SizedBox(height: 8),
             Wrap(
               spacing: 6,
@@ -63,21 +64,16 @@ class MedicalScreen extends GetView<MedicalController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Medical information',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Medical information'),
       body: Obx(() {
         if (controller.loading.value && controller.medical.value == null) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: const [
-                ShimmerScreenHeaderSkeleton(withChip: false),
-                SizedBox(height: AppSpacing.md),
+                ShimmerScreenIntroSkeleton(withChip: false),
+                SizedBox(height: EmSpacing.s12),
                 ShimmerListRowSkeleton(),
                 ShimmerListRowSkeleton(),
                 ShimmerListRowSkeleton(),
@@ -119,10 +115,10 @@ class MedicalScreen extends GetView<MedicalController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenHeader(title: 'Medical information', caption: 'Health record on file with the school'),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: 'Health record on file with the school'),
+              const SizedBox(height: EmSpacing.s16),
               if (bloodGroup != null && bloodGroup.isNotEmpty) ...[
                 AppCard(
                   child: Row(
@@ -132,12 +128,12 @@ class MedicalScreen extends GetView<MedicalController> {
                           text: 'Blood group',
                           fontWeight: FontWeight.w800,
                           fontSize: 12,
-                          color: AppColors.primaryColor),
+                          color: EmColors.primaryDark),
                       AppTag(bloodGroup, style: TagStyle.red),
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
               ],
               _chipList('Allergies', allergies, TagStyle.red),
               _chipList('Medications', medications, TagStyle.amber),
@@ -153,7 +149,7 @@ class MedicalScreen extends GetView<MedicalController> {
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
               ],
               if ((insuranceProvider?.isNotEmpty ?? false) || (insurancePolicyNumber?.isNotEmpty ?? false)) ...[
                 const SectionRow(title: 'Insurance'),
@@ -166,14 +162,14 @@ class MedicalScreen extends GetView<MedicalController> {
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
               ],
               if (specialNeedsDetail != null && specialNeedsDetail.isNotEmpty) ...[
                 const SectionRow(title: 'Special needs'),
                 AppCard(
                     child: CustomText(
                         text: specialNeedsDetail,
-                        color: AppColors.ink,
+                        color: EmColors.ink,
                         fontSize: 12.5)),
               ],
             ],

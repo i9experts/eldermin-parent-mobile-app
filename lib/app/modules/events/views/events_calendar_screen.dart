@@ -6,20 +6,24 @@ import '../../../../core/widgets/app_date_picker.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/chart_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_text.dart';
+import '../../../../core/design/design.dart';
+import '../../../../core/widgets/em_tab_heading.dart';
+import '../../../../core/widgets/tab_state_list.dart';
 import '../controllers/events_controller.dart';
 
 const _categoryColors = {
-  'academic': AppColors.blue,
-  'sports': AppColors.amber,
-  'exam': AppColors.red,
-  'cultural': AppColors.purple,
-  'religious': AppColors.secondryColor,
-  'parents': AppColors.blue,
-  'holiday': AppColors.secondryColor,
-  'trip': AppColors.purple,
+  'academic': EmColors.primary,
+  'sports': EmColors.accent,
+  'exam': EmColors.error,
+  'cultural': EmColors.statusLeave,
+  'religious': EmColors.success,
+  'parents': EmColors.primary,
+  'holiday': EmColors.success,
+  'trip': EmColors.statusLeave,
 };
 
+/// Calendar tab root (teacher tab-root pattern: [TabHeading] + [TabStateList], teacher `calendar_screen.dart:75-93` for the
+/// calendar tab body and `classes_screen.dart:59-72` for the heading). The month chip opens the month picker (wired).
 class EventsCalendarScreen extends StatelessWidget {
   const EventsCalendarScreen({super.key});
 
@@ -28,25 +32,14 @@ class EventsCalendarScreen extends StatelessWidget {
     final controller = Get.put(EventsController());
 
     return Obx(() {
-      if (controller.loading.value && controller.events.isEmpty) {
-        return AppShimmer(
-          child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            children: [
-              const ShimmerScreenHeaderSkeleton(),
-              const SizedBox(height: AppSpacing.md),
-              const ShimmerBone(width: double.infinity, height: 300, radius: AppRadius.lg),
-              const SizedBox(height: AppSpacing.md),
-              const ShimmerStatsRowSkeleton(count: 3),
-              const SizedBox(height: AppSpacing.md),
-              ...shimmerListRows(4),
-            ],
-          ),
-        );
-      }
-      if (controller.error.value != null) {
-        return AppErrorView(
-            message: controller.error.value!, onRetry: controller.fetch);
+      final loading = controller.loading.value && controller.events.isEmpty;
+      final TabListState state;
+      if (loading) {
+        state = TabListState.loading;
+      } else if (controller.error.value != null) {
+        state = TabListState.error;
+      } else {
+        state = TabListState.data;
       }
 
       final month = controller.selectedMonth.value;
@@ -55,77 +48,78 @@ class EventsCalendarScreen extends StatelessWidget {
       final monthEvents = controller.eventsInMonth(month);
       final events = day == null ? monthEvents : controller.eventsOnDay(month, day);
 
-      return RefreshIndicator(
+      return TabStateList(
+        state: state,
         onRefresh: controller.fetch,
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          children: [
-            ScreenHeader(
-              title: 'Calendar',
-              caption: 'School events, exams and meetings',
-              selectLabel: DateFormat('MMMM yyyy').format(month),
-              onSelectTap: () async {
-                final picked = await showAppMonthPicker(
-                  context,
-                  initialMonth: month,
-                );
-                if (picked != null) controller.changeMonth(picked);
-              },
+        header: [
+          const TabHeading(title: 'Calendar', caption: 'School events, exams and meetings'),
+          Padding(
+            padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.s12),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: EmChip(
+                key: const Key('month_chip'),
+                label: DateFormat('MMMM yyyy').format(month),
+                icon: Icons.expand_more_rounded,
+                onTap: () async {
+                  final picked = await showAppMonthPicker(context, initialMonth: month);
+                  if (picked != null) controller.changeMonth(picked);
+                },
+              ),
             ),
-            AppCard(
-                child: AppMonthCalendar(
+          ),
+        ],
+        skeleton: const [
+          ShimmerBone(width: double.infinity, height: 320, radius: EmRadius.card),
+          SizedBox(height: EmSpacing.s12),
+          ShimmerStatsRowSkeleton(count: 3),
+          SizedBox(height: EmSpacing.s12),
+          ShimmerListRowSkeleton(),
+          ShimmerListRowSkeleton(),
+          ShimmerListRowSkeleton(),
+        ],
+        errorMessage: controller.error.value,
+        onRetry: controller.fetch,
+        data: [
+          AppCard(
+            child: AppMonthCalendar(
               month: month,
               eventDays: eventDays,
               selectedDay: day,
               onDayTap: controller.toggleDay,
               onPrevMonth: controller.prevMonth,
               onNextMonth: controller.nextMonth,
-            )),
-            const SizedBox(height: AppSpacing.md),
-            StatsRow(items: [
-              ('${monthEvents.length}', 'Events', null),
-              (
-                '${monthEvents.where((e) => e['category'] == 'exam').length}',
-                'Exams',
-                null
-              ),
-              (
-                '${monthEvents.where((e) => e['category'] == 'parents').length}',
-                'Meetings',
-                null
-              )
-            ]),
-            const SizedBox(height: AppSpacing.md),
-            SectionRow(
-                title: day == null
-                    ? 'This month'
-                    : '$day ${DateFormat('MMMM').format(month)}'),
-            if (events.isEmpty)
-              AppEmptyView(
-                  icon: Icons.event_busy_outlined,
-                  title: day == null ? 'No events this month' : 'Nothing on this day',
-                  subtitle: day == null
-                      ? 'School events and important dates will show up here.'
-                      : 'Tap the date again to see the whole month.')
-            else
-              ...events.map((e) {
-                final range = controller.rangeOf(e);
-                final color = _categoryColors[e['category']] ?? AppColors.blue;
-                return ListCardRow(
-                  icon: Icons.calendar_month_rounded,
-                  iconColor: color,
-                  title: e['title']?.toString() ?? 'Event',
-                  subtitle: [
-                    if (range != null) _rangeLabel(range.$1, range.$2),
-                    if (e['venue'] != null && e['venue'].toString().isNotEmpty) e['venue'].toString(),
-                  ].join(' • '),
-                  trailing: AppTag((e['category'] ?? 'event').toString(),
-                      style: TagStyle.info),
-                  onTap: () => _showEvent(context, e, range, color),
-                );
-              }),
-          ],
-        ),
+            ),
+          ),
+          StatsRow(items: [
+            ('${monthEvents.length}', 'Events', null),
+            ('${monthEvents.where((e) => e['category'] == 'exam').length}', 'Exams', null),
+            ('${monthEvents.where((e) => e['category'] == 'parents').length}', 'Meetings', null),
+          ]),
+          const SizedBox(height: EmSpacing.s8),
+          SectionRow(title: day == null ? 'This month' : '$day ${DateFormat('MMMM').format(month)}'),
+          if (events.isEmpty)
+            AppEmptyView(
+                icon: Icons.event_busy_outlined,
+                title: day == null ? 'No events this month' : 'Nothing on this day',
+                subtitle: day == null ? 'School events and important dates will show up here.' : 'Tap the date again to see the whole month.')
+          else
+            ...events.map((e) {
+              final range = controller.rangeOf(e);
+              final color = _categoryColors[e['category']] ?? EmColors.primary;
+              return ListCardRow(
+                icon: Icons.calendar_month_rounded,
+                iconColor: color,
+                title: e['title']?.toString() ?? 'Event',
+                subtitle: [
+                  if (range != null) _rangeLabel(range.$1, range.$2),
+                  if (e['venue'] != null && e['venue'].toString().isNotEmpty) e['venue'].toString(),
+                ].join(' • '),
+                trailing: AppTag((e['category'] ?? 'event').toString(), style: TagStyle.info),
+                onTap: () => _showEvent(context, e, range, color),
+              );
+            }),
+        ],
       );
     });
   }
@@ -137,54 +131,35 @@ class EventsCalendarScreen extends StatelessWidget {
 
   void _showEvent(BuildContext context, dynamic e, (DateTime, DateTime)? range, Color color) {
     final desc = e['description']?.toString() ?? '';
-    final time = [e['startTime'], e['endTime']]
-        .where((t) => t != null && t.toString().isNotEmpty)
-        .join(' – ');
+    final time = [e['startTime'], e['endTime']].where((t) => t != null && t.toString().isNotEmpty).join(' – ');
     final rows = <(IconData, String)>[
       if (range != null) (Icons.event_outlined, _rangeLabel(range.$1, range.$2)),
       if (time.isNotEmpty) (Icons.schedule_outlined, time),
-      if (e['venue'] != null && e['venue'].toString().isNotEmpty)
-        (Icons.place_outlined, e['venue'].toString()),
+      if (e['venue'] != null && e['venue'].toString().isNotEmpty) (Icons.place_outlined, e['venue'].toString()),
     ];
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(children: [
-                Expanded(
-                  child: CustomText(
-                      text: e['title']?.toString() ?? 'Event',
-                      fontWeight: FontWeight.w800,
-                      fontSize: 17,
-                      color: AppColors.primaryColor),
-                ),
-                const SizedBox(width: 8),
-                AppTag((e['category'] ?? 'event').toString(), style: TagStyle.info),
+    EmBottomSheet.show<void>(
+      context,
+      title: e['title']?.toString() ?? 'Event',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(alignment: AlignmentDirectional.centerStart, child: AppTag((e['category'] ?? 'event').toString(), style: TagStyle.info)),
+          const SizedBox(height: EmSpacing.s12),
+          for (final r in rows)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.s8),
+              child: Row(children: [
+                Icon(r.$1, size: 20, color: color),
+                const SizedBox(width: EmSpacing.s12),
+                Expanded(child: Text(r.$2, style: EmType.body.copyWith(color: EmColors.ink))),
               ]),
-              const SizedBox(height: 14),
-              for (final r in rows)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(children: [
-                    Icon(r.$1, size: 18, color: color),
-                    const SizedBox(width: 10),
-                    Expanded(child: CustomText(text: r.$2, fontSize: 13, color: AppColors.ink)),
-                  ]),
-                ),
-              if (desc.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                CustomText(text: desc, fontSize: 13, color: AppColors.muted),
-              ],
-              const SizedBox(height: 12),
-            ],
-          ),
-        ),
+            ),
+          if (desc.isNotEmpty) ...[
+            const SizedBox(height: EmSpacing.s4),
+            Text(desc, style: EmType.body.copyWith(color: EmColors.textSecondary, fontWeight: FontWeight.w400)),
+          ],
+        ],
       ),
     );
   }

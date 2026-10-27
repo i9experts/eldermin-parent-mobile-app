@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_app_snack_bar.dart';
-import '../../../components/custom_text.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/notifications_controller.dart';
 
@@ -39,15 +38,12 @@ class NotificationsScreen extends GetView<NotificationsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const CustomText(
-            text: 'Notifications',
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w700),
+    return EmScaffold(
+      appBar: EmAppBar(
+        title: 'Notifications',
         actions: [
-          TextButton(
+          EmTextAction(
+            label: 'Mark all read',
             onPressed: () async {
               final ok = await controller.markAllRead();
               if (ok) {
@@ -57,8 +53,6 @@ class NotificationsScreen extends GetView<NotificationsController> {
                     'Could not update notifications. Please try again.');
               }
             },
-            child: const CustomText(
-                text: 'Mark all read', color: Colors.white, fontSize: 12),
           ),
         ],
       ),
@@ -66,7 +60,7 @@ class NotificationsScreen extends GetView<NotificationsController> {
         if (controller.loading.value && controller.items.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: shimmerListRows(7),
             ),
           );
@@ -86,7 +80,7 @@ class NotificationsScreen extends GetView<NotificationsController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: items.map((n) {
               final isRead = n['isRead'] == true;
               return ListCardRow(
@@ -97,10 +91,10 @@ class NotificationsScreen extends GetView<NotificationsController> {
                 trailing: isRead
                     ? null
                     : Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                            color: AppColors.amber, shape: BoxShape.circle)),
+                        key: Key('unread_${n['_id']}'),
+                        width: 10,
+                        height: 10,
+                        decoration: const BoxDecoration(color: EmColors.primary, shape: BoxShape.circle)),
                 onTap: () {
                   if (!isRead) controller.markRead(n['_id']);
                   final route = _notificationRoutes[n['type']];

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/locked_feature_view.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
@@ -15,21 +15,16 @@ class DiaryScreen extends GetView<DiaryController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Class diary',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Class diary'),
       body: Obx(() {
         if (controller.loading.value && controller.entries.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
-                const ShimmerScreenHeaderSkeleton(withChip: false),
-                const SizedBox(height: AppSpacing.md),
+                const ShimmerScreenIntroSkeleton(withChip: false),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(4),
               ],
             ),
@@ -46,10 +41,10 @@ class DiaryScreen extends GetView<DiaryController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenHeader(title: 'Class diary', caption: "Daily classwork & homework from your child's teachers"),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: "Daily classwork & homework from your child's teachers"),
+              const SizedBox(height: EmSpacing.s16),
               if (entries.isEmpty)
                 const AppEmptyView(
                   icon: Icons.auto_stories_outlined,
@@ -83,7 +78,7 @@ class _DiaryCard extends GetView<DiaryController> {
         .toList();
 
     return AppCard(
-      padding: const EdgeInsets.all(14),
+      padding: EmSpacing.cardPad,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -93,11 +88,11 @@ class _DiaryCard extends GetView<DiaryController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomText(text: dateLabel, fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.ink),
+                    CustomText(text: dateLabel, fontSize: 15, fontWeight: FontWeight.w700, color: EmColors.ink),
                     if (teacher.isNotEmpty)
                       Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: CustomText(text: 'By $teacher', fontSize: 12, color: AppColors.muted),
+                        padding: const EdgeInsetsDirectional.only(top: EmSpacing.s2),
+                        child: CustomText(text: 'By $teacher', fontSize: 12, color: EmColors.textSecondary),
                       ),
                   ],
                 ),
@@ -108,12 +103,12 @@ class _DiaryCard extends GetView<DiaryController> {
                 final busy = controller.downloadingId.value == id;
                 return busy
                     ? const Padding(
-                        padding: EdgeInsets.all(12),
+                        padding: EdgeInsetsDirectional.all(EmSpacing.s12),
                         child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
                       )
                     : IconButton(
                         tooltip: 'Open PDF',
-                        icon: const Icon(Icons.picture_as_pdf_outlined, color: AppColors.blue),
+                        icon: const Icon(Icons.picture_as_pdf_outlined, color: EmColors.primary),
                         onPressed: id.isEmpty ? null : () => controller.openPdf(id),
                       );
               }),
@@ -144,11 +139,11 @@ class _PeriodBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomText(text: _s('subject'), fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.blue),
+        CustomText(text: _s('subject'), fontSize: 14, fontWeight: FontWeight.w700, color: EmColors.primary),
         if (title.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: CustomText(text: title, fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.ink),
+            padding: const EdgeInsetsDirectional.only(top: EmSpacing.s2),
+            child: CustomText(text: title, fontSize: 13, fontWeight: FontWeight.w600, color: EmColors.ink),
           ),
         if (description.isNotEmpty) _line(null, description),
         if (classwork.isNotEmpty) _line('Classwork', classwork),
@@ -158,13 +153,13 @@ class _PeriodBlock extends StatelessWidget {
   }
 
   Widget _line(String? label, String text) => Padding(
-        padding: const EdgeInsets.only(top: 6),
+        padding: const EdgeInsetsDirectional.only(top: EmSpacing.s4 + EmSpacing.s2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (label != null)
-              CustomText(text: label, fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.muted),
-            CustomText(text: text, fontSize: 13, color: AppColors.ink),
+              CustomText(text: label, fontSize: 11, fontWeight: FontWeight.w700, color: EmColors.textSecondary),
+            CustomText(text: text, fontSize: 13, color: EmColors.ink),
           ],
         ),
       );

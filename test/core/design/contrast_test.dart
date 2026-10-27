@@ -1,0 +1,102 @@
+import 'package:eldermin_parent_app/core/design/design.dart';
+import 'package:eldermin_parent_app/core/theme/app_theme.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('WCAG helpers', () {
+    test('black on white is 21:1, same colour is 1:1', () {
+      expect(contrastRatio(Colors.black, Colors.white), closeTo(21, 0.01));
+      expect(contrastRatio(EmColors.primary, EmColors.primary), closeTo(1, 0.001));
+    });
+    test('ratio is symmetric', () {
+      expect(contrastRatio(EmColors.ink, EmColors.surface), contrastRatio(EmColors.surface, EmColors.ink));
+    });
+    test('readableOn picks white on dark and ink on light', () {
+      expect(readableOn(EmColors.primaryDark), Colors.white);
+      expect(readableOn(EmColors.primary), Colors.white);
+      expect(readableOn(EmColors.primaryLight), const Color(0xFF12263A));
+      expect(readableOn(EmColors.accent), const Color(0xFF12263A));
+      expect(readableOn(Colors.white), const Color(0xFF12263A));
+      expect(readableOn(Colors.black), Colors.white);
+    });
+  });
+
+  group('declared token pairs meet WCAG AA', () {
+    for (final p in EmColors.contrastPairs) {
+      test('${p.name} >= ${p.min}', () {
+        final r = contrastRatio(p.foreground, p.background);
+        expect(r, greaterThanOrEqualTo(p.min), reason: '${p.name} is ${r.toStringAsFixed(2)}:1');
+      });
+    }
+    test('pair list has no duplicates', () {
+      final names = EmColors.contrastPairs.map((p) => p.name).toList();
+      expect(names.toSet().length, names.length);
+    });
+  });
+
+  group('EmTone pairs are AA', () {
+    final tags = {'info': EmTone.info, 'amber': EmTone.warning, 'green': EmTone.success, 'red': EmTone.error, 'neutral': EmTone.neutral, 'leave': EmTone.leave};
+    tags.forEach((name, t) {
+      test(name, () => expect(contrastRatio(t.foreground, t.background), greaterThanOrEqualTo(4.5)));
+    });
+  });
+
+  group('every semantic colour has a container + on-colour', () {
+    final sets = {
+      'success': (EmColors.success, EmColors.onSuccess, EmColors.successContainer, EmColors.onSuccessContainer),
+      'error': (EmColors.error, EmColors.onError, EmColors.errorContainer, EmColors.onErrorContainer),
+      'warning': (EmColors.warning, EmColors.onWarning, EmColors.warningContainer, EmColors.onWarningContainer),
+      'info': (EmColors.info, EmColors.onInfo, EmColors.infoContainer, EmColors.onInfoContainer),
+      'statusLeave': (EmColors.statusLeave, EmColors.onStatusLeave, EmColors.statusLeaveContainer, EmColors.onStatusLeaveContainer),
+    };
+    sets.forEach((name, c) {
+      test('$name: on-colour on solid and on-container on container are AA; container is a light tint', () {
+        expect(contrastRatio(c.$2, c.$1), greaterThanOrEqualTo(4.5));
+        expect(contrastRatio(c.$4, c.$3), greaterThanOrEqualTo(4.5));
+        expect(relativeLuminance(c.$3), greaterThan(0.8), reason: 'container must be light');
+      });
+    });
+  });
+
+  group('accent is never a text colour in the theme', () {
+    final theme = AppTheme.light;
+    test('no text-theme style uses the accent', () {
+      final t = theme.textTheme;
+      for (final s in [t.displayLarge, t.headlineSmall, t.titleMedium, t.bodyLarge, t.bodyMedium, t.bodySmall, t.labelLarge, t.labelSmall]) {
+        expect(s!.color, isNot(EmColors.accent));
+      }
+    });
+    test('FAB glyph on accent is navy', () {
+      expect(theme.floatingActionButtonTheme.backgroundColor, EmColors.accent);
+      expect(theme.floatingActionButtonTheme.foregroundColor, EmColors.onAccent);
+    });
+  });
+
+  group('AppTheme.light (entry point kept)', () {
+    final theme = AppTheme.light;
+    test('scaffold is the brand tint, not white', () {
+      expect(theme.scaffoldBackgroundColor, EmColors.background);
+      expect(theme.scaffoldBackgroundColor, isNot(Colors.white));
+    });
+    test('app bar is tinted, not navy', () {
+      expect(theme.appBarTheme.backgroundColor, EmColors.background);
+      expect(theme.appBarTheme.foregroundColor, EmColors.ink);
+    });
+    test('cards are white, radius 24', () {
+      expect(theme.cardTheme.color, EmColors.surface);
+      expect((theme.cardTheme.shape as RoundedRectangleBorder).borderRadius, BorderRadius.circular(24));
+    });
+    test('font family is the bundled one', () {
+      expect(theme.textTheme.bodyMedium!.fontFamily, EmType.family);
+      expect(EmType.family, 'PlusJakartaSans');
+    });
+    test('buttons are 10 dp rounded, theme yellow with an ink label, >= 48dp high', () {
+      final s = theme.elevatedButtonTheme.style!;
+      expect((s.shape!.resolve({})! as RoundedRectangleBorder).borderRadius, BorderRadius.circular(10));
+      expect(s.backgroundColor!.resolve({}), EmColors.accent);
+      expect(contrastRatio(s.foregroundColor!.resolve({})!, EmColors.accent), greaterThanOrEqualTo(4.5));
+      expect(s.minimumSize!.resolve({})!.height, greaterThanOrEqualTo(48));
+    });
+  });
+}

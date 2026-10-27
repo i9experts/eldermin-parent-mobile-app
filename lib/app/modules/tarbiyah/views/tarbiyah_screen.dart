@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
@@ -27,35 +28,24 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const CustomText(
-          text: 'Growth & tarbiyah',
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Growth & tarbiyah'),
       body: Obx(() {
         if (controller.loading.value &&
             controller.tarbiyahAssessments.isEmpty &&
             controller.behaviourRecords.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
-                const SizedBox(height: AppSpacing.md),
+                const ShimmerScreenIntroSkeleton(),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerHeroCardSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerStatsRowSkeleton(count: 3),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 const ShimmerChartSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 ...shimmerListRows(4),
               ],
             ),
@@ -79,15 +69,12 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenHeader(
-                title: 'Growth & tarbiyah',
+              const ScreenIntro(
                 caption: 'Character, wellbeing and positive habits',
                 selectLabel: 'This month',
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.md),
               if (assessment != null)
                 HeroCard(
                   kicker: 'Holistic growth score',
@@ -99,7 +86,6 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                       : (assessment['teacherObservations']?.toString() ??
                           'Consistent positive development'),
                   percent: overallPct ?? 0,
-                  ringColor: AppColors.amber,
                   metrics: [
                     (
                       '${records.where((r) => (r['points'] ?? 0) > 0).length}',
@@ -118,7 +104,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                     title: 'No tarbiyah assessment yet',
                     subtitle:
                         'Character assessments will appear here once recorded.'),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               if (traits.isNotEmpty) ...[
                 StatsRow(items: [
                   for (final t in traits.take(3))
@@ -128,7 +114,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                       null,
                     ),
                 ]),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 const SectionRow(title: 'Character development'),
                 AppCard(
                   child: Column(
@@ -138,7 +124,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                       final score = _traitPct(t);
                       final key = _traitName(t);
                       return Padding(
-                        padding: EdgeInsets.only(top: e.key == 0 ? 0 : 10),
+                        padding: EdgeInsetsDirectional.only(top: e.key == 0 ? 0 : EmSpacing.s8 + EmSpacing.s2),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -148,7 +134,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                                 Expanded(
                                   child: CustomText(
                                       text: key,
-                                      color: AppColors.muted,
+                                      color: EmColors.textSecondary,
                                       fontSize: 9.5,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis),
@@ -156,7 +142,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                                 const SizedBox(width: 8),
                                 CustomText(
                                     text: '$score%',
-                                    color: AppColors.primaryColor,
+                                    color: EmColors.primaryDark,
                                     fontSize: 9,
                                     fontWeight: FontWeight.w800),
                               ],
@@ -165,8 +151,8 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                             AppProgressBar(
                                 percent: score,
                                 color: score < 88
-                                    ? AppColors.amber
-                                    : AppColors.secondryColor),
+                                    ? EmColors.accent
+                                    : EmColors.success),
                           ],
                         ),
                       );
@@ -174,7 +160,7 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                   ),
                 ),
               ],
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               const SectionRow(title: 'Teacher notes & observations'),
               if (records.isEmpty)
                 const AppEmptyView(
@@ -190,8 +176,8 @@ class TarbiyahScreen extends GetView<TarbiyahController> {
                   return ListCardRow(
                     icon: Icons.favorite_rounded,
                     iconColor: neutral
-                        ? AppColors.muted
-                        : (positive ? AppColors.secondryColor : AppColors.red),
+                        ? EmColors.textSecondary
+                        : (positive ? EmColors.success : EmColors.error),
                     title: rec['title']?.toString() ??
                         rec['category']?.toString() ??
                         'Observation',

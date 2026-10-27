@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:eldermin_parent_app/core/theme/app_theme.dart';
 
 import 'svg_icon.dart';
 import '../config/app_images.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../../core/design/design.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CommonImageView extends StatelessWidget {
@@ -91,7 +91,7 @@ class CommonImageView extends StatelessWidget {
       try {
         return SvgPicture.asset(
           placeHolder,
-          // color: AppColors.gray600.withOpacity(0.5),
+          // color: EmColors.textSecondary.withOpacity(0.5),
           height: height,
           width: width,
           fit: fit,
@@ -106,7 +106,7 @@ class CommonImageView extends StatelessWidget {
       try {
         return Image.asset(
           placeHolder,
-          // color: AppColors.gray600.withOpacity(0.5),
+          // color: EmColors.textSecondary.withOpacity(0.5),
           height: height,
           width: width,
           fit: fit,
@@ -125,7 +125,7 @@ class CommonImageView extends StatelessWidget {
     return Container(
       height: height,
       width: width,
-      color: AppColors.background,
+      color: EmColors.background,
       child: SvgIcon(
         assetName: AppImages.placeHolderImage,
         size: (height ?? 50) * 0.4,
@@ -153,14 +153,14 @@ class CommonImageView extends StatelessWidget {
         placeholder: (context, url) => Container(
           height: height,
           width: width,
-          color: AppColors.greySwatch200,
+          color: EmColors.background,
           child: Center(
             child: SizedBox(
               height: 30,
               width: 30,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: AppColors.greySwatch400,
+                color: EmColors.disabled,
               ),
             ),
           ),

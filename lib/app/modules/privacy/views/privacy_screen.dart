@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/design/design.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../components/custom_text.dart';
 
@@ -74,17 +74,10 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const CustomText(
-          text: 'Privacy policy',
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-          fontSize: 18,
-        ),
-      ),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Privacy policy'),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: EmSpacing.listPadding,
         children: [
           AppCard(
             child: Column(
@@ -92,7 +85,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               children: const [
                 CustomText(
                   text: 'Your family\'s privacy',
-                  color: AppColors.primaryColor,
+                  color: EmColors.primaryDark,
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
                 ),
@@ -102,34 +95,34 @@ class PrivacyPolicyScreen extends StatelessWidget {
                       'shows and how it is handled. It covers only what this app '
                       'does — your school\'s own privacy policy governs how it '
                       'collects and manages student records more broadly.',
-                  color: AppColors.muted,
+                  color: EmColors.textSecondary,
                   fontSize: 11,
                   height: 1.5,
                 ),
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: EmSpacing.s8),
           ..._sections.map((s) => AppCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomText(text: s.$1, color: AppColors.primaryColor, fontSize: 12.5, fontWeight: FontWeight.w800),
+                    CustomText(text: s.$1, color: EmColors.primaryDark, fontSize: 12.5, fontWeight: FontWeight.w800),
                     const SizedBox(height: 6),
-                    CustomText(text: s.$2, color: AppColors.muted, fontSize: 11, height: 1.55),
+                    CustomText(text: s.$2, color: EmColors.textSecondary, fontSize: 11, height: 1.55),
                   ],
                 ),
               )),
           Center(
             child: CustomText(
               text: 'Questions about this policy? Reach us from More → Feedback.',
-              color: AppColors.faint,
+              color: EmColors.textTertiary,
               fontSize: 10,
               textAlign: TextAlign.center,
               maxLines: 2,
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: EmSpacing.s12),
         ],
       ),
     );

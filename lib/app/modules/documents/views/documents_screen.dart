@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_app_snack_bar.dart';
-import '../../../components/custom_text.dart';
 import '../controllers/documents_controller.dart';
 
 class DocumentsScreen extends GetView<DocumentsController> {
@@ -54,22 +54,16 @@ class DocumentsScreen extends GetView<DocumentsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-        text: 'Academic documents',
-        color: Colors.white,
-        fontWeight: FontWeight.w700,
-        fontSize: 18,
-      )),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Academic documents'),
       body: Obx(() {
         if (controller.loading.value && controller.documents.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
-                const ShimmerScreenHeaderSkeleton(withChip: false),
-                const SizedBox(height: AppSpacing.md),
+                const ShimmerScreenIntroSkeleton(withChip: false),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(6),
               ],
             ),
@@ -84,10 +78,10 @@ class DocumentsScreen extends GetView<DocumentsController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenHeader(title: 'Academic documents', caption: 'Certificates and records on file'),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: 'Certificates and records on file'),
+              const SizedBox(height: EmSpacing.s16),
               StatsRow(items: [
                 ('${documents.length}', 'Documents', null),
                 (
@@ -101,7 +95,7 @@ class DocumentsScreen extends GetView<DocumentsController> {
                   null
                 ),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               if (documents.isEmpty)
                 const AppEmptyView(
                   icon: Icons.folder_off_outlined,

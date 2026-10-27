@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/greeting.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_date_picker.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_text.dart';
 import '../../../components/custom_app_snack_bar.dart';
 import '../../../components/custom_bottom_sheet.dart';
-import '../../../components/custom_button.dart';
-import '../../../components/custom_text_field.dart';
 import '../controllers/homework_controller.dart';
 
 class HomeworkScreen extends GetView<HomeworkController> {
@@ -17,27 +16,20 @@ class HomeworkScreen extends GetView<HomeworkController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Homework',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Homework'),
       body: Obx(() {
         if (controller.loading.value && controller.items.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const ShimmerScreenIntroSkeleton(),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerStatsRowSkeleton(count: 3),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 const ShimmerChartSkeleton(),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(5),
               ],
             ),
@@ -60,10 +52,9 @@ class HomeworkScreen extends GetView<HomeworkController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              ScreenHeader(
-                title: 'Homework',
+              ScreenIntro(
                 caption: 'Tasks, submissions and feedback',
                 selectLabel:
                     DateFormat('MMMM yyyy').format(controller.selectedMonth.value),
@@ -75,38 +66,32 @@ class HomeworkScreen extends GetView<HomeworkController> {
                   if (picked != null) controller.changeMonth(picked);
                 },
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
                 ('${items.length}', 'Assigned', null),
                 ('$completedCount', 'Completed', null),
                 ('$pendingCount', 'Pending', null),
               ]),
               if (items.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
                 AppCard(
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      DonutRing(percent: completionPct, color: AppColors.blue),
-                      const SizedBox(width: 16),
+                      DonutRing(percent: completionPct, color: EmColors.primary),
+                      const SizedBox(width: EmSpacing.s16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const CustomText(
-                                text: 'Weekly completion',
-                                fontWeight: FontWeight.w800,
-                                fontSize: 12,
-                                color: AppColors.primaryColor),
-                            const SizedBox(height: 10),
+                            Text('Weekly completion', style: EmType.label.copyWith(color: EmColors.ink)),
+                            const SizedBox(height: EmSpacing.s8),
                             _LegendRow(
-                                color: AppColors.secondryColor,
+                                color: EmColors.success,
                                 label: 'Submitted',
                                 value: '$completedCount'),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: EmSpacing.s4),
                             _LegendRow(
-                                color: AppColors.amber,
+                                color: EmColors.accent,
                                 label: 'Pending',
                                 value: '$pendingCount'),
                           ],
@@ -116,12 +101,12 @@ class HomeworkScreen extends GetView<HomeworkController> {
                   ),
                 ),
               ],
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: EmSpacing.s12),
               SegmentedControl(
                   options: const ['All tasks', 'Pending', 'Submitted'],
                   selectedIndex: controller.filter.value,
                   onChanged: controller.changeFilter),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: EmSpacing.s12),
               if (filtered.isEmpty)
                 const AppEmptyView(
                     icon: Icons.assignment_turned_in_outlined,
@@ -136,7 +121,7 @@ class HomeworkScreen extends GetView<HomeworkController> {
                       ['submitted', 'late', 'graded'].contains((h['mySubmission'] is Map ? h['mySubmission']['status'] : null));
                   final isOverdue = !isSubmitted &&
                       due != null &&
-                      due.isBefore(DateTime.now());
+                      due.isBefore(uiNow());
                   final sub = h['mySubmission'] is Map ? Map<String, dynamic>.from(h['mySubmission'] as Map) : null;
                   final subStatus = sub?['status']?.toString();
                   final graded = subStatus == 'graded';
@@ -147,65 +132,31 @@ class HomeworkScreen extends GetView<HomeworkController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(children: [
-                          Expanded(
-                              child: CustomText(
-                                  text: h['subject'] ?? 'Subject',
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.primaryColor,
-                                  fontSize: 12,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis)),
+                          Expanded(child: Text('${h['subject'] ?? 'Subject'}', maxLines: 1, overflow: TextOverflow.ellipsis, style: EmType.bodyLarge.copyWith(color: EmColors.ink))),
+                          const SizedBox(width: EmSpacing.s8),
                           AppTag(
-                            isSubmitted
-                                ? 'Submitted'
-                                : (isOverdue
-                                    ? 'Overdue'
-                                    : (due != null
-                                        ? 'Due ${due.day}/${due.month}'
-                                        : 'Pending')),
-                            style: isSubmitted
-                                ? TagStyle.green
-                                : (isOverdue ? TagStyle.red : TagStyle.amber),
+                            isSubmitted ? 'Submitted' : (isOverdue ? 'Overdue' : (due != null ? 'Due ${due.day}/${due.month}' : 'Pending')),
+                            style: isSubmitted ? TagStyle.green : (isOverdue ? TagStyle.red : TagStyle.amber),
                           ),
                         ]),
-                        const SizedBox(height: 4),
-                        CustomText(
-                            text: h['title'] ?? h['description'] ?? '',
-                            color: AppColors.muted,
-                            fontSize: 10.5,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: EmSpacing.s4),
+                        Text('${h['title'] ?? h['description'] ?? ''}',
+                            maxLines: 2, overflow: TextOverflow.ellipsis, style: EmType.label.copyWith(color: EmColors.textSecondary, fontWeight: FontWeight.w400)),
+                        const SizedBox(height: EmSpacing.s12),
                         if (graded && sub?['grade'] != null) ...[
-                          CustomText(
-                              text: 'Score: ${sub!['grade']}/${sub['maxGrade'] ?? h['totalMarks'] ?? ''}',
-                              color: AppColors.primaryColor,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 11),
+                          Text('Score: ${sub!['grade']}/${sub['maxGrade'] ?? h['totalMarks'] ?? ''}', style: EmType.label.copyWith(color: EmColors.ink)),
                           if ((sub['feedback']?.toString() ?? '').isNotEmpty)
-                            CustomText(
-                                text: 'Feedback: ${sub['feedback']}',
-                                color: AppColors.muted,
-                                fontSize: 10.5,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis),
-                          const SizedBox(height: 8),
+                            Text('Feedback: ${sub['feedback']}',
+                                maxLines: 3, overflow: TextOverflow.ellipsis, style: EmType.label.copyWith(color: EmColors.textSecondary, fontWeight: FontWeight.w400)),
+                          const SizedBox(height: EmSpacing.s8),
                         ],
                         if (canSubmit && !isSubmitted) ...[
-                          const CustomText(
-                              text: 'Tap to submit your answer',
-                              color: AppColors.blue,
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w700),
-                          const SizedBox(height: 8),
+                          Text('Tap to submit your answer', style: EmType.label.copyWith(color: EmColors.primary)),
+                          const SizedBox(height: EmSpacing.s8),
                         ],
                         AppProgressBar(
                             percent: isSubmitted ? 100 : (isOverdue ? 20 : 60),
-                            color: isSubmitted
-                                ? AppColors.secondryColor
-                                : (isOverdue
-                                    ? AppColors.red
-                                    : AppColors.amber)),
+                            color: isSubmitted ? EmColors.success : (isOverdue ? EmColors.error : EmColors.accent)),
                       ],
                     ),
                   );
@@ -242,56 +193,43 @@ extension on HomeworkScreen {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (details.isNotEmpty) ...[
-              CustomText(text: details, color: AppColors.muted, fontSize: 12),
-              const SizedBox(height: 14),
+              Text(details, style: EmType.body.copyWith(color: EmColors.textSecondary, fontWeight: FontWeight.w400)),
+              const SizedBox(height: EmSpacing.s16),
             ],
             if (sub == null)
-              const CustomText(
-                  text: "This homework isn't on your child's class roster yet, so it can't be submitted from here.",
-                  color: AppColors.muted,
-                  fontSize: 12)
+              Text("This homework isn't on your child's class roster yet, so it can't be submitted from here.",
+                  style: EmType.body.copyWith(color: EmColors.textSecondary, fontWeight: FontWeight.w400))
             else if (graded) ...[
-              if (existing.isNotEmpty) CustomText(text: 'Your answer: $existing', color: AppColors.ink, fontSize: 12),
-              const SizedBox(height: 8),
-              const CustomText(
-                  text: 'Graded - this can no longer be resubmitted.', color: AppColors.muted, fontSize: 11.5),
+              if (existing.isNotEmpty) Text('Your answer: $existing', style: EmType.body.copyWith(color: EmColors.ink)),
+              const SizedBox(height: EmSpacing.s8),
+              Text('Graded - this can no longer be resubmitted.', style: EmType.label.copyWith(color: EmColors.textSecondary, fontWeight: FontWeight.w400)),
             ] else ...[
-              CustomTextField(
+              EmTextField(
                 controller: textCtrl,
                 maxLines: 5,
                 label: 'Your answer',
-                isborder: true,
-                fillColor: AppColors.background,
+                fillColor: EmColors.background,
               ),
-              const SizedBox(height: 18),
-              Obx(() => CustomButton(
-                    label: controller.submittingId.value == id
-                        ? ''
-                        : (status == 'submitted' || status == 'late' ? 'Resubmit' : 'Submit'),
-                    width: double.infinity,
-                    height: 48,
-                    color: AppColors.primaryColor,
-                    enabled: controller.submittingId.value != id,
-                    prefix: controller.submittingId.value == id
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                        : null,
-                    onPressed: () async {
-                      final text = textCtrl.text.trim();
-                      if (text.isEmpty) {
-                        CustomAppSnackbar.error('Please write your answer first.');
-                        return;
-                      }
-                      final err = await controller.submit(id, text);
-                      if (ctx.mounted) Navigator.of(ctx).pop();
-                      if (err == null) {
-                        CustomAppSnackbar.success('Homework submitted.');
-                      } else {
-                        CustomAppSnackbar.error(err);
-                      }
-                    },
+              const SizedBox(height: EmSpacing.s20),
+              Obx(() => EmPrimaryButton(
+                    label: status == 'submitted' || status == 'late' ? 'Resubmit' : 'Submit',
+                    loading: controller.submittingId.value == id,
+                    onPressed: controller.submittingId.value == id
+                        ? null
+                        : () async {
+                            final text = textCtrl.text.trim();
+                            if (text.isEmpty) {
+                              CustomAppSnackbar.error('Please write your answer first.');
+                              return;
+                            }
+                            final err = await controller.submit(id, text);
+                            if (ctx.mounted) Navigator.of(ctx).pop();
+                            if (err == null) {
+                              CustomAppSnackbar.success('Homework submitted.');
+                            } else {
+                              CustomAppSnackbar.error(err);
+                            }
+                          },
                   )),
             ],
           ],
@@ -311,25 +249,10 @@ class _LegendRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 6),
-        Expanded(
-          child: CustomText(
-              text: label,
-              color: AppColors.muted,
-              fontSize: 10,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis),
-        ),
-        CustomText(
-            text: value,
-            color: AppColors.primaryColor,
-            fontSize: 11,
-            fontWeight: FontWeight.w800),
+        Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        const SizedBox(width: EmSpacing.s8),
+        Expanded(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: EmType.caption.copyWith(color: EmColors.textSecondary))),
+        Text(value, style: EmType.valueSmall.copyWith(color: EmColors.ink)),
       ],
     );
   }

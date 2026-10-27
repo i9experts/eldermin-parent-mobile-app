@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -32,7 +33,7 @@ class LibraryScreen extends GetView<LibraryController> {
         Expanded(
           child: CustomText(
               text: label,
-              color: AppColors.muted,
+              color: EmColors.textSecondary,
               fontSize: 9.5,
               fontWeight: FontWeight.w600,
               maxLines: 1,
@@ -44,27 +45,20 @@ class LibraryScreen extends GetView<LibraryController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Learning library',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Learning library'),
       body: Obx(() {
         if (controller.loading.value && controller.issues.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const ShimmerScreenIntroSkeleton(),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerStatsRowSkeleton(count: 3),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerChartSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 ...shimmerListRows(5),
               ],
             ),
@@ -85,10 +79,9 @@ class LibraryScreen extends GetView<LibraryController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              ScreenHeader(
-                title: 'Learning library',
+              ScreenIntro(
                 caption: 'Resources, reading and borrowed books',
                 selectLabel:
                     DateFormat('MMMM yyyy').format(controller.selectedMonth.value),
@@ -100,14 +93,12 @@ class LibraryScreen extends GetView<LibraryController> {
                   if (picked != null) controller.changeMonth(picked);
                 },
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
                 ('$active', 'Borrowed', null),
                 ('$overdue', 'Overdue', overdue > 0 ? null : 'Clear'),
                 ('$returned', 'Returned', null),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               if (issues.isNotEmpty) ...[
                 AppCard(
                   child: Row(
@@ -115,7 +106,7 @@ class LibraryScreen extends GetView<LibraryController> {
                     children: [
                       DonutRing(
                         percent: ((returned / issues.length) * 100).round(),
-                        color: AppColors.purple,
+                        color: EmColors.statusLeave,
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -126,26 +117,26 @@ class LibraryScreen extends GetView<LibraryController> {
                                 text: 'Books completed',
                                 fontWeight: FontWeight.w800,
                                 fontSize: 12,
-                                color: AppColors.primaryColor),
+                                color: EmColors.primaryDark),
                             const SizedBox(height: 4),
                             CustomText(
                                 text:
                                     '$returned of ${issues.length} borrowed books returned',
-                                color: AppColors.muted,
+                                color: EmColors.textSecondary,
                                 fontSize: 10.5,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis),
                             const SizedBox(height: 10),
-                            _legendItem(AppColors.purple, 'Returned · $returned'),
+                            _legendItem(EmColors.statusLeave, 'Returned · $returned'),
                             const SizedBox(height: 6),
-                            _legendItem(AppColors.line, 'Outstanding · ${issues.length - returned}'),
+                            _legendItem(EmColors.border, 'Outstanding · ${issues.length - returned}'),
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
               ],
               const SectionRow(title: 'Borrowed & returned books'),
               if (issues.isEmpty)
@@ -169,7 +160,7 @@ class LibraryScreen extends GetView<LibraryController> {
                           : '');
                   return ListCardRow(
                     icon: Icons.menu_book_rounded,
-                    iconColor: AppColors.purple,
+                    iconColor: EmColors.statusLeave,
                     title: b['bookTitle']?.toString() ?? 'Book',
                     subtitle: subtitle,
                     trailing: AppTag(

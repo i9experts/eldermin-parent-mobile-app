@@ -1,237 +1,133 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/design/design.dart';
+import '../../../../core/theme/app_theme.dart' show TagStyle;
 import '../../../../core/widgets/app_widgets.dart';
-import '../../../../core/widgets/student_avatar.dart';
+import '../../../../core/widgets/form_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_text.dart';
 import '../controllers/profile_controller.dart';
 
+/// Student profile (read-only). Teacher pattern: `design-kit-v1` `profile_screen.dart:34-49` (a list of header, details cards and
+/// rows), header avatar + name `:56-72`, label / value rows in an [AppCard] `:148-164` (here [AppKeyValueRow]). Unlike the teacher
+/// app, a field the school has not filled in still shows "-" (the parent app always did), so no information line disappears.
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
 
-  Widget _row(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomText(text: label, color: AppColors.muted, fontSize: 10.5),
-          Flexible(
-            child: CustomText(
-                text: value,
-                color: AppColors.primaryColor,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                textAlign: TextAlign.right,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Student profile',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Student profile'),
       body: Obx(() {
         if (controller.loading.value && controller.profile.value == null) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
-                      border: Border.all(color: const Color(0xFFE3EAF0))),
-                  child: const Column(
-                    children: [
-                      ShimmerCircle(size: 66),
-                      SizedBox(height: 10),
-                      ShimmerBone(width: 140, height: 16, radius: 6),
-                      SizedBox(height: 8),
-                      ShimmerBone(width: 100, height: 10, radius: 5),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
+                const ShimmerScreenIntroSkeleton(),
+                const ShimmerProfileHeaderSkeleton(),
+                const SizedBox(height: EmSpacing.s12),
                 const ShimmerStatsRowSkeleton(count: 3),
-                const SizedBox(height: AppSpacing.md),
-                const ShimmerChartSkeleton(),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: EmSpacing.s12),
+                const ShimmerProgressCardSkeleton(),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(3),
               ],
             ),
           );
         }
         if (controller.error.value != null) {
-          return AppErrorView(
-              message: controller.error.value!, onRetry: controller.fetch);
+          return AppErrorView(message: controller.error.value!, onRetry: controller.fetch);
         }
         final p = controller.profile.value;
-        if (p == null)
-          return const AppEmptyView(
-              icon: Icons.person_off_outlined, title: 'No profile on file');
+        if (p == null) {
+          return const AppEmptyView(icon: Icons.person_off_outlined, title: 'No profile on file');
+        }
 
         final firstName = p['firstName']?.toString() ?? '';
         final lastName = p['lastName']?.toString() ?? '';
-        final initials =
-            '${firstName.isNotEmpty ? firstName[0] : ''}${lastName.isNotEmpty ? lastName[0] : ''}'
-                .toUpperCase();
+        final initials = '${firstName.isNotEmpty ? firstName[0] : ''}${lastName.isNotEmpty ? lastName[0] : ''}'.toUpperCase();
         final grade = p['currentGrade']?.toString() ?? '';
         final section = p['currentSection']?.toString();
         final roll = p['currentRollNumber']?.toString();
         final status = p['status']?.toString() ?? 'active';
         final dob = DateTime.tryParse(p['dateOfBirth']?.toString() ?? '');
-        final bloodGroup = (p['medical'] is Map)
-            ? (p['medical']['bloodGroup']?.toString())
-            : null;
+        final bloodGroup = (p['medical'] is Map) ? (p['medical']['bloodGroup']?.toString()) : null;
         final guardians = (p['guardians'] as List<dynamic>?) ?? [];
         final documents = (p['documents'] as List<dynamic>?) ?? [];
 
-        final coreFields = [
-          firstName,
-          lastName,
-          grade,
-          p['admissionNumber']?.toString(),
-          p['dateOfBirth']?.toString(),
-          p['gender']?.toString(),
-          bloodGroup
-        ];
-        final filled =
-            coreFields.where((f) => f != null && f.isNotEmpty).length;
+        final coreFields = [firstName, lastName, grade, p['admissionNumber']?.toString(), p['dateOfBirth']?.toString(), p['gender']?.toString(), bloodGroup];
+        final filled = coreFields.where((f) => f != null && f.isNotEmpty).length;
         final completeness = ((filled / coreFields.length) * 100).round();
 
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenHeader(
-                title: 'Student profile',
-                caption: 'Identity, contacts and record health',
-                selectLabel: 'Current year',
-              ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: 'Identity, contacts and record health', selectLabel: 'Current year'),
               AppCard(
                 child: Column(
                   children: [
-                    StudentAvatar(
-                      photoUrl: (p['photoUrl'] ?? p['photo'])?.toString(),
-                      initials: initials,
-                      size: 66,
-                      radius: 23,
-                      fontSize: 18,
-                      initialsColor: AppColors.primaryColor,
-                      fallbackDecoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                            colors: [Colors.white, Color(0xFFD9EAFA)]),
-                        borderRadius: BorderRadius.circular(23),
-                        border: Border.all(
-                            color: AppColors.primaryColor.withOpacity(0.12), width: 2),
-                      ),
+                    EmAvatar(
+                      key: const Key('profile_avatar'),
+                      initials: initials.isEmpty ? '—' : initials,
+                      imageUrl: (p['photoUrl'] ?? p['photo'])?.toString(),
+                      size: 96,
                     ),
-                    const SizedBox(height: 10),
-                    CustomText(
-                        text: '$firstName $lastName'.trim(),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.primaryColor,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: 4),
-                    CustomText(
-                        text: [
-                          if (grade.isNotEmpty) 'Grade $grade',
-                          if (section != null && section.isNotEmpty)
-                            'Section $section',
-                          if (roll != null && roll.isNotEmpty) 'Roll $roll',
-                        ].join(' • '),
-                        color: AppColors.muted,
-                        fontSize: 10.5,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: 8),
-                    AppTag(
-                        status[0].toUpperCase() +
-                            status.substring(1).replaceAll('_', ' '),
-                        style: status == 'active'
-                            ? TagStyle.green
-                            : TagStyle.neutral),
+                    const SizedBox(height: EmSpacing.s12),
+                    Text('$firstName $lastName'.trim(), textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis, style: EmType.heading.copyWith(color: EmColors.ink)),
+                    const SizedBox(height: EmSpacing.s4),
+                    Text(
+                      [
+                        if (grade.isNotEmpty) 'Grade $grade',
+                        if (section != null && section.isNotEmpty) 'Section $section',
+                        if (roll != null && roll.isNotEmpty) 'Roll $roll',
+                      ].join(' • '),
+                      textAlign: TextAlign.center,
+                      style: EmType.label.copyWith(color: EmColors.textSecondary, fontWeight: FontWeight.w400),
+                    ),
+                    const SizedBox(height: EmSpacing.s8),
+                    AppTag(status[0].toUpperCase() + status.substring(1).replaceAll('_', ' '), style: status == 'active' ? TagStyle.green : TagStyle.neutral),
                   ],
                 ),
               ),
-              const SizedBox(height: AppSpacing.md),
               StatsRow(items: [
                 ('$completeness%', 'Profile complete', null),
                 ('${guardians.length}', 'Guardians', null),
                 ('${documents.length}', 'Documents', null),
               ]),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: EmSpacing.s12),
               if (completeness < 100)
                 AppCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const CustomText(
-                              text: 'Profile completeness',
-                              fontWeight: FontWeight.w800,
-                              fontSize: 12,
-                              color: AppColors.primaryColor),
+                          Expanded(child: Text('Profile completeness', style: EmType.label.copyWith(color: EmColors.ink))),
                           AppTag('$completeness%', style: TagStyle.amber),
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      AppProgressBar(
-                          percent: completeness, color: AppColors.amber),
+                      const SizedBox(height: EmSpacing.s12),
+                      AppProgressBar(percent: completeness, color: EmColors.accent),
                     ],
                   ),
                 ),
-              const SizedBox(height: AppSpacing.md),
               const SectionRow(title: 'Record details'),
               AppCard(
                 child: Column(
                   children: [
-                    _row('Admission number',
-                        p['admissionNumber']?.toString() ?? '—'),
-                    const Divider(),
-                    _row(
-                        'Date of birth',
-                        dob != null
-                            ? '${dob.day}/${dob.month}/${dob.year}'
-                            : '—'),
-                    const Divider(),
-                    _row('Gender', p['gender']?.toString() ?? '—'),
-                    const Divider(),
-                    _row('Blood group', bloodGroup ?? '—'),
-                    const Divider(),
-                    _row('House group', p['houseGroup']?.toString() ?? '—'),
-                    const Divider(),
-                    _row('Class teacher', p['classTeacher']?.toString() ?? '—'),
+                    AppKeyValueRow('Admission number', p['admissionNumber']?.toString() ?? '—'),
+                    AppKeyValueRow('Date of birth', dob != null ? '${dob.day}/${dob.month}/${dob.year}' : '—'),
+                    AppKeyValueRow('Gender', p['gender']?.toString() ?? '—'),
+                    AppKeyValueRow('Blood group', bloodGroup ?? '—'),
+                    AppKeyValueRow('House group', p['houseGroup']?.toString() ?? '—'),
+                    AppKeyValueRow('Class teacher', p['classTeacher']?.toString() ?? '—'),
                   ],
                 ),
               ),
               if (guardians.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s8),
                 const SectionRow(title: 'Guardians & contacts'),
                 ...guardians.map((raw) {
                   final g = Map<String, dynamic>.from(raw as Map);
@@ -242,9 +138,7 @@ class ProfileScreen extends GetView<ProfileController> {
                       if (g['relation'] != null) g['relation'].toString(),
                       if (g['phone'] != null) g['phone'].toString(),
                     ].join(' • '),
-                    trailing: (g['isPrimary'] == true)
-                        ? const AppTag('Primary', style: TagStyle.info)
-                        : null,
+                    trailing: (g['isPrimary'] == true) ? const AppTag('Primary', style: TagStyle.info) : null,
                   );
                 }),
               ],

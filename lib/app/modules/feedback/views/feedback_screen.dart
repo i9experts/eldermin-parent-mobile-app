@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../components/custom_app_snack_bar.dart';
 import '../../../components/custom_button.dart';
@@ -18,19 +18,13 @@ class FeedbackScreen extends GetView<FeedbackController> {
     final titleCtrl = TextEditingController();
     final descriptionCtrl = TextEditingController();
 
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-        text: 'Send feedback',
-        color: Colors.white,
-        fontWeight: FontWeight.w700,
-        fontSize: 18,
-      )),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Send feedback'),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: EmSpacing.listPadding,
         children: [
-          const ScreenHeader(title: 'Send feedback', caption: "Tell the school what's on your mind"),
-          const SizedBox(height: AppSpacing.lg),
+          const ScreenIntro(caption: "Tell the school what's on your mind"),
+          const SizedBox(height: EmSpacing.s16),
           AppCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +34,7 @@ class FeedbackScreen extends GetView<FeedbackController> {
                   label: 'Subject',
                   hintText: 'A short summary',
                   isborder: true,
-                  fillColor: AppColors.background,
+                  fillColor: EmColors.background,
                 ),
                 const SizedBox(height: 14),
                 CustomTextField(
@@ -49,12 +43,12 @@ class FeedbackScreen extends GetView<FeedbackController> {
                   hintText: 'Share the details',
                   maxLines: 5,
                   isborder: true,
-                  fillColor: AppColors.background,
+                  fillColor: EmColors.background,
                 ),
                 const SizedBox(height: 14),
                 const CustomText(
                   text: 'Priority',
-                  color: AppColors.muted,
+                  color: EmColors.textSecondary,
                   fontSize: 10.5,
                   fontWeight: FontWeight.w700,
                 ),
@@ -69,10 +63,10 @@ class FeedbackScreen extends GetView<FeedbackController> {
                   final error = controller.error.value;
                   if (error == null) return const SizedBox.shrink();
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.s12),
                     child: CustomText(
                       text: error,
-                      color: AppColors.red,
+                      color: EmColors.error,
                       fontSize: 11,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
@@ -83,13 +77,13 @@ class FeedbackScreen extends GetView<FeedbackController> {
                       label: controller.submitting.value ? '' : 'Submit feedback',
                       width: double.infinity,
                       height: 48,
-                      color: AppColors.primaryColor,
+                      color: EmColors.primaryDark,
                       enabled: !controller.submitting.value,
                       prefix: controller.submitting.value
                           ? const SizedBox(
                               width: 18,
                               height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                              child: CircularProgressIndicator(strokeWidth: 2, color: EmColors.onPrimary))
                           : null,
                       onPressed: () async {
                         final ok = await controller.submit(

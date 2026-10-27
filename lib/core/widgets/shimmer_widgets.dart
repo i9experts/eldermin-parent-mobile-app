@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
-import '../theme/app_theme.dart' show AppRadius, AppSpacing, AppColors;
-// import '../../app/config/app_colors.dart' show AppColors;
+import '../design/design.dart';
 
-/// Wraps a skeleton layout in the shimmer sweep animation. Wrap once per
-/// screen around the whole loading-state layout below, not around each
-/// individual bone - one [Shimmer.fromColors] driving many bones is both
-/// cheaper and keeps the sweep synchronized across the screen.
+/// Skeleton placeholders for the loading states, on the kit's [EmShimmer] / [EmSkeletonBox] / [EmSkeletonRow].
+/// Wrap once per screen around the whole loading-state layout (one shimmer drives every bone, so the sweep stays
+/// in sync). Each skeleton mirrors the shape of the widget it stands in for.
+
+/// Wraps a skeleton layout in the shimmer sweep animation.
 class AppShimmer extends StatelessWidget {
   final Widget child;
   const AppShimmer({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: AppColors.shimmerBase,
-      highlightColor: AppColors.shimmerHighlight,
-      child: child,
-    );
-  }
+  Widget build(BuildContext context) => EmShimmer(child: child);
 }
 
 /// The basic "line" placeholder bone.
@@ -29,88 +22,26 @@ class ShimmerBone extends StatelessWidget {
   const ShimmerBone({super.key, this.width, this.height = 14, this.radius = 6});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-          color: AppColors.shimmerShape,
-          borderRadius: BorderRadius.circular(radius)),
-    );
-  }
+  Widget build(BuildContext context) => EmSkeletonBox(width: width, height: height, radius: radius);
 }
 
-/// A circular bone - icon badges, avatars.
-class ShimmerCircle extends StatelessWidget {
-  final double size;
-  const ShimmerCircle({super.key, this.size = 38});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        width: size,
-        height: size,
-        decoration: const BoxDecoration(
-            color: AppColors.shimmerShapeAlt, shape: BoxShape.circle));
-  }
-}
-
-/// Mirrors [ScreenHeader] - title + caption + optional trailing chip.
-class ShimmerScreenHeaderSkeleton extends StatelessWidget {
+/// Mirrors [ScreenIntro] - one caption line + optional chip (the title is the app bar's).
+class ShimmerScreenIntroSkeleton extends StatelessWidget {
   final bool withChip;
-  const ShimmerScreenHeaderSkeleton({super.key, this.withChip = true});
+  const ShimmerScreenIntroSkeleton({super.key, this.withChip = true});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 13),
+      padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.block),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                ShimmerBone(width: 160, height: 22, radius: 6),
-                SizedBox(height: 8),
-                ShimmerBone(width: 210, height: 12, radius: 5),
-              ],
-            ),
-          ),
+          const Expanded(child: Align(alignment: AlignmentDirectional.centerStart, child: EmSkeletonBox(width: 220, height: 14))),
           if (withChip) ...[
-            const SizedBox(width: 10),
-            const ShimmerBone(width: 78, height: 32, radius: 11),
+            const SizedBox(width: EmSpacing.s12),
+            const EmSkeletonBox(width: 110, height: 28, radius: EmRadius.pill),
           ],
         ],
-      ),
-    );
-  }
-}
-
-/// Mirrors [DateStripWidget] / [AppWeekDateStrip] - 7 equal day boxes.
-class ShimmerDateStripSkeleton extends StatelessWidget {
-  const ShimmerDateStripSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.shimmerBase)),
-      child: Row(
-        children: List.generate(7, (i) {
-          return Expanded(
-            child: Container(
-              height: 52,
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              decoration: BoxDecoration(
-                  color: AppColors.shimmerShape,
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-          );
-        }),
       ),
     );
   }
@@ -124,126 +55,205 @@ class ShimmerStatsRowSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: List.generate(count, (i) {
-        final isLast = i == count - 1;
-        return Expanded(
-          child: Container(
-            margin: EdgeInsets.only(right: isLast ? 0 : 8),
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 11),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.shimmerBase)),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ShimmerBone(width: 30, height: 16, radius: 5),
-                SizedBox(height: 6),
-                ShimmerBone(width: 44, height: 8, radius: 4),
-              ],
+      children: [
+        for (var i = 0; i < count; i++) ...[
+          if (i > 0) const SizedBox(width: EmSpacing.s8),
+          Expanded(
+            child: Container(
+              padding: EmSpacing.cardPadCompact,
+              decoration: const BoxDecoration(color: EmColors.surface, borderRadius: EmRadius.tileAll),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  EmSkeletonBox(width: 30, height: 18),
+                  SizedBox(height: EmSpacing.s8),
+                  EmSkeletonBox(width: 44, height: 10),
+                ],
+              ),
             ),
           ),
-        );
-      }),
+        ],
+      ],
     );
   }
 }
 
-/// Mirrors [HeroCard] - a single rounded block at the same height/radius
-/// as the real navy gradient card, since a gradient can't shimmer cleanly.
+/// Mirrors [HeroCard] - one rounded block at the same radius as the real hero card.
 class ShimmerHeroCardSkeleton extends StatelessWidget {
   const ShimmerHeroCardSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-          color: AppColors.shimmerShape,
-          borderRadius: BorderRadius.circular(AppRadius.xl)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ShimmerBone(width: 100, height: 10, radius: 4),
-                SizedBox(height: 10),
-                ShimmerBone(width: 70, height: 26, radius: 6),
-                SizedBox(height: 8),
-                ShimmerBone(width: 140, height: 10, radius: 4),
-              ],
-            ),
+      padding: const EdgeInsetsDirectional.all(EmSpacing.s16),
+      decoration: const BoxDecoration(color: EmColors.surface, borderRadius: EmRadius.heroAll),
+      child: const Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    EmSkeletonBox(width: 120, height: 12),
+                    SizedBox(height: EmSpacing.s12),
+                    EmSkeletonBox(width: 90, height: 30),
+                    SizedBox(height: EmSpacing.s12),
+                    EmSkeletonBox(width: 150, height: 12),
+                  ],
+                ),
+              ),
+              EmSkeletonBox(height: 96, circle: true),
+            ],
           ),
-          ShimmerCircle(size: 76),
+          SizedBox(height: EmSpacing.s16),
+          Row(
+            children: [
+              Expanded(child: EmSkeletonBox(height: 96, radius: EmRadius.tile)),
+              SizedBox(width: EmSpacing.s8),
+              Expanded(child: EmSkeletonBox(height: 96, radius: EmRadius.tile)),
+              SizedBox(width: EmSpacing.s8),
+              Expanded(child: EmSkeletonBox(height: 96, radius: EmRadius.tile)),
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-/// Mirrors the `AppCard`-wrapped chart cards (`AppBarChart`/`AppLineChart`)
-/// - a title bone above a full-width chart-shaped rectangle.
+/// Mirrors a one-bar progress card ("Requests approved", "Profile completeness"): a title bone and a thin bar bone.
+class ShimmerProgressCardSkeleton extends StatelessWidget {
+  const ShimmerProgressCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EmSpacing.cardPad,
+      decoration: const BoxDecoration(color: EmColors.surface, borderRadius: EmRadius.cardAll),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          EmSkeletonBox(width: 130, height: 14),
+          SizedBox(height: EmSpacing.s12),
+          EmSkeletonBox(width: double.infinity, height: 8, radius: EmRadius.pill),
+        ],
+      ),
+    );
+  }
+}
+
+/// Mirrors a summary hero card (name + tag, a few detail lines, count tags): the Early Years summary.
+class ShimmerSummaryCardSkeleton extends StatelessWidget {
+  const ShimmerSummaryCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsetsDirectional.all(EmSpacing.s16),
+      decoration: const BoxDecoration(color: EmColors.surface, borderRadius: EmRadius.heroAll),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            EmSkeletonBox(height: 40, circle: true),
+            SizedBox(width: EmSpacing.s12),
+            Expanded(child: EmSkeletonBox(height: 20)),
+            SizedBox(width: EmSpacing.s12),
+            EmSkeletonBox(width: 80, height: 24, radius: EmRadius.pill),
+          ]),
+          SizedBox(height: EmSpacing.s16),
+          EmSkeletonBox(width: 150, height: 14),
+          SizedBox(height: EmSpacing.s8),
+          EmSkeletonBox(width: 190, height: 14),
+          SizedBox(height: EmSpacing.s16),
+          Row(children: [
+            EmSkeletonBox(width: 110, height: 26, radius: EmRadius.pill),
+            SizedBox(width: EmSpacing.s8),
+            EmSkeletonBox(width: 110, height: 26, radius: EmRadius.pill),
+          ]),
+        ],
+      ),
+    );
+  }
+}
+
+/// Mirrors a media card (a photo block, a title, a date and two text lines): the Early Years portfolio entry.
+class ShimmerMediaCardSkeleton extends StatelessWidget {
+  const ShimmerMediaCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsetsDirectional.only(bottom: EmSpacing.row),
+      padding: EmSpacing.cardPad,
+      decoration: const BoxDecoration(color: EmColors.surface, borderRadius: EmRadius.cardAll),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          EmSkeletonBox(width: double.infinity, height: 150, radius: EmRadius.md),
+          SizedBox(height: EmSpacing.s12),
+          EmSkeletonBox(width: 160, height: 16),
+          SizedBox(height: EmSpacing.s8),
+          EmSkeletonBox(width: 90, height: 12),
+          SizedBox(height: EmSpacing.s8),
+          EmSkeletonBox(width: double.infinity, height: 12),
+        ],
+      ),
+    );
+  }
+}
+
+/// Mirrors the profile header card: avatar circle, name and one line.
+class ShimmerProfileHeaderSkeleton extends StatelessWidget {
+  const ShimmerProfileHeaderSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EmSpacing.cardPad,
+      decoration: const BoxDecoration(color: EmColors.surface, borderRadius: EmRadius.cardAll),
+      child: const Column(
+        children: [
+          EmSkeletonBox(height: 96, circle: true),
+          SizedBox(height: EmSpacing.s12),
+          EmSkeletonBox(width: 150, height: 18),
+          SizedBox(height: EmSpacing.s8),
+          EmSkeletonBox(width: 190, height: 12),
+        ],
+      ),
+    );
+  }
+}
+
+/// Mirrors the `AppCard`-wrapped chart cards - a title bone above a full-width chart-shaped block.
 class ShimmerChartSkeleton extends StatelessWidget {
   const ShimmerChartSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(color: AppColors.shimmerBase)),
+      padding: EmSpacing.cardPad,
+      decoration: const BoxDecoration(color: EmColors.surface, borderRadius: EmRadius.cardAll),
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ShimmerBone(width: 90, height: 12, radius: 5),
-          SizedBox(height: 12),
-          ShimmerBone(width: double.infinity, height: 90, radius: 10),
+          EmSkeletonBox(width: 90, height: 14),
+          SizedBox(height: EmSpacing.s12),
+          EmSkeletonBox(width: double.infinity, height: 120, radius: EmRadius.control),
         ],
       ),
     );
   }
 }
 
-/// Mirrors [ListCardRow] / [AppCard] - the workhorse for every list screen:
-/// an icon-circle bone + a two-line text bone.
+/// Mirrors [ListCardRow] / [AppCard] - the workhorse for every list screen (the kit's [EmSkeletonRow]).
 class ShimmerListRowSkeleton extends StatelessWidget {
   const ShimmerListRowSkeleton({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(color: AppColors.shimmerBase)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          ShimmerCircle(size: 38),
-          SizedBox(width: 11),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ShimmerBone(width: 130, height: 12, radius: 5),
-                SizedBox(height: 6),
-                ShimmerBone(width: 90, height: 9, radius: 4),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const EmSkeletonRow();
 }
 
 /// Convenience: N [ShimmerListRowSkeleton]s in a row of their own.
-List<Widget> shimmerListRows([int count = 6]) =>
-    List.generate(count, (_) => const ShimmerListRowSkeleton());
+List<Widget> shimmerListRows([int count = 6]) => List.generate(count, (_) => const ShimmerListRowSkeleton());

@@ -1,10 +1,18 @@
-// import '../config/app_colors.dart';
-import 'package:eldermin_parent_app/core/theme/app_theme.dart';
-
-import '../config/app_dimens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
+import '../../core/design/design.dart';
+
+/// The app's long-standing text field, now a wrapper over the kit's [EmTextField] (same constructor, no call-site change).
+///
+/// Mapping: [label] (falls back to [hintText] when null, since the kit field is always labelled) -> label; [hintText] ->
+/// hint (only when there is a label); [controller], [focusNode], [obscureText], [keyboardType], [maxLines], [validator],
+/// [onChanged], [onFieldSubmitted] -> the same; [errorText] -> errorText; [suffixIcon] -> suffix; an [Icon] given as
+/// [prefixIcon] -> prefixIcon; [inputFormatters] -> the same, plus a length limit for [maxLength] (the kit shows no
+/// counter); [fillColor] -> fillColor; [borderBorderradius] -> radius.
+///
+/// No kit equivalent (accepted and ignored): [isDecoration], [color], [textColor], [filled], [borderRadius], [ispadding],
+/// [isborder] (the kit field always has its own outline) and [contentPadding]. A [prefixIcon] that is not an [Icon] is shown
+/// in front of the field. A multi-line field keeps its label at the top (wrapper adaptation: `alignLabelWithHint`).
 
 // ignore: must_be_immutable
 class CustomTextField extends StatelessWidget {
@@ -36,7 +44,7 @@ class CustomTextField extends StatelessWidget {
 
   const CustomTextField({
     super.key,
-    this.borderBorderradius = AppDimen.borderRadius,
+    this.borderBorderradius = EmRadius.control,
     this.label,
     this.hintText,
     this.prefixIcon,
@@ -44,15 +52,15 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.suffixIcon,
     this.filled = true,
-    this.fillColor = AppColors.white,
+    this.fillColor = EmColors.surface,
     this.borderRadius,
     this.ispadding = false,
     this.isborder = false,
     this.controller,
     this.focusNode,
     this.onChanged,
-    this.color = AppColors.white,
-    this.textColor = AppColors.black,
+    this.color = EmColors.surface,
+    this.textColor = EmColors.ink,
     this.keyboardType,
     this.validator,
     this.maxLines = 1,
@@ -65,87 +73,47 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isTablet = size.width >= 600;
-
-    return Container(
-      margin: ispadding ? EdgeInsets.only(bottom: 2) : null,
-      decoration: isDecoration
-          ? BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(borderBorderradius),
-              // border: Border.all(
-              //   color: AppColors.primaryColor.withOpacity(0.55),
-              // ),
-            )
-          : null,
-      child: TextFormField(
-        style: TextStyle(color: textColor),
-        onFieldSubmitted: onFieldSubmitted,
-        maxLength: maxLength,
-        maxLines: maxLines,
-        validator: validator,
-        onChanged: onChanged,
-        keyboardType: keyboardType,
-        controller: controller,
-        focusNode: focusNode,
-        obscureText: obscureText,
-        inputFormatters: inputFormatters,
-        decoration: InputDecoration(
-          prefixIcon: prefixIcon == null
-              ? null
-              : Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: prefixIcon,
-                ),
-          prefixIconColor: AppColors.grey,
-          labelText: label,
-          labelStyle: TextStyle(
-            color: AppColors.grey,
-            fontSize: isTablet ? 18 : 14,
-          ),
-          hintText: hintText?.tr,
-          hintStyle: TextStyle(color: AppColors.grey),
-          errorText: errorText,
-          suffixIcon: suffixIcon == null
-              ? null
-              : Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: suffixIcon,
-                ),
-          suffixIconColor: AppColors.grey,
-          filled: filled,
-          fillColor: fillColor,
-          contentPadding: contentPadding ??
-              EdgeInsets.only(
-                left: 12,
-                right: 18,
-                top: isTablet ? 20 : 16,
-                bottom: isTablet ? 20 : 16,
-              ),
-          enabledBorder: isborder
-              ? OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(borderBorderradius),
-                  borderSide: BorderSide(
-                    color: AppColors.lightGrey,
-                    width: 0.3,
-                  ),
-                )
-              : OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(borderBorderradius),
-                  borderSide: BorderSide.none,
-                ),
-          focusedBorder: isborder
-              ? OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(borderBorderradius),
-                  borderSide: BorderSide(color: AppColors.primaryColor),
-                )
-              : OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(borderBorderradius),
-                  borderSide: BorderSide.none,
-                ),
-        ),
-      ),
+    // the kit field's prefix slot is an icon: an [Icon] passed here keeps its glyph
+    final iconPrefix = prefixIcon is Icon ? (prefixIcon as Icon).icon : null;
+    Widget field = EmTextField(
+      label: label ?? hintText ?? '',
+      hint: label == null ? null : hintText,
+      controller: controller,
+      focusNode: focusNode,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      validator: validator,
+      onChanged: onChanged,
+      onSubmitted: onFieldSubmitted == null ? null : (v) => onFieldSubmitted!(v),
+      errorText: errorText,
+      prefixIcon: iconPrefix,
+      suffix: suffixIcon,
+      inputFormatters: [
+        ...?inputFormatters,
+        if (maxLength != null) LengthLimitingTextInputFormatter(maxLength),
+      ],
+      fillColor: fillColor,
+      radius: borderBorderradius,
     );
+    // a multi-line field keeps its label / hint at the top-left (the single-line default centres it vertically)
+    if (maxLines == null || maxLines! > 1) {
+      final theme = Theme.of(context);
+      field = Theme(
+        data: theme.copyWith(inputDecorationTheme: theme.inputDecorationTheme.copyWith(alignLabelWithHint: true)),
+        child: field,
+      );
+    }
+    // a prefix that is not an icon (a country code, a currency, a unit) carries meaning: it is shown in front of the field
+    if (prefixIcon != null && prefixIcon is! Icon) {
+      field = Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 56),
+          child: Padding(padding: const EdgeInsetsDirectional.only(end: EmSpacing.s8), child: Align(alignment: AlignmentDirectional.centerStart, widthFactor: 1, child: prefixIcon)),
+        ),
+        Expanded(child: field),
+      ]);
+    }
+    return field;
   }
 }

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/design/design.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/chart_widgets.dart';
+import '../../../../core/widgets/em_tab_heading.dart';
 import '../../../../core/widgets/hero_card.dart';
-import '../../../../core/widgets/locked_feature_view.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_text.dart';
+import '../../../../core/widgets/tab_state_list.dart';
 import '../../students/controllers/student_controller.dart';
 import '../controllers/results_controller.dart';
 
+/// Progress tab root (teacher tab-root pattern: [TabHeading] + [TabStateList], teacher `classes_screen.dart:59-72`,
+/// `screen_state_view.dart:12-102`). State precedence is unchanged: loading, then error, then locked, then data.
 class ResultsScreen extends StatelessWidget {
   const ResultsScreen({super.key});
 
@@ -19,57 +21,50 @@ class ResultsScreen extends StatelessWidget {
     final controller = Get.put(ResultsController());
 
     return Obx(() {
-      if (students.selectedStudent == null)
-        return const AppEmptyView(
-            icon: Icons.person_off_outlined, title: 'No child selected');
-      if (controller.loading.value && controller.reportCards.isEmpty) {
-        return AppShimmer(
-          child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            children: [
-              const ShimmerScreenHeaderSkeleton(),
-              const SizedBox(height: AppSpacing.lg),
-              const ShimmerDateStripSkeleton(),
-              const SizedBox(height: AppSpacing.lg),
-              const ShimmerHeroCardSkeleton(),
-              const SizedBox(height: AppSpacing.md),
-              const ShimmerStatsRowSkeleton(count: 3),
-              const SizedBox(height: AppSpacing.md),
-              const ShimmerChartSkeleton(),
-              const SizedBox(height: AppSpacing.md),
-              ...shimmerListRows(4),
-            ],
-          ),
-        );
-      }
-      if (controller.error.value != null) {
-        return AppErrorView(
-            message: controller.error.value!, onRetry: controller.fetch);
-      }
-      if (controller.locked.value) {
-        return const LockedFeatureView();
+      if (students.selectedStudent == null) {
+        return const AppEmptyView(icon: Icons.person_off_outlined, title: 'No child selected');
       }
 
+      const heading = TabHeading(title: 'Learning progress', caption: 'Academic performance and growth');
+      final loading = controller.loading.value && controller.reportCards.isEmpty;
       final reportCards = controller.reportCards;
-      if (reportCards.isEmpty) {
-        // Scrollable so pull-to-refresh works even with nothing to show.
-        return RefreshIndicator(
+      final TabListState state;
+      if (loading) {
+        state = TabListState.loading;
+      } else if (controller.error.value != null) {
+        state = TabListState.error;
+      } else if (controller.locked.value) {
+        state = TabListState.locked;
+      } else if (reportCards.isEmpty) {
+        state = TabListState.empty;
+      } else {
+        state = TabListState.data;
+      }
+
+      const skeleton = [
+        ShimmerHeroCardSkeleton(),
+        SizedBox(height: EmSpacing.s16),
+        ShimmerChartSkeleton(),
+        SizedBox(height: EmSpacing.s16),
+        ShimmerListRowSkeleton(),
+        ShimmerListRowSkeleton(),
+        ShimmerListRowSkeleton(),
+      ];
+
+      if (state != TabListState.data) {
+        return TabStateList(
+          state: state,
           onRefresh: controller.fetch,
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
-                child: const AppEmptyView(
-                    icon: Icons.bar_chart_rounded,
-                    title: 'No results published yet',
-                    subtitle:
-                        "Results will appear here once your child's school publishes them. Pull down to refresh."),
-              ),
-            ],
-          ),
+          header: const [heading],
+          skeleton: skeleton,
+          errorMessage: controller.error.value,
+          onRetry: controller.fetch,
+          emptyIcon: Icons.bar_chart_rounded,
+          emptyTitle: 'No results published yet',
+          emptySubtitle: "Results will appear here once your child's school publishes them. Pull down to refresh.",
         );
       }
+
       final latest = reportCards.first;
       final subjects = (latest['subjects'] as List<dynamic>? ?? []);
       final overallPct = (latest['overallPercentage'] as num?)?.round();
@@ -91,9 +86,7 @@ class ResultsScreen extends StatelessWidget {
         final prevPct = (reportCards[1]['overallPercentage'] as num?)?.round();
         if (prevPct != null) {
           final delta = overallPct - prevPct;
-          trendText = delta >= 0
-              ? '↑ $delta points since last term'
-              : '↓ ${delta.abs()} points since last term';
+          trendText = delta >= 0 ? '↑ $delta points since last term' : '↓ ${delta.abs()} points since last term';
         } else {
           trendText = 'Latest performance snapshot';
         }
@@ -101,112 +94,77 @@ class ResultsScreen extends StatelessWidget {
         trendText = 'Latest performance snapshot';
       }
 
-      return RefreshIndicator(
+      return TabStateList(
+        state: state,
         onRefresh: controller.fetch,
-        child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          children: [
-            ScreenHeader(
-              title: 'Learning progress',
-              caption: 'Academic performance and growth',
-              selectLabel:
-                  (latest['assessmentTitle'] ?? latest['term'] ?? 'Latest')
-                      .toString(),
+        header: [
+          heading,
+          // the assessment the numbers below are for
+          Padding(
+            padding: const EdgeInsetsDirectional.only(bottom: EmSpacing.s12),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: EmChip.status(label: (latest['assessmentTitle'] ?? latest['term'] ?? 'Latest').toString(), tone: EmTone.info),
             ),
-            const AppWeekDateStrip(),
-            const SizedBox(height: AppSpacing.lg),
-            HeroCard(
-              kicker: 'Overall achievement',
-              value: latest['overallGrade']?.toString() ??
-                  (overallPct != null ? '$overallPct%' : '—'),
-              trend: trendText,
-              percent: overallPct ?? 0,
-              metrics: [
-                ('${overallPct ?? '—'}%', 'Overall'),
-                ('${latest['overallGrade'] ?? '—'}', 'Grade'),
-                ('${subjects.length}', 'Subjects'),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.md),
-            StatsRow(items: [
-              ('${latest['overallPercentage'] ?? '—'}%', 'Overall', null),
-              ('${latest['overallGrade'] ?? '—'}', 'Grade', null),
-              ('${subjects.length}', 'Subjects', null),
-            ]),
-            if (trendPoints.length >= 2) ...[
-              const SizedBox(height: AppSpacing.md),
-              AppCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomText(
-                        text: 'Performance trend',
-                        fontWeight: FontWeight.w800,
-                        fontSize: 12,
-                        color: AppColors.primaryColor),
-                    const SizedBox(height: 10),
-                    AppLineChart(points: trendPoints),
-                  ],
-                ),
-              ),
+          ),
+        ],
+        data: [
+          HeroCard(
+            kicker: 'Overall achievement',
+            value: latest['overallGrade']?.toString() ?? (overallPct != null ? '$overallPct%' : '—'),
+            trend: trendText,
+            percent: overallPct ?? 0,
+            metrics: [
+              ('${overallPct ?? '—'}%', 'Overall'),
+              ('${latest['overallGrade'] ?? '—'}', 'Grade'),
+              ('${subjects.length}', 'Subjects'),
             ],
-            const SizedBox(height: AppSpacing.md),
-            const SectionRow(title: 'Subject scores'),
-            ...subjects.map((s) {
-              final pct = (s['percentage'] as num?)?.round() ?? 0;
-              return AppCard(
-                child: Row(children: [
-                  Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                        color: AppColors.pale,
-                        borderRadius: BorderRadius.circular(12)),
-                    child: Center(
-                        child: CustomText(
-                            text: (s['subject'] ?? '?')
-                                .toString()
-                                .substring(0, 1),
-                            color: AppColors.blue,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 11)),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomText(
-                            text: s['subject'] ?? '',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 12,
-                            color: AppColors.primaryColor,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 4),
-                        AppProgressBar(
-                            percent: pct,
-                            color: pct >= 80
-                                ? AppColors.secondryColor
-                                : (pct >= 60
-                                    ? AppColors.blue
-                                    : AppColors.amber)),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  CustomText(
-                      text: '$pct%',
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14,
-                      color: AppColors.primaryColor,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
-                ]),
-              );
-            }),
+            metricIcons: const [Icons.percent_rounded, Icons.workspace_premium_outlined, Icons.menu_book_rounded],
+          ),
+          if (trendPoints.length >= 2) ...[
+            const SizedBox(height: EmSpacing.s16),
+            AppCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Performance trend', style: EmType.label.copyWith(color: EmColors.ink)),
+                  const SizedBox(height: EmSpacing.s12),
+                  AppLineChart(points: trendPoints),
+                ],
+              ),
+            ),
           ],
-        ),
+          const SizedBox(height: EmSpacing.s8),
+          const SectionRow(title: 'Subject scores'),
+          ...subjects.map((s) {
+            final pct = (s['percentage'] as num?)?.round() ?? 0;
+            return AppCard(
+              child: Row(children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(color: EmColors.primaryTint, shape: BoxShape.circle),
+                  child: Center(
+                    child: Text((s['subject'] ?? '?').toString().substring(0, 1), style: EmType.label.copyWith(color: EmColors.primary)),
+                  ),
+                ),
+                const SizedBox(width: EmSpacing.s12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('${s['subject'] ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis, style: EmType.body.copyWith(color: EmColors.ink)),
+                      const SizedBox(height: EmSpacing.s4),
+                      AppProgressBar(percent: pct, color: pct >= 80 ? EmColors.success : (pct >= 60 ? EmColors.primary : EmColors.accent)),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: EmSpacing.s12),
+                Text('$pct%', maxLines: 1, style: EmType.valueSmall.copyWith(color: EmColors.ink)),
+              ]),
+            );
+          }),
+        ],
       );
     });
   }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_text.dart';
 import '../controllers/learning_resources_controller.dart';
 
 class LearningResourcesScreen extends GetView<LearningResourcesController> {
@@ -11,21 +11,16 @@ class LearningResourcesScreen extends GetView<LearningResourcesController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'Learning resources',
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Learning resources'),
       body: Obx(() {
         if (controller.loading.value && controller.plans.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
-                const ShimmerScreenHeaderSkeleton(withChip: false),
-                const SizedBox(height: AppSpacing.md),
+                const ShimmerScreenIntroSkeleton(withChip: false),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(6),
               ],
             ),
@@ -40,10 +35,10 @@ class LearningResourcesScreen extends GetView<LearningResourcesController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenHeader(title: 'Learning resources', caption: 'Lesson plans and shared materials'),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: 'Lesson plans and shared materials'),
+              const SizedBox(height: EmSpacing.s16),
               StatsRow(items: [
                 ('${plans.length}', 'Lesson plans', null),
                 (
@@ -52,7 +47,7 @@ class LearningResourcesScreen extends GetView<LearningResourcesController> {
                   null
                 ),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               if (plans.isEmpty)
                 const AppEmptyView(
                   icon: Icons.folder_open_outlined,
@@ -68,7 +63,7 @@ class LearningResourcesScreen extends GetView<LearningResourcesController> {
                   final resources = (p['resources'] as List<dynamic>?) ?? [];
                   return ListCardRow(
                     icon: Icons.menu_book_outlined,
-                    iconColor: AppColors.blue,
+                    iconColor: EmColors.primary,
                     title: topic,
                     subtitle: [
                       if (subject.isNotEmpty) subject,

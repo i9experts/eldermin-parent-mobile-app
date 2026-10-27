@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -13,25 +14,18 @@ class CircularsScreen extends GetView<CircularsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'School updates',
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 18)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'School updates'),
       body: Obx(() {
         if (controller.loading.value && controller.circulars.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
-                const ShimmerScreenHeaderSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
-                const ShimmerDateStripSkeleton(),
-                const SizedBox(height: AppSpacing.lg),
+                const ShimmerScreenIntroSkeleton(),
+                const SizedBox(height: EmSpacing.s16),
                 const ShimmerStatsRowSkeleton(count: 3),
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: EmSpacing.s16),
                 ...shimmerListRows(6),
               ],
             ),
@@ -57,10 +51,9 @@ class CircularsScreen extends GetView<CircularsController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              ScreenHeader(
-                title: 'School updates',
+              ScreenIntro(
                 caption: 'Circulars, notices and acknowledgements',
                 selectLabel: DateFormat('MMMM yyyy').format(selectedMonth),
                 onSelectTap: () async {
@@ -71,8 +64,6 @@ class CircularsScreen extends GetView<CircularsController> {
                   if (picked != null) controller.changeMonth(picked);
                 },
               ),
-              const AppWeekDateStrip(),
-              const SizedBox(height: AppSpacing.lg),
               StatsRow(items: [
                 ('${circulars.length}', 'Published', null),
                 ('$thisMonth', 'This month', null),
@@ -82,7 +73,7 @@ class CircularsScreen extends GetView<CircularsController> {
                   null
                 ),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               const SectionRow(title: 'Notices'),
               if (circularsForSelectedMonth.isEmpty)
                 const AppEmptyView(
@@ -96,7 +87,7 @@ class CircularsScreen extends GetView<CircularsController> {
                   final category = c['category']?.toString() ?? 'notice';
                   return ListCardRow(
                     icon: Icons.description_outlined,
-                    iconColor: AppColors.blue,
+                    iconColor: EmColors.primary,
                     title: c['title']?.toString() ?? 'Notice',
                     subtitle: [
                       if (date != null)
@@ -120,7 +111,7 @@ class CircularsScreen extends GetView<CircularsController> {
       context: context,
       isScrollControlled: true,
       builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: EmSpacing.listPadding,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -130,14 +121,14 @@ class CircularsScreen extends GetView<CircularsController> {
                   text: c['title']?.toString() ?? 'Notice',
                   fontWeight: FontWeight.w800,
                   fontSize: 16,
-                  color: AppColors.primaryColor),
+                  color: EmColors.primaryDark),
               const SizedBox(height: 10),
               CustomText(
                   text: (c['body']?.toString().isNotEmpty ?? false)
                       ? c['body'].toString()
                       : 'No further details.',
                   fontSize: 13,
-                  color: AppColors.ink),
+                  color: EmColors.ink),
               if (needsAck && c['_id'] != null) ...[
                 const SizedBox(height: 16),
                 SizedBox(

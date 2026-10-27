@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_text.dart';
 import '../controllers/message_thread_controller.dart';
 
 class MessageThreadScreen extends GetView<MessageThreadController> {
@@ -11,24 +10,14 @@ class MessageThreadScreen extends GetView<MessageThreadController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return EmScaffold(
+      appBar: EmAppBar(
+        titleWidget: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CustomText(
-              text: controller.staffName,
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-            ),
+            Text(controller.staffName, maxLines: 1, overflow: TextOverflow.ellipsis, style: EmType.heading.copyWith(color: EmColors.ink)),
             if (controller.studentName != null)
-              CustomText(
-                text: 'Re: ${controller.studentName}',
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 11,
-              ),
+              Text('Re: ${controller.studentName}', maxLines: 1, overflow: TextOverflow.ellipsis, style: EmType.caption.copyWith(color: EmColors.textSecondary)),
           ],
         ),
       ),
@@ -39,7 +28,7 @@ class MessageThreadScreen extends GetView<MessageThreadController> {
               if (controller.loading.value && controller.messages.isEmpty) {
                 return AppShimmer(
                   child: ListView(
-                    padding: const EdgeInsets.all(AppSpacing.md),
+                    padding: EmSpacing.listPadding,
                     children: shimmerListRows(6),
                   ),
                 );
@@ -60,7 +49,7 @@ class MessageThreadScreen extends GetView<MessageThreadController> {
               return RefreshIndicator(
                 onRefresh: controller.fetch,
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(AppSpacing.md),
+                  padding: EmSpacing.listPadding,
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final m = messages[index];
@@ -69,44 +58,31 @@ class MessageThreadScreen extends GetView<MessageThreadController> {
                         ? DateTime.tryParse(m['createdAt'].toString())
                         : null;
                     return Align(
-                      alignment: isGuardian
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
+                      alignment: isGuardian ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
                       child: Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.75),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 10),
+                        margin: const EdgeInsetsDirectional.only(bottom: EmSpacing.s12),
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
+                        padding: const EdgeInsetsDirectional.symmetric(horizontal: EmSpacing.s16, vertical: EmSpacing.s12),
                         decoration: BoxDecoration(
-                          color: isGuardian
-                              ? AppColors.primaryColor
-                              : AppColors.background,
-                          borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(14),
-                            topRight: const Radius.circular(14),
-                            bottomLeft: Radius.circular(isGuardian ? 14 : 2),
-                            bottomRight: Radius.circular(isGuardian ? 2 : 14),
+                          color: isGuardian ? EmColors.primary : EmColors.surface,
+                          border: Border.all(color: isGuardian ? EmColors.primary : EmColors.border),
+                          borderRadius: BorderRadiusDirectional.only(
+                            topStart: const Radius.circular(EmRadius.md),
+                            topEnd: const Radius.circular(EmRadius.md),
+                            bottomStart: Radius.circular(isGuardian ? EmRadius.md : EmSpacing.s4),
+                            bottomEnd: Radius.circular(isGuardian ? EmSpacing.s4 : EmRadius.md),
                           ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            CustomText(
-                              text: (m['body'] ?? '').toString(),
-                              color: isGuardian ? Colors.white : AppColors.ink,
-                              fontSize: 13,
-                            ),
+                            Text((m['body'] ?? '').toString(), style: EmType.body.copyWith(color: isGuardian ? EmColors.onPrimary : EmColors.ink, fontWeight: FontWeight.w400)),
                             if (createdAt != null) ...[
-                              const SizedBox(height: 4),
-                              CustomText(
-                                text:
-                                    '${createdAt.hour.toString().padLeft(2, '0')}:${createdAt.minute.toString().padLeft(2, '0')}',
-                                color: isGuardian
-                                    ? Colors.white.withOpacity(0.7)
-                                    : AppColors.faint,
-                                fontSize: 9,
+                              const SizedBox(height: EmSpacing.s4),
+                              Text(
+                                '${createdAt.hour.toString().padLeft(2, '0')}:${createdAt.minute.toString().padLeft(2, '0')}',
+                                style: EmType.caption.copyWith(color: isGuardian ? EmColors.onPrimary : EmColors.textSecondary),
                               ),
                             ],
                           ],
@@ -118,54 +94,51 @@ class MessageThreadScreen extends GetView<MessageThreadController> {
               );
             }),
           ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.sm),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: controller.replyController,
-                      minLines: 1,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        hintText: 'Type a message…',
-                        filled: true,
-                        fillColor: AppColors.background,
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 10),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide.none,
+          // composer (teacher thread pattern, `message_thread_screen.dart:231-270`)
+          DecoratedBox(
+            decoration: const BoxDecoration(color: EmColors.surface, border: Border(top: BorderSide(color: EmColors.border))),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(EmSpacing.s16, EmSpacing.s8, EmSpacing.s16, EmSpacing.s8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: controller.replyController,
+                        minLines: 1,
+                        maxLines: 4,
+                        textCapitalization: TextCapitalization.sentences,
+                        style: EmType.body.copyWith(color: EmColors.ink),
+                        decoration: InputDecoration(
+                          hintText: 'Type a message…',
+                          hintStyle: EmType.body.copyWith(color: EmColors.textTertiary),
+                          filled: true,
+                          fillColor: EmColors.background,
+                          contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: EmSpacing.s16, vertical: EmSpacing.s12),
+                          border: const OutlineInputBorder(borderRadius: EmRadius.tileAll, borderSide: BorderSide.none),
+                          enabledBorder: const OutlineInputBorder(borderRadius: EmRadius.tileAll, borderSide: BorderSide.none),
+                          focusedBorder: const OutlineInputBorder(borderRadius: EmRadius.tileAll, borderSide: BorderSide(color: EmColors.primary, width: 2)),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Obx(() => Material(
-                        color: AppColors.primaryColor,
-                        borderRadius: BorderRadius.circular(24),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(24),
-                          onTap:
-                              controller.sending.value ? null : controller.send,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: controller.sending.value
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2, color: Colors.white),
-                                  )
-                                : const Icon(Icons.send_rounded,
-                                    color: Colors.white, size: 18),
+                    const SizedBox(width: EmSpacing.s8),
+                    Obx(() => IconButton(
+                          key: const Key('send_message'),
+                          tooltip: 'Send',
+                          onPressed: controller.sending.value ? null : controller.send,
+                          style: IconButton.styleFrom(
+                            backgroundColor: EmColors.primary,
+                            disabledBackgroundColor: EmColors.disabled,
+                            minimumSize: const Size(EmSpacing.minTouch, EmSpacing.minTouch),
                           ),
-                        ),
-                      )),
-                ],
+                          icon: controller.sending.value
+                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: EmColors.onPrimary))
+                              : const Icon(Icons.send_rounded, color: EmColors.onPrimary, size: 20),
+                        )),
+                  ],
+                ),
               ),
             ),
           ),

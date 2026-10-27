@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../components/custom_text.dart';
 import '../../../routes/app_routes.dart';
@@ -50,46 +50,39 @@ class HelpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const CustomText(
-          text: 'Help & support',
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-          fontSize: 18,
-        ),
-      ),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'Help & support'),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: EmSpacing.listPadding,
         children: [
           const SectionRow(title: 'Frequently asked questions'),
           ..._faqs.map((f) => AppCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomText(text: f.$1, color: AppColors.primaryColor, fontSize: 12, fontWeight: FontWeight.w800, height: 1.35),
+                    CustomText(text: f.$1, color: EmColors.primaryDark, fontSize: 12, fontWeight: FontWeight.w800, height: 1.35),
                     const SizedBox(height: 6),
-                    CustomText(text: f.$2, color: AppColors.muted, fontSize: 11, height: 1.5),
+                    CustomText(text: f.$2, color: EmColors.textSecondary, fontSize: 11, height: 1.5),
                   ],
                 ),
               )),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: EmSpacing.s8),
           const SectionRow(title: 'Still need help?'),
           ListCardRow(
             icon: Icons.forum_outlined,
-            iconColor: AppColors.blue,
+            iconColor: EmColors.primary,
             title: 'Message your school',
             subtitle: 'Reach staff directly from the Messages tab.',
           ),
-          const SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: EmSpacing.s8),
           ListCardRow(
             icon: Icons.feedback_outlined,
-            iconColor: AppColors.secondryColor,
+            iconColor: EmColors.success,
             title: 'Send feedback',
             subtitle: 'Report a problem or suggest an improvement.',
             onTap: () => Get.toNamed(Routes.feedback),
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: EmSpacing.s12),
         ],
       ),
     );

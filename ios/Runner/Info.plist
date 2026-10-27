@@ -45,12 +45,6 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Used once when you create your account to tag your city/country so we know where parents are waiting for SmartVan.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Eldermin Parent uses your camera to let you take a photo for your profile picture or to attach to messages and documents shared with your child's school.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Eldermin Parent needs access to your photo library so you can choose a photo for your profile picture or attach images to messages and documents shared with your child's school.</string>
 	<key>UIStatusBarHidden</key>
 	<false/>
 </dict>

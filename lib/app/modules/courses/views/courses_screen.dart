@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/design/design.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -12,18 +13,16 @@ class CoursesScreen extends GetView<CoursesController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const CustomText(
-              text: 'My courses', color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
+    return EmScaffold(
+      appBar: EmAppBar(title: 'My courses'),
       body: Obx(() {
         if (controller.loading.value && controller.courses.isEmpty) {
           return AppShimmer(
             child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: EmSpacing.listPadding,
               children: [
-                const ShimmerScreenHeaderSkeleton(withChip: false),
-                const SizedBox(height: AppSpacing.md),
+                const ShimmerScreenIntroSkeleton(withChip: false),
+                const SizedBox(height: EmSpacing.s12),
                 ...shimmerListRows(4),
               ],
             ),
@@ -39,15 +38,15 @@ class CoursesScreen extends GetView<CoursesController> {
         return RefreshIndicator(
           onRefresh: controller.fetch,
           child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: EmSpacing.listPadding,
             children: [
-              const ScreenHeader(title: 'My courses', caption: 'Lessons published by your child\'s teachers'),
-              const SizedBox(height: AppSpacing.lg),
+              const ScreenIntro(caption: 'Lessons published by your child\'s teachers'),
+              const SizedBox(height: EmSpacing.s16),
               StatsRow(items: [
                 ('${courses.length}', 'Courses', null),
                 ('$done/$total', 'Lessons done', null),
               ]),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: EmSpacing.s16),
               if (courses.isEmpty)
                 const AppEmptyView(
                   icon: Icons.school_outlined,
@@ -83,25 +82,25 @@ class _CourseCard extends GetView<CoursesController> {
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          tilePadding: const EdgeInsets.all(14),
-          childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+          tilePadding: EmSpacing.cardPad,
+          childrenPadding: const EdgeInsetsDirectional.fromSTEB(EmSpacing.s16, 0, EmSpacing.s16, EmSpacing.s12),
           title: CustomText(
               text: course['subjectName']?.toString() ?? 'Course',
               fontWeight: FontWeight.w800,
               fontSize: 14,
-              color: AppColors.primaryColor),
+              color: EmColors.primaryDark),
           subtitle: Padding(
-            padding: const EdgeInsets.only(top: 6),
+            padding: const EdgeInsetsDirectional.only(top: EmSpacing.s4 + EmSpacing.s2),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (subtitle.isNotEmpty)
-                  CustomText(text: subtitle, color: AppColors.muted, fontSize: 11),
+                  CustomText(text: subtitle, color: EmColors.textSecondary, fontSize: 11),
                 const SizedBox(height: 8),
                 Row(children: [
-                  Expanded(child: AppProgressBar(percent: pct, color: AppColors.blue)),
+                  Expanded(child: AppProgressBar(percent: pct, color: EmColors.primary)),
                   const SizedBox(width: 8),
-                  CustomText(text: '$pct%', fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.primaryColor),
+                  CustomText(text: '$pct%', fontSize: 11, fontWeight: FontWeight.w800, color: EmColors.primaryDark),
                 ]),
               ],
             ),
@@ -111,24 +110,24 @@ class _CourseCard extends GetView<CoursesController> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 6, bottom: 4),
+                  padding: const EdgeInsetsDirectional.only(top: EmSpacing.s4 + EmSpacing.s2, bottom: EmSpacing.s4),
                   child: CustomText(
                       text: 'Unit ${u['unitNo']}: ${u['unitName'] ?? ''}',
                       fontWeight: FontWeight.w800,
                       fontSize: 12,
-                      color: AppColors.blue),
+                      color: EmColors.primary),
                 ),
               ),
               for (final t in ((u['topics'] as List<dynamic>?) ?? []).map((t) => Map<String, dynamic>.from(t as Map))) ...[
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 4, bottom: 2),
+                    padding: const EdgeInsetsDirectional.only(top: EmSpacing.s4, bottom: EmSpacing.s2),
                     child: CustomText(
                         text: t['topicName']?.toString() ?? '',
                         fontWeight: FontWeight.w700,
                         fontSize: 11.5,
-                        color: AppColors.ink),
+                        color: EmColors.ink),
                   ),
                 ),
                 for (final l in ((t['lessons'] as List<dynamic>?) ?? []).map((l) => Map<String, dynamic>.from(l as Map)))
@@ -173,17 +172,17 @@ class _LessonRow extends GetView<CoursesController> {
     return Obx(() {
       final busy = controller.updatingKey.value == key;
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsetsDirectional.symmetric(vertical: EmSpacing.s2),
         child: Row(
           children: [
             busy
                 ? const Padding(
-                    padding: EdgeInsets.all(12),
+                    padding: EdgeInsetsDirectional.all(EmSpacing.s12),
                     child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)))
                 : IconButton(
                     tooltip: completed ? 'Mark as not done' : 'Mark as done',
                     icon: Icon(completed ? Icons.check_circle_rounded : Icons.radio_button_unchecked,
-                        color: completed ? AppColors.secondryColor : AppColors.muted),
+                        color: completed ? EmColors.success : EmColors.textSecondary),
                     onPressed: () =>
                         controller.setLessonStatus(syllabusId, unitNo, topicNo, lessonNo, completed ? 'not_started' : 'completed'),
                   ),
@@ -195,12 +194,12 @@ class _LessonRow extends GetView<CoursesController> {
                       text: lesson['title']?.toString() ?? 'Lesson',
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink),
+                      color: EmColors.ink),
                   if ((lesson['description']?.toString() ?? '').isNotEmpty)
                     CustomText(
                         text: lesson['description'].toString(),
                         fontSize: 11,
-                        color: AppColors.muted,
+                        color: EmColors.textSecondary,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis),
                   if (status == 'in_progress') const AppTag('In progress', style: TagStyle.amber),
@@ -210,7 +209,7 @@ class _LessonRow extends GetView<CoursesController> {
             if (link != null)
               IconButton(
                 tooltip: 'Open',
-                icon: const Icon(Icons.open_in_new_rounded, color: AppColors.blue, size: 20),
+                icon: const Icon(Icons.open_in_new_rounded, color: EmColors.primary, size: 20),
                 onPressed: () async {
                   await launchUrl(Uri.parse(link), mode: LaunchMode.externalApplication);
                   if (status == 'not_started') {
