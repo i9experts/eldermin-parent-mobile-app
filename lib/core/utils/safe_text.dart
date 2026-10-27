@@ -76,6 +76,15 @@ String htmlToPlainText(String html) {
   return s.trim();
 }
 
+/// One-line plain text for list previews: like [htmlToPlainText] but with no link/image markers. Images are dropped, links keep only their text,
+/// and all whitespace (including line breaks) collapses to single spaces.
+String htmlToPreviewText(String html) {
+  var s = html.replaceAll(_comment, '').replaceAll(_scriptStyle, '').replaceAll(_openNoClose, '');
+  s = s.replaceAll(_img, ' ');
+  s = s.replaceAllMapped(_anchor, (m) => ' ${m.group(2)!.replaceAll(_anyTag, '')} ');
+  return htmlToPlainText(s).replaceAll(RegExp(r'\s+'), ' ').trim();
+}
+
 class _ListState {
   _ListState(this.ordered);
   final bool ordered;

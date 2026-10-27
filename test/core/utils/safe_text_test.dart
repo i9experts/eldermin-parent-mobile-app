@@ -126,6 +126,26 @@ void main() {
     });
   });
 
+  group('htmlToPreviewText', () {
+    test('drops images and link markers, keeps link text, one line', () {
+      const html = '<div>Dear parents</div><div>See <a href="https://school.edu/trip">the trip page</a></div><div><img src="https://cdn.example/a.png" alt="Map"></div>';
+      expect(htmlToPreviewText(html), 'Dear parents See the trip page');
+    });
+    test('editor output has no markers, tags or line breaks', () {
+      final p = htmlToPreviewText(editorOutput);
+      expect(p, isNot(contains('](')));
+      expect(p, isNot(contains('[')));
+      expect(p, isNot(contains('<')));
+      expect(p, isNot(contains('\n')));
+      expect(p, contains('trip page'));
+      expect(p, contains('email us'));
+    });
+    test('script text and unclosed script tails never appear', () {
+      expect(htmlToPreviewText('Hi<script>alert(1)</script> there'), 'Hi there');
+      expect(htmlToPreviewText('Hi<script>alert(1)'), 'Hi');
+    });
+  });
+
   group('safeExternalUri', () {
     test('allows http, https, mailto, tel only', () {
       expect(safeExternalUri('https://a.example/x'), isNotNull);

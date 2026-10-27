@@ -47,6 +47,22 @@ void main() {
     await _done(t);
   });
 
+  testWidgets('row preview shows clean text for a body with a link and an image', (t) async {
+    final rows = [
+      {
+        '_id': 'rich1',
+        'title': 'Rich body',
+        'description': '<div>Dear parents</div><div>See <a href="https://school.edu/trip">the trip page</a></div><div><img src="https://cdn.example/a.png"></div>',
+        'response': null,
+      },
+    ];
+    await _open(t, consentApi(rows: rows));
+    expect(find.text('Dear parents See the trip page'), findsOneWidget);
+    expect(find.textContaining('](', findRichText: true), findsNothing);
+    expect(find.textContaining('[Image]', findRichText: true), findsNothing);
+    await _done(t);
+  });
+
   testWidgets('tapping a pending row opens the sheet with every field and the actions', (t) async {
     await _open(t, consentApi());
     await _openRow(t, 'Museum trip');
