@@ -29,6 +29,7 @@ String _fileName(String url, int i) {
 
 /// Opens the consent detail sheet for [id]. Only the selected student's own data is shown; `studentIds` (the whole cohort) never is.
 Future<void> showConsentDetailSheet(BuildContext context, ConsentController c, String id) {
+  c.respondError.value = null; // a failure from an earlier sheet is not this one's
   return DetailBottomSheet.show<void>(context, reactive: true, data: () => consentSheetData(c, id));
 }
 
