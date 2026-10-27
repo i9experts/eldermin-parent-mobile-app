@@ -1,8 +1,9 @@
 // Mirrored in eldermin-teacher-app lib/core/widgets/detail_bottom_sheet.dart (list-row-details) — keep in sync.
-// The only differences are the attachment opener default and the import of the shared rich-text view.
+// Differences: the attachment opener default, the import of the shared rich-text view, and (parent only) [DetailSheetData.imageAttachments].
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../app/components/external_link.dart';
+import '../../app/components/rich_image.dart';
 import '../../app/components/rich_text_view.dart';
 import '../design/design.dart';
 
@@ -42,6 +43,7 @@ class DetailSheetData {
     this.longTextIsRich = false,
     this.sections = const [],
     this.attachments = const [],
+    this.imageAttachments = const [],
     this.footer,
     this.state = DetailSheetState.ready,
     this.errorMessage,
@@ -62,6 +64,9 @@ class DetailSheetData {
   final bool longTextIsRich;
   final List<DetailSection> sections;
   final List<DetailAttachment> attachments;
+
+  /// Image URLs (already checked against the image allowlist) shown as a thumbnail row that opens the full-screen viewer.
+  final List<String> imageAttachments;
 
   /// Pinned below the scrolling content, above the safe area. Null hides it.
   final Widget? footer;
@@ -176,9 +181,23 @@ class DetailBottomSheet extends StatelessWidget {
             ),
           ),
         ],
-        if (d.attachments.isNotEmpty) ...[
+        if (d.attachments.isNotEmpty || d.imageAttachments.isNotEmpty) ...[
           const SizedBox(height: EmSpacing.s16),
           const _Label('Attachments'),
+          if (d.imageAttachments.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: EmSpacing.s8),
+              child: SizedBox(
+                key: const Key('detail_image_attachments'),
+                height: 96,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: d.imageAttachments.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: EmSpacing.s8),
+                  itemBuilder: (_, i) => RichImageView(key: ValueKey('detail_image_${d.imageAttachments[i]}'), url: d.imageAttachments[i], alt: 'Attachment ${i + 1}', thumbnailSize: 96),
+                ),
+              ),
+            ),
           for (final a in d.attachments)
             InkWell(
               key: ValueKey('detail_attachment_${a.url}'),

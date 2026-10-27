@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/design/design.dart';
+import '../../../../core/utils/safe_text.dart';
 import '../../../../core/widgets/detail_bottom_sheet.dart';
 import '../../../components/custom_app_snack_bar.dart';
 import '../../students/controllers/student_controller.dart';
@@ -25,6 +26,16 @@ String? _dateOf(Object? iso, {bool utcDay = false}) {
 String _fileName(String url, int i) {
   final seg = Uri.tryParse(url)?.pathSegments.where((s) => s.isNotEmpty).lastOrNull;
   return seg == null || seg.isEmpty ? 'Attachment ${i + 1}' : Uri.decodeComponent(seg);
+}
+
+const _imageExtensions = {'png', 'jpg', 'jpeg', 'webp', 'gif'};
+
+/// An attachment shown as a thumbnail: an https image on an allowlisted host with a raster extension (HEIC and SVG stay ordinary links).
+bool isImageAttachment(String url) {
+  if (!isAllowedImageUrl(url)) return false;
+  final name = Uri.parse(url.trim()).path.toLowerCase();
+  final dot = name.lastIndexOf('.');
+  return dot >= 0 && _imageExtensions.contains(name.substring(dot + 1));
 }
 
 /// Opens the consent detail sheet for [id]. Only the selected student's own data is shown; `studentIds` (the whole cohort) never is.
@@ -65,7 +76,8 @@ DetailSheetData consentSheetData(ConsentController c, String id) {
     longTextLabel: 'Details',
     longText: r['description']?.toString(),
     longTextIsRich: true,
-    attachments: [for (var i = 0; i < attachments.length; i++) DetailAttachment(_fileName(attachments[i], i), attachments[i])],
+    attachments: [for (var i = 0; i < attachments.length; i++) if (!isImageAttachment(attachments[i])) DetailAttachment(_fileName(attachments[i], i), attachments[i])],
+    imageAttachments: attachments.where(isImageAttachment).toList(),
     sections: [
       if (status == ConsentStatus.responded && response != null)
         DetailSection('Your response', [
