@@ -223,15 +223,14 @@ void main() {
     await _done(t);
   });
 
-  testWidgets('large text scale: the actions stack and stay reachable', (t) async {
-    await _open(t, consentApi(), textScale: 1.2);
-    // The screen's own "Consent completion" header row (Row, spaceBetween, untouched by this change) overflows by 14 px at this scale;
-    // that is not what this test is about, so consume it here.
-    t.takeException();
-    await _openRow(t, 'Museum trip');
-    expect(_grant, findsOneWidget);
-    expect(_decline, findsOneWidget);
-    expect(t.getTopLeft(_grant).dy, greaterThan(t.getTopLeft(_decline).dy));
-    await _done(t);
-  });
+  for (final scale in [1.2, 1.5, 2.0]) {
+    testWidgets('text scale $scale: no overflow, the actions stack and stay reachable', (t) async {
+      await _open(t, consentApi(), textScale: scale);
+      await _openRow(t, 'Museum trip');
+      expect(_grant, findsOneWidget);
+      expect(_decline, findsOneWidget);
+      expect(t.getTopLeft(_grant).dy, greaterThan(t.getTopLeft(_decline).dy));
+      await _done(t); // any layout exception thrown above fails the test: nothing is consumed
+    });
+  }
 }

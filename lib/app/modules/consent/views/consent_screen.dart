@@ -65,11 +65,14 @@ class ConsentScreen extends GetView<ConsentController> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const CustomText(
-                              text: 'Consent completion',
-                              fontWeight: FontWeight.w800,
-                              fontSize: 12,
-                              color: EmColors.primaryDark),
+                          const Expanded(
+                            child: CustomText(
+                                text: 'Consent completion',
+                                fontWeight: FontWeight.w800,
+                                fontSize: 12,
+                                color: EmColors.primaryDark),
+                          ),
+                          const SizedBox(width: EmSpacing.s8),
                           AppTag(
                               '${((responded / requests.length) * 100).round()}%',
                               style: TagStyle.info),
