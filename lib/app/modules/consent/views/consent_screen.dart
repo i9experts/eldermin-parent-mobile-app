@@ -108,7 +108,7 @@ class ConsentScreen extends GetView<ConsentController> {
                   final status = ConsentController.statusOf(r);
                   final due = DateTime.tryParse(r['dueDate']?.toString() ?? '')?.toUtc();
                   final decision = (r['response'] as Map?)?['decision']?.toString();
-                  final preview = htmlToPlainText(r['description']?.toString() ?? '').replaceAll('\n', ' ');
+                  final preview = htmlToPreviewText(r['description']?.toString() ?? '');
 
                   return AppCard(
                     onTap: () => showConsentDetailSheet(context, controller, id),
