@@ -8,7 +8,7 @@ enum AuthPhotoSize {
   /// Sign in: the photo fills the top ~55% and fades into the navy.
   tall(0.55, Alignment.topCenter),
 
-  /// The screens pushed from it (OTP, email sign in, create account): a shorter photo.
+  /// The screens pushed from it (OTP): a shorter photo.
   short(0.34, Alignment(0, -0.78));
 
   const AuthPhotoSize(this.fraction, this.alignment);
@@ -20,12 +20,13 @@ enum AuthPhotoSize {
 
   /// Share of a screen [height] dp tall: the tall photo gives way a little on small phones (< 700 dp, the iPhone SE)
   /// so the whole form still fits without scrolling.
-  double fractionFor(double height) => this == tall && height < compactHeight ? compactTall : fraction;
+  double fractionFor(double height) =>
+      this == tall && height < compactHeight ? compactTall : fraction;
 
   static const double compactHeight = 700, compactTall = 0.46;
 }
 
-/// Shared layout for the signed-out screens (login, OTP, email sign in, create account). Copied from the teacher
+/// Shared layout for the signed-out screens (login, OTP). Copied from the teacher
 /// app's `design-kit-v1`; the parent additions are [eyebrow] and an optional [subtitle].
 ///
 /// the first photo at the top fading into the navy page, the logo tile (the
@@ -90,7 +91,8 @@ class AuthPageShell extends StatelessWidget {
           body: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: TweenAnimationBuilder<double>(
@@ -114,7 +116,8 @@ class AuthPageShell extends StatelessWidget {
                                 height: h,
                                 child: EmPhotoBackdrop(
                                   key: const Key('auth_photo'),
-                                  image: EmAuthPhotos.provider(EmAuthPhotos.photo1),
+                                  image: EmAuthPhotos.provider(
+                                      EmAuthPhotos.photo1),
                                   alignment: photoSize.alignment,
                                   safeTop: photoSafeTop,
                                   bottomAlpha: 1,
@@ -124,19 +127,24 @@ class AuthPageShell extends StatelessWidget {
                               PositionedDirectional(
                                 top: top + EmSpacing.s12,
                                 end: EmSpacing.s24,
-                                child: const EmLogoAnchor(child: EmLogoTile(size: logoTile)),
+                                child: const EmLogoAnchor(
+                                    child: EmLogoTile(size: logoTile)),
                               ),
                               if (showBack)
                                 PositionedDirectional(
                                   top: top + EmSpacing.s8,
                                   start: EmSpacing.s16,
                                   child: Builder(builder: (context) {
-                                    final rtl = Directionality.of(context) == TextDirection.rtl;
+                                    final rtl = Directionality.of(context) ==
+                                        TextDirection.rtl;
                                     return EmIconCircleButton(
-                                      icon: rtl ? Icons.chevron_right_rounded : Icons.chevron_left_rounded,
+                                      icon: rtl
+                                          ? Icons.chevron_right_rounded
+                                          : Icons.chevron_left_rounded,
                                       semanticLabel: 'Back',
                                       tooltip: 'Back',
-                                      onTap: () => Navigator.maybeOf(context)?.maybePop(),
+                                      onTap: () => Navigator.maybeOf(context)
+                                          ?.maybePop(),
                                     );
                                   }),
                                 ),
@@ -146,10 +154,12 @@ class AuthPageShell extends StatelessWidget {
                         SafeArea(
                           top: false,
                           child: Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(EmSpacing.s24, 0, EmSpacing.s24, EmSpacing.s24),
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                EmSpacing.s24, 0, EmSpacing.s24, EmSpacing.s24),
                             child: Center(
                               child: ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: maxContentWidth),
+                                constraints: const BoxConstraints(
+                                    maxWidth: maxContentWidth),
                                 child: _rise(entrance, _content()),
                               ),
                             ),
@@ -172,12 +182,17 @@ class AuthPageShell extends StatelessWidget {
     return EmOnDark(
       child: Builder(
         builder: (context) => TextButtonTheme(
-          data: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: EmColors.onPrimaryDark)),
+          data: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                  foregroundColor: EmColors.onPrimaryDark)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (eyebrow != null) ...[
-                Text(eyebrow!, key: const Key('auth_eyebrow'), style: EmType.caption.copyWith(color: EmOnDark.muted(context))),
+                Text(eyebrow!,
+                    key: const Key('auth_eyebrow'),
+                    style: EmType.caption
+                        .copyWith(color: EmOnDark.muted(context))),
                 const SizedBox(height: EmSpacing.s4),
               ],
               Semantics(
@@ -192,7 +207,9 @@ class AuthPageShell extends StatelessWidget {
                 const SizedBox(height: EmSpacing.s8),
                 Text(subtitle!,
                     key: const Key('auth_subtitle'),
-                    style: EmType.body.copyWith(color: EmOnDark.muted(context), fontWeight: FontWeight.w400)),
+                    style: EmType.body.copyWith(
+                        color: EmOnDark.muted(context),
+                        fontWeight: FontWeight.w400)),
               ],
               const SizedBox(height: EmSpacing.s20),
               child,
@@ -211,7 +228,9 @@ class AuthPageShell extends StatelessWidget {
       child: content,
       builder: (context, child) => Opacity(
         opacity: a.value,
-        child: Transform.translate(offset: Offset(0, EmMotion.riseDistance * (1 - a.value)), child: child),
+        child: Transform.translate(
+            offset: Offset(0, EmMotion.riseDistance * (1 - a.value)),
+            child: child),
       ),
     );
     if (shake != null) c = EmShake(trigger: shake!, child: c);
@@ -235,13 +254,21 @@ class AuthBanner extends StatelessWidget {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsetsDirectional.all(EmSpacing.s12),
-        decoration: BoxDecoration(color: tone.background, borderRadius: EmRadius.mdAll),
+        decoration:
+            BoxDecoration(color: tone.background, borderRadius: EmRadius.mdAll),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(isError ? Icons.error_outline_rounded : Icons.info_outline_rounded, color: tone.foreground, size: 20),
+            Icon(
+                isError
+                    ? Icons.error_outline_rounded
+                    : Icons.info_outline_rounded,
+                color: tone.foreground,
+                size: 20),
             const SizedBox(width: EmSpacing.s8),
-            Expanded(child: Text(message, style: EmType.label.copyWith(color: tone.foreground))),
+            Expanded(
+                child: Text(message,
+                    style: EmType.label.copyWith(color: tone.foreground))),
           ],
         ),
       ),
@@ -253,7 +280,8 @@ class AuthBanner extends StatelessWidget {
 class PasswordVisibilityButton extends StatelessWidget {
   final bool obscured;
   final VoidCallback onToggle;
-  const PasswordVisibilityButton({super.key, required this.obscured, required this.onToggle});
+  const PasswordVisibilityButton(
+      {super.key, required this.obscured, required this.onToggle});
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -267,7 +295,12 @@ class PasswordVisibilityButton extends StatelessWidget {
           child: SizedBox(
             width: 48,
             height: 48,
-            child: Icon(obscured ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20, color: EmOnDark.muted(context)),
+            child: Icon(
+                obscured
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                size: 20,
+                color: EmOnDark.muted(context)),
           ),
         ),
       );

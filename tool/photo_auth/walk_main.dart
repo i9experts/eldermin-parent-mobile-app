@@ -1,8 +1,7 @@
-// Dev tool (NOT shipped: lives under tool/). Runs the real parent app screens (splash, login, OTP, email sign in,
-// create account) with a stubbed API and a SCRIPTED walkthrough, so the photo auth look can be recorded on the iOS
+// Dev tool (NOT shipped: lives under tool/). Runs the real parent app screens (splash, login, OTP) with a stubbed API and a SCRIPTED walkthrough, so the photo auth look can be recorded on the iOS
 // simulator without UI automation:
 //
-//   tool/photo_auth/walk.sh UDID SCENARIO OUT_PREFIX      SCENARIO = a|b|c|d|e|f   (see _scenarios below)
+//   tool/photo_auth/walk.sh UDID SCENARIO OUT_PREFIX      SCENARIO = a|b|d|e|f   (see _scenarios below)
 //
 // The script drives the screens through their own controllers (it types into the text controllers, calls the same
 // methods the buttons call, pushes the same routes) and prints `MARK:<name>:<epoch ms>` lines that walk.sh uses to
@@ -10,13 +9,10 @@
 // The first mark, `flash`, is a magenta frame the recording is aligned on.
 import 'dart:async';
 import 'package:eldermin_parent_app/app/modules/auth/controllers/auth_controller.dart';
-import 'package:eldermin_parent_app/app/modules/auth/controllers/create_account_controller.dart';
-import 'package:eldermin_parent_app/app/modules/auth/controllers/email_sign_in_controller.dart';
 import 'package:eldermin_parent_app/app/modules/auth/controllers/phone_entry_controller.dart';
 import 'package:eldermin_parent_app/app/modules/auth/views/phone_entry_screen.dart';
 import 'package:eldermin_parent_app/app/modules/splash/views/splash_screen.dart';
 import 'package:eldermin_parent_app/app/routes/app_pages.dart';
-import 'package:eldermin_parent_app/app/routes/app_routes.dart';
 import 'package:eldermin_parent_app/core/design/design.dart';
 import 'package:eldermin_parent_app/core/network/base_client.dart';
 import 'package:eldermin_parent_app/core/network/api_exception.dart';
@@ -112,32 +108,6 @@ Future<void> script() async {
     case 'e': // the same with reduce motion
     case 'f': // the same at text scale 1.3
       await _login(_walk);
-    case 'c': // create account + email sign in
-      await _wait4Login();
-      Get.toNamed(Routes.createAccount);
-      await wait(1800);
-      mark('c_create_account');
-      final c = Get.find<CreateAccountController>();
-      await keyboard(true);
-      mark('c_create_keyboard');
-      await type(c.fullNameController, 'Ayesha Khan', perChar: 60);
-      await type(c.emailController, 'ayesha@example.com', perChar: 40);
-      mark('c_create_filled');
-      await keyboard(false);
-      await c.createAccount(); // empty fields -> the existing validation message
-      await wait(500);
-      mark('c_create_error');
-      await wait(900);
-      Get.offNamed(Routes.emailSignIn);
-      await wait(1800);
-      mark('c_email_sign_in');
-      final e = Get.find<EmailSignInController>();
-      await keyboard(true);
-      await type(e.emailController, 'ayesha@example.com', perChar: 50);
-      await type(e.passwordController, 'secret123', perChar: 50);
-      mark('c_email_keyboard');
-      await keyboard(false);
-      mark('c_email_after_keyboard');
   }
   await wait(800);
   mark('end');

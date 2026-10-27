@@ -12,8 +12,6 @@ import '../support/route_harness.dart';
 /// request still pending) at normal and 1.3x text. The fake API means no network and no storage.
 final routes = <String, Object?>{
   Routes.otpVerify: {'phone': '+923001234567', 'devCode': '123456'},
-  Routes.createAccount: null,
-  Routes.emailSignIn: null,
   Routes.studentSelector: null,
   Routes.notifications: null,
   Routes.dues: null,
@@ -51,10 +49,10 @@ void main() {
   setUpAll(loadAuthFonts);
   tearDown(Get.reset);
 
-  test('the smoke test covers every named route (33)', () {
+  test('the smoke test covers every named route (31)', () {
     final registered = AppPages.pages.map((p) => p.name).toSet();
     expect(routes.keys.toSet(), registered);
-    expect(routes.length, 33);
+    expect(routes.length, 31);
   });
 
   for (final entry in routes.entries) {

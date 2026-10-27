@@ -1,6 +1,4 @@
 import 'package:eldermin_parent_app/app/modules/auth/controllers/otp_verify_controller.dart';
-import 'package:eldermin_parent_app/app/modules/auth/views/create_account_screen.dart';
-import 'package:eldermin_parent_app/app/modules/auth/views/email_sign_in_screen.dart';
 import 'package:eldermin_parent_app/app/modules/auth/views/otp_verify_screen.dart';
 import 'package:eldermin_parent_app/app/modules/auth/views/phone_entry_screen.dart';
 import 'package:eldermin_parent_app/app/modules/auth/widgets/auth_page_shell.dart';
@@ -59,14 +57,12 @@ void main() {
       }
     }
 
-    testWidgets('login (tall photo), OTP, email sign in, create account (short photo)', (t) async {
+    testWidgets('login (tall photo), OTP (short photo)', (t) async {
       for (final (w, h) in sizes) {
         for (final scale in [1.0, 1.3]) {
           for (final (name, build, fraction) in <(String, Widget Function(), double)>[
             ('login', () => const PhoneEntryScreen(), AuthPhotoSize.tall.fraction),
             ('otp', () => const OtpVerifyScreen(), AuthPhotoSize.short.fraction),
-            ('email', () => const EmailSignInScreen(), AuthPhotoSize.short.fraction),
-            ('create', () => const CreateAccountScreen(), AuthPhotoSize.short.fraction),
           ]) {
             setUpAuthDeps();
             if (name == 'otp') Get.put<OtpVerifyController>(TestOtp(dev: '123456'));
@@ -84,7 +80,7 @@ void main() {
       setUpAuthDeps();
       await pumpScreen(t, const PhoneEntryScreen(), width: 375, height: 667);
       expect(t.getSize(find.byKey(const Key('auth_photo'))).height, closeTo(667 * AuthPhotoSize.compactTall, 1));
-      expect(t.getRect(find.textContaining('Create an account', findRichText: true)).bottom, lessThanOrEqualTo(667));
+      expect(t.getRect(find.textContaining("Haven't registered this number")).bottom, lessThanOrEqualTo(667));
       expect(t.getRect(find.byType(EmMorphButton)).bottom, lessThanOrEqualTo(667));
     });
 
@@ -106,13 +102,13 @@ void main() {
   group('text styles on the overlay', () {
     testWidgets('only white, muted-light, light-caption and accent text on a photo screen; accent only as heading, link or label', (t) async {
       final allowed = {EmColors.onPrimaryDark, EmColors.primaryContainer, EmColors.primaryLight, EmColors.accent, EmColors.ink, EmColors.errorContainer};
-      for (final build in <Widget Function()>[() => const PhoneEntryScreen(), () => const EmailSignInScreen(), () => const CreateAccountScreen(), () => const SplashScreen()]) {
+      for (final build in <Widget Function()>[() => const PhoneEntryScreen(), () => const SplashScreen()]) {
         setUpAuthDeps();
         await pumpScreen(t, build());
         for (final text in t.widgetList<Text>(find.byType(Text))) {
           final c = text.style?.color;
           if (c != null) expect(allowed, contains(c), reason: '"${text.data}"');
-          // spans (the "Create an account" links)
+          // spans 
           text.textSpan?.visitChildren((span) {
             final sc = span.style?.color;
             if (sc != null) expect(allowed, contains(sc), reason: 'span');

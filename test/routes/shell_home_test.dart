@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:eldermin_parent_app/app/modules/auth/controllers/auth_controller.dart';
 import 'package:eldermin_parent_app/app/modules/home/controllers/home_shell_controller.dart';
 import 'package:eldermin_parent_app/app/modules/home/views/home_shell.dart';
 import 'package:eldermin_parent_app/app/modules/students/controllers/student_controller.dart';
@@ -229,21 +228,6 @@ void main() {
       expect(find.text('All caught up'), findsOneWidget);
       expect(find.text('No pending homework right now.'), findsOneWidget);
       expect(t.takeException(), isNull);
-      await disposeApp(t);
-    });
-
-    testWidgets('a self-serve parent account sees the Eldermin explanation, not a child list', (t) async {
-      setUpRouteDeps(homeApi());
-      final auth = Get.find<AuthController>();
-      auth.isParentLead.value = true;
-      await pumpApp(t, home: const HomeShell());
-      await settle(t);
-      expect(find.text("Your school isn't on Eldermin yet"), findsOneWidget);
-      expect(find.textContaining('joins Eldermin'), findsOneWidget);
-      expect(find.byType(EmEmptyState), findsOneWidget);
-      auth.schoolOnboarded.value = true;
-      await settle(t);
-      expect(find.text("You're almost there!"), findsOneWidget);
       await disposeApp(t);
     });
 

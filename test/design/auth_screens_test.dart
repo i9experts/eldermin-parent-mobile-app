@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:eldermin_parent_app/app/modules/auth/controllers/otp_verify_controller.dart';
 import 'package:eldermin_parent_app/app/modules/auth/controllers/phone_entry_controller.dart';
-import 'package:eldermin_parent_app/app/modules/auth/views/create_account_screen.dart';
-import 'package:eldermin_parent_app/app/modules/auth/views/email_sign_in_screen.dart';
 import 'package:eldermin_parent_app/app/modules/auth/views/otp_verify_screen.dart';
 import 'package:eldermin_parent_app/app/modules/auth/views/phone_entry_screen.dart';
 import 'package:eldermin_parent_app/core/design/design.dart';
@@ -23,8 +21,6 @@ class _Case {
 const cases = [
   _Case('login', PhoneEntryScreen.new, 'Send Verification Code'),
   _Case('otp', OtpVerifyScreen.new, 'Verify & Continue', otp: true),
-  _Case('email', EmailSignInScreen.new, 'Sign In'),
-  _Case('create', CreateAccountScreen.new, 'Create Account'),
 ];
 
 double shakeOffset(WidgetTester t) =>
@@ -111,13 +107,6 @@ void main() {
       await pumpScreen(t, const PhoneEntryScreen());
       expect(find.bySemanticsLabel('Back'), findsNothing);
       expect(find.byType(AppBar), findsNothing);
-      for (final (screen, eyebrow) in [(const EmailSignInScreen(), 'Sign In'), (const CreateAccountScreen(), 'Create Account')]) {
-        setUpAuthDeps();
-        await pumpScreen(t, screen);
-        expect(find.byTooltip('Back'), findsOneWidget);
-        expect(t.widget<Text>(find.byKey(const Key('auth_eyebrow'))).data, eyebrow);
-      }
-      Get.reset();
       deps(cases[1]);
       await pumpScreen(t, const OtpVerifyScreen());
       expect(find.byTooltip('Back'), findsOneWidget);
@@ -129,7 +118,6 @@ void main() {
       await pumpScreen(t, const PhoneEntryScreen());
       expect(find.text("Enter the WhatsApp number registered with your child's school. We'll send a verification code — no password needed."), findsOneWidget);
       expect(find.text("Haven't registered this number with your school yet? Contact the school office to link it to your child's profile."), findsOneWidget);
-      expect(find.textContaining('Create an account', findRichText: true), findsOneWidget);
       deps(cases[1]);
       await pumpScreen(t, const OtpVerifyScreen());
       expect(find.text('Enter the code'), findsOneWidget);
@@ -208,26 +196,6 @@ void main() {
       expect(t.widget<EmMorphButton>(find.byType(EmMorphButton)).onPressed, isNotNull);
     });
 
-    testWidgets('create account: the terms checkbox and every field keep their hints', (t) async {
-      setUpAuthDeps();
-      await pumpScreen(t, const CreateAccountScreen());
-      // every field keeps its hint (shown when the label floats) and gains its former heading as the label
-      final fields = {
-        'Full Name': 'Enter your full name',
-        'School Name': "Your child's school name",
-        'Email Address': 'Enter your email',
-        'Phone Number': '+92 300 1234567',
-        'Password': 'Create a password',
-        'Confirm Password': 'Confirm your password',
-      };
-      for (final e in fields.entries) {
-        final f = find.byWidgetPredicate((w) => w is EmTextField && w.label == e.key && w.hint == e.value);
-        await t.ensureVisible(f);
-        expect(f, findsOneWidget, reason: e.key);
-      }
-      expect(find.text('I agree to the Terms & Conditions and Privacy Policy'), findsOneWidget);
-      expect(find.byType(Checkbox), findsOneWidget);
-    });
   });
 
   group('reduce motion', () {

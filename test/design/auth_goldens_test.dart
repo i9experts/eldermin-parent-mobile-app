@@ -3,8 +3,6 @@ library;
 
 import 'dart:io';
 import 'package:eldermin_parent_app/app/modules/auth/controllers/otp_verify_controller.dart';
-import 'package:eldermin_parent_app/app/modules/auth/views/create_account_screen.dart';
-import 'package:eldermin_parent_app/app/modules/auth/views/email_sign_in_screen.dart';
 import 'package:eldermin_parent_app/app/modules/auth/views/otp_verify_screen.dart';
 import 'package:eldermin_parent_app/app/modules/auth/views/phone_entry_screen.dart';
 import 'package:eldermin_parent_app/app/modules/splash/views/splash_screen.dart';
@@ -26,8 +24,6 @@ void main() {
     'splash': (() => const SplashScreen(), false, false),
     'login': (() => const PhoneEntryScreen(), true, false),
     'otp': (() => const OtpVerifyScreen(), true, true),
-    'email': (() => const EmailSignInScreen(), true, false),
-    'create': (() => const CreateAccountScreen(), true, false),
   };
 
   for (final e in screens.entries) {

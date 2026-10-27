@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../../core/design/design.dart';
-import '../../../routes/app_routes.dart';
 import '../controllers/phone_entry_controller.dart';
 import '../widgets/auth_page_shell.dart';
 
@@ -74,21 +73,6 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
             "Haven't registered this number with your school yet? Contact the school office to link it to your child's profile.",
             textAlign: TextAlign.center,
             style: EmType.caption.copyWith(color: EmColors.primaryContainer, fontWeight: FontWeight.w400),
-          ),
-          const SizedBox(height: EmSpacing.s8),
-          Center(
-            child: TextButton(
-              onPressed: () => Get.toNamed(Routes.createAccount),
-              child: Text.rich(
-                TextSpan(children: [
-                  TextSpan(
-                      text: "Your school isn't on Eldermin yet? ",
-                      style: EmType.caption.copyWith(color: EmColors.primaryContainer, fontWeight: FontWeight.w400)),
-                  TextSpan(text: 'Create an account', style: EmType.caption.copyWith(color: EmColors.onPrimaryDark, fontWeight: FontWeight.w700)),
-                ]),
-                textAlign: TextAlign.center,
-              ),
-            ),
           ),
         ],
       ),
