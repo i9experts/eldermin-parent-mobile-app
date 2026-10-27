@@ -68,6 +68,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
             keyboardType: TextInputType.number,
             animationType: AnimationType.fade,
             cursorColor: EmColors.accent,
+            backgroundColor: Colors.transparent,
             textStyle: EmType.heading.copyWith(color: EmColors.onPrimaryDark),
             pinTheme: PinTheme(
               shape: PinCodeFieldShape.box,
