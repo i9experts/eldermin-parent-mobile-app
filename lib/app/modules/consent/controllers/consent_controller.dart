@@ -35,19 +35,24 @@ class ConsentController extends GetxController {
     fetch();
   }
 
-  /// The end of the day the request is due, local time. The backend stores a date-only value (midnight UTC), so its calendar date is the
-  /// date the school picked; null when the request has no due date.
+  /// Test seam: the first instant of the given calendar day in the device's local time zone.
+  static DateTime Function(int year, int month, int day) startOfLocalDay = (y, m, d) => DateTime(y, m, d);
+
+  /// The instant the due day is over: local midnight after the day the school picked. The web form sends a date-only value
+  /// (`<input type="date">`, ConsentTab.tsx:33), the backend parses it as midnight UTC (`new Date('2026-11-15')`,
+  /// parent-portal.service.ts:808) and returns `2026-11-15T00:00:00.000Z`. Its UTC calendar date is therefore the date that was picked, whatever
+  /// the device's zone, and the request stays open until that day ends on the device's clock. Null when there is no due date.
   static DateTime? dueEnd(Map request) {
     final due = DateTime.tryParse(request['dueDate']?.toString() ?? '');
     if (due == null) return null;
-    final d = due.isUtc ? due : due.toUtc();
-    return DateTime(d.year, d.month, d.day, 23, 59, 59);
+    final d = due.toUtc();
+    return startOfLocalDay(d.year, d.month, d.day + 1); // day + 1 rolls over month ends
   }
 
   static ConsentStatus statusOf(Map request, {DateTime? now}) {
     if (request['response'] is Map) return ConsentStatus.responded;
     final end = dueEnd(request);
-    if (end != null && (now ?? uiNow()).isAfter(end)) return ConsentStatus.expired;
+    if (end != null && !(now ?? uiNow()).isBefore(end)) return ConsentStatus.expired;
     return ConsentStatus.pending;
   }
 

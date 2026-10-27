@@ -15,7 +15,10 @@ Future<ConsentController> _controller(Future<dynamic> Function(String, String) a
 }
 
 void main() {
-  tearDown(Get.reset);
+  tearDown(() {
+    ConsentController.startOfLocalDay = (y, m, d) => DateTime(y, m, d);
+    Get.reset();
+  });
 
   group('statusOf (pinned now: 26 Oct 2026 09:30)', () {
     test('no response and a future due date is pending', () {
@@ -38,6 +41,55 @@ void main() {
     });
     test('an unparsable due date is treated as none', () {
       expect(ConsentController.statusOf({'dueDate': 'garbage'}, now: pinnedNow), ConsentStatus.pending);
+    });
+  });
+
+  // The web sends "2026-11-15" (date-only); the backend stores and returns 2026-11-15T00:00:00.000Z. The admin picked 15 Nov, so the request
+  // must stay open until 15 Nov ends on the DEVICE's clock. Device zones are simulated by fixing what "local midnight" means.
+  group('due date: picked 15 Nov (API value 2026-11-15T00:00:00.000Z)', () {
+    const api = {'dueDate': '2026-11-15T00:00:00.000Z'};
+    ConsentStatus at(DateTime now) => ConsentController.statusOf(api, now: now);
+
+    void zone(Duration offset) => ConsentController.startOfLocalDay = (y, m, d) => DateTime.utc(y, m, d).subtract(offset);
+
+    test('device in UTC+5 (Pakistan): pending through 23:59:59 on 15 Nov, expired from 00:00 on 16 Nov', () {
+      zone(const Duration(hours: 5));
+      expect(at(DateTime.utc(2026, 11, 15, 0, 0)), ConsentStatus.pending); // UTC midnight is 05:00 local on the 15th: must still be open
+      expect(at(DateTime.utc(2026, 11, 15, 10, 0)), ConsentStatus.pending);
+      expect(at(DateTime.utc(2026, 11, 15, 18, 59, 59, 999)), ConsentStatus.pending); // 23:59:59.999 local
+      expect(at(DateTime.utc(2026, 11, 15, 19, 0)), ConsentStatus.expired); // 00:00 on the 16th local
+      expect(at(DateTime.utc(2026, 11, 16, 3, 0)), ConsentStatus.expired);
+    });
+
+    test('device in UTC: pending through 23:59:59 on 15 Nov, expired from 00:00 on 16 Nov', () {
+      zone(Duration.zero);
+      expect(at(DateTime.utc(2026, 11, 15, 12, 0)), ConsentStatus.pending);
+      expect(at(DateTime.utc(2026, 11, 15, 23, 59, 59, 999)), ConsentStatus.pending);
+      expect(at(DateTime.utc(2026, 11, 16, 0, 0)), ConsentStatus.expired);
+    });
+
+    test('device west of UTC (UTC-5): still open when it is already the 16th in UTC', () {
+      zone(const Duration(hours: -5));
+      expect(at(DateTime.utc(2026, 11, 16, 4, 59, 59)), ConsentStatus.pending); // 23:59:59 on the 15th local
+      expect(at(DateTime.utc(2026, 11, 16, 5, 0)), ConsentStatus.expired);
+    });
+
+    test('month and year ends roll over', () {
+      zone(const Duration(hours: 5));
+      expect(ConsentController.statusOf({'dueDate': '2026-12-31T00:00:00.000Z'}, now: DateTime.utc(2026, 12, 31, 18, 59)), ConsentStatus.pending);
+      expect(ConsentController.statusOf({'dueDate': '2026-12-31T00:00:00.000Z'}, now: DateTime.utc(2026, 12, 31, 19, 0)), ConsentStatus.expired);
+      expect(ConsentController.statusOf({'dueDate': '2026-02-28T00:00:00.000Z'}, now: DateTime.utc(2026, 2, 28, 18, 59)), ConsentStatus.pending);
+    });
+
+    test('with the real device zone (whatever it is): open at 23:59:59 local on the 15th, expired at 00:00 local on the 16th', () {
+      expect(at(DateTime(2026, 11, 15, 23, 59, 59, 999)), ConsentStatus.pending);
+      expect(at(DateTime(2026, 11, 16)), ConsentStatus.expired);
+      expect(at(DateTime(2026, 11, 15)), ConsentStatus.pending);
+    });
+
+    test('a due-date with a time part still means the UTC calendar day', () {
+      zone(Duration.zero);
+      expect(ConsentController.statusOf({'dueDate': '2026-11-15T09:30:00.000Z'}, now: DateTime.utc(2026, 11, 15, 20)), ConsentStatus.pending);
     });
   });
 
