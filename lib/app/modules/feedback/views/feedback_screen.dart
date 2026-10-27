@@ -91,8 +91,10 @@ class FeedbackScreen extends GetView<FeedbackController> {
                           description: descriptionCtrl.text,
                         );
                         if (ok) {
+                          // Navigator.pop, not Get.back(): Get.back() only closes an open GetX snackbar (e.g. one left by an earlier failed
+                          // attempt, or the one shown here) and leaves the screen up.
+                          if (context.mounted) Navigator.of(context).pop();
                           CustomAppSnackbar.success('Thanks — your feedback has been submitted.');
-                          Get.back();
                         } else if (controller.error.value != null) {
                           CustomAppSnackbar.error(controller.error.value!);
                         }

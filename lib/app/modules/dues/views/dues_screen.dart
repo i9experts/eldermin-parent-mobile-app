@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/hero_card.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../controllers/dues_controller.dart';
+import 'dues_detail_sheet.dart';
 
 /// Fees & dues (read-only). Teacher pattern: the Home hero summary (`design-kit-v1` `home_sections.dart` `ClassTeacherCard`,
 /// `EmHeroCard` + ring) for the outstanding amount, white [EmCard] rows for the list (`ptm_widgets.dart:31-71` card style).
@@ -101,7 +102,8 @@ class DuesScreen extends GetView<DuesController> {
               if (invoices.isEmpty)
                 const AppEmptyView(icon: Icons.receipt_long_outlined, title: 'No invoices on file')
               else
-                ...invoices.map((inv) {
+                ...invoices.map((raw) {
+                  final inv = Map<String, dynamic>.from(raw as Map);
                   final due = inv['dueDate'] != null ? DateTime.tryParse(inv['dueDate'].toString()) : null;
                   final isUnpaid = _n(inv['balanceDue']) > 0;
                   return ListCardRow(
@@ -110,6 +112,7 @@ class DuesScreen extends GetView<DuesController> {
                     title: inv['invoiceNumber']?.toString() ?? 'Invoice',
                     subtitle: due != null ? 'Due ${due.day}/${due.month}/${due.year}' : '',
                     trailing: AppTag(isUnpaid ? 'Unpaid' : 'Paid', style: isUnpaid ? TagStyle.red : TagStyle.green),
+                    onTap: () => showDuesDetailSheet(context, inv),
                   );
                 }),
             ],

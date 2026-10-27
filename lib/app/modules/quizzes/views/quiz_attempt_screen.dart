@@ -33,7 +33,8 @@ class QuizAttemptScreen extends GetView<QuizAttemptController> {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
-        if (await _confirmLeave(context)) Get.back();
+        // Navigator.pop, not Get.back(): Get.back() only closes an open GetX snackbar (e.g. a failed-submit error) and would not leave.
+        if (await _confirmLeave(context) && context.mounted) Navigator.of(context).pop();
       },
       child: EmScaffold(
         appBar: EmAppBar(title: controller.title),
@@ -234,7 +235,8 @@ class _ResultView extends StatelessWidget {
                   text: 'Auto-marked so far: ${result['autoGradedMarks']}', color: EmColors.textSecondary, fontSize: 12)),
         ],
         const SizedBox(height: 32),
-        CustomButton(label: 'Back to quizzes', height: 48, color: EmColors.primaryDark, onPressed: () => Get.back()),
+        // Navigator.pop, not Get.back(): Get.back() only closes an open GetX snackbar (e.g. a failed attempt's error still showing).
+        CustomButton(label: 'Back to quizzes', height: 48, color: EmColors.primaryDark, onPressed: () => Navigator.of(context).pop()),
       ],
     );
   }
