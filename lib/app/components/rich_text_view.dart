@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import '../../core/design/design.dart';
 import '../../core/utils/safe_text.dart';
 import 'external_link.dart';
+import 'rich_image.dart';
 
-/// Renders [raw] (markdown-lite / plain text / HTML, see [parseRichText]) as inert text: headings, bullets, numbers, paragraphs. Links are
-/// tappable but open only after the confirmation dialog of [ExternalLinks]. No images, no HTML, no scripts.
+/// Renders [raw] (markdown-lite / plain text / HTML, see [parseRichText]) as inert text: headings, bullets, numbers, paragraphs, bold / italic /
+/// underline. Links are tappable but open only after the confirmation dialog of [ExternalLinks]. Images only from an allowed source (see
+/// `allowedImageSource`), shown by [RichImageView]. No HTML, no scripts.
 class RichTextView extends StatefulWidget {
   final String raw;
   const RichTextView(this.raw, {super.key});
@@ -29,14 +31,16 @@ class _RichTextViewState extends State<RichTextView> {
   TextSpan _span(List<InlineRun> runs, TextStyle base) {
     return TextSpan(style: base, children: [
       for (final r in runs)
-        if (r.link == null)
-          TextSpan(text: r.text)
-        else
-          TextSpan(
-            text: r.text,
-            style: const TextStyle(color: EmColors.primary, decoration: TextDecoration.underline),
-            recognizer: _link(r.link!),
+        TextSpan(
+          text: r.text,
+          style: TextStyle(
+            fontWeight: r.bold ? FontWeight.w700 : null,
+            fontStyle: r.italic ? FontStyle.italic : null,
+            color: r.link == null ? null : EmColors.primary,
+            decoration: r.link != null || r.underline ? TextDecoration.underline : null,
           ),
+          recognizer: r.link == null ? null : _link(r.link!),
+        ),
     ]);
   }
 
@@ -57,8 +61,13 @@ class _RichTextViewState extends State<RichTextView> {
     return Column(key: const Key('rich_text'), crossAxisAlignment: CrossAxisAlignment.start, children: [
       for (final b in blocks)
         Padding(
-          padding: EdgeInsets.only(bottom: EmSpacing.s8, top: b.kind == TextBlockKind.heading ? EmSpacing.s8 : 0),
+          padding: EdgeInsetsDirectional.only(
+            bottom: EmSpacing.s8,
+            top: b.kind == TextBlockKind.heading ? EmSpacing.s8 : 0,
+            start: EmSpacing.s16 * b.indent,
+          ),
           child: switch (b.kind) {
+            TextBlockKind.image => RichImageView(url: b.imageUrl, bytes: b.imageBytes, alt: b.alt),
             TextBlockKind.heading => Text.rich(_span(b.runs, EmType.bodyLarge.copyWith(fontWeight: FontWeight.w800, color: EmColors.ink, height: 1.5))),
             TextBlockKind.paragraph => Text.rich(_span(b.runs, base)),
             TextBlockKind.bullet => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('•  ', style: base), Expanded(child: Text.rich(_span(b.runs, base)))]),
