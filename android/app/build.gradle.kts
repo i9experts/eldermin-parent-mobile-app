@@ -12,7 +12,9 @@ plugins {
 
 val keystorePropertiesFile = rootProject.file("key.properties")
 val keystoreProperties = Properties()
-if (keystorePropertiesFile.exists()) {
+// key.properties holds the release keystore and is not committed: debug builds must work without it.
+val hasKeystore = keystorePropertiesFile.exists()
+if (hasKeystore) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
@@ -32,7 +34,7 @@ android {
     }
 
     signingConfigs {
-        create("release") {
+        if (hasKeystore) create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String
             keyPassword = keystoreProperties["keyPassword"] as String
             storeFile = file(keystoreProperties["storeFile"] as String)
@@ -56,8 +58,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            if (hasKeystore) signingConfig = signingConfigs.getByName("release")
         }
+    }
+}
+
+// A release build is never signed with the debug key or left unsigned silently.
+gradle.taskGraph.whenReady {
+    val wantsRelease = allTasks.any { it.project == project && it.name.contains("Release") && (it.name.startsWith("assemble") || it.name.startsWith("bundle")) }
+    if (wantsRelease && !hasKeystore) {
+        throw GradleException("android/key.properties is missing: release builds need the release keystore (keyAlias, keyPassword, storeFile, storePassword). Debug builds do not.")
     }
 }
 
