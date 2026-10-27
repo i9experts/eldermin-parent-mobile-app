@@ -175,9 +175,12 @@ class ParentApiService {
   Future<List<dynamic>> getConsentRequests(String studentId) async =>
       await _get(ApiConstants.consentRequests(studentId)) as List<dynamic>;
 
-  Future<void> respondToConsent(String studentId, String consentRequestId, String decision, {String? notes}) =>
-      _post(ApiConstants.respondToConsent(studentId, consentRequestId),
-          data: {'decision': decision, if (notes != null) 'notes': notes});
+  /// Returns the saved response document (the backend answers with it), or null if the body was not a map.
+  Future<Map<String, dynamic>?> respondToConsent(String studentId, String consentRequestId, String decision, {String? notes}) async {
+    final res = await _post(ApiConstants.respondToConsent(studentId, consentRequestId),
+        data: {'decision': decision, if (notes != null) 'notes': notes});
+    return res is Map ? Map<String, dynamic>.from(res) : null;
+  }
 
   Future<List<dynamic>> getStudentLeaves(String studentId) async =>
       await _get(ApiConstants.studentLeaves(studentId)) as List<dynamic>;

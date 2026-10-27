@@ -4,10 +4,10 @@ import 'package:get/get.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
-import '../../../components/custom_app_snack_bar.dart';
-import '../../../components/custom_button.dart';
 import '../../../components/custom_text.dart';
+import '../../../../core/utils/safe_text.dart';
 import '../controllers/consent_controller.dart';
+import 'consent_detail_sheet.dart';
 
 class ConsentScreen extends GetView<ConsentController> {
   const ConsentScreen({super.key});
@@ -101,12 +101,14 @@ class ConsentScreen extends GetView<ConsentController> {
               else
                 ...requests.map((raw) {
                   final r = Map<String, dynamic>.from(raw as Map);
-                  final id = r['_id']?.toString() ?? r['id']?.toString() ?? '';
-                  final response = r['response'] as Map<dynamic, dynamic>?;
-                  final due = DateTime.tryParse(r['dueDate']?.toString() ?? '');
-                  final decision = response?['decision']?.toString();
+                  final id = ConsentController.idOf(r);
+                  final status = ConsentController.statusOf(r);
+                  final due = DateTime.tryParse(r['dueDate']?.toString() ?? '')?.toUtc();
+                  final decision = (r['response'] as Map?)?['decision']?.toString();
+                  final preview = htmlToPlainText(r['description']?.toString() ?? '').replaceAll('\n', ' ');
 
                   return AppCard(
+                    onTap: () => showConsentDetailSheet(context, controller, id),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -121,95 +123,27 @@ class ConsentScreen extends GetView<ConsentController> {
                                     color: EmColors.primaryDark,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis)),
-                            if (decision != null)
-                              AppTag(
-                                  decision == 'granted'
-                                      ? 'Granted'
-                                      : 'Declined',
+                            switch (status) {
+                              ConsentStatus.responded => AppTag(
+                                  decision == 'granted' ? 'Granted' : 'Declined',
                                   style: decision == 'granted'
                                       ? TagStyle.green
-                                      : TagStyle.red)
-                            else
-                              AppTag(
-                                  due != null
-                                      ? 'Due ${due.day}/${due.month}'
-                                      : 'Pending',
+                                      : TagStyle.red),
+                              ConsentStatus.expired =>
+                                const AppTag('Expired', style: TagStyle.red),
+                              ConsentStatus.pending => AppTag(
+                                  due != null ? 'Due ${due.day}/${due.month}' : 'Pending',
                                   style: TagStyle.amber),
+                            },
                           ],
                         ),
                         const SizedBox(height: 4),
                         CustomText(
-                            text: r['description']?.toString() ?? '',
+                            text: preview,
                             color: EmColors.textSecondary,
                             fontSize: 10.5,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis),
-                        if (response == null) ...[
-                          const SizedBox(height: 12),
-                          Obx(() {
-                            final busy = controller.respondingId.value == id;
-                            final decline = EmSecondaryButton(
-                              label: 'Decline',
-                              expand: true,
-                              onPressed: busy
-                                  ? null
-                                  : () async {
-                                      final ok = await controller.respond(
-                                          id, 'declined');
-                                      if (ok) {
-                                        CustomAppSnackbar.success(
-                                            'Response recorded — consent declined.');
-                                      } else {
-                                        CustomAppSnackbar.error(controller
-                                                .error.value ??
-                                            'Could not submit your response. Please try again.');
-                                      }
-                                    },
-                            );
-                            final grant = CustomButton(
-                              label: busy ? '' : 'Grant consent',
-                              height: 42,
-                              color: EmColors.primaryDark,
-                              enabled: !busy,
-                              onPressed: () async {
-                                final ok =
-                                    await controller.respond(id, 'granted');
-                                if (ok) {
-                                  CustomAppSnackbar.success(
-                                      'Response recorded — consent granted.');
-                                } else {
-                                  CustomAppSnackbar.error(controller
-                                          .error.value ??
-                                      'Could not submit your response. Please try again.');
-                                }
-                              },
-                              prefix: busy
-                                  ? const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2, color: EmColors.onPrimary))
-                                  : null,
-                            );
-                            // side by side; stacked at large text sizes so neither label is cut off
-                            if (MediaQuery.textScalerOf(context).scale(1) >
-                                1.15) {
-                              return Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    decline,
-                                    const SizedBox(height: EmSpacing.s8),
-                                    grant
-                                  ]);
-                            }
-                            return Row(children: [
-                              Expanded(child: decline),
-                              const SizedBox(width: EmSpacing.s8),
-                              Expanded(child: grant),
-                            ]);
-                          }),
-                        ],
                       ],
                     ),
                   );
