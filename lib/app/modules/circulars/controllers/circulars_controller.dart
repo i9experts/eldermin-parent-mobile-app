@@ -38,12 +38,36 @@ class CircularsController extends GetxController {
     }
   }
 
-  Future<void> acknowledge(String id) async {
+  /// The circular being acknowledged, null when none is in flight.
+  final acknowledgingId = RxnString();
+
+  /// Why the last acknowledgement failed (shown in the detail sheet).
+  final RxnString acknowledgeError = RxnString();
+
+  /// Current copy of a circular (patched in place after an acknowledgement).
+  Map<String, dynamic>? byId(String id) {
+    for (final raw in circulars) {
+      final c = Map<String, dynamic>.from(raw as Map);
+      if (c['_id']?.toString() == id) return c;
+    }
+    return null;
+  }
+
+  /// Acknowledges a circular. Returns false (and sets [acknowledgeError]) on failure; ignored while another acknowledgement is in flight.
+  Future<bool> acknowledge(String id) async {
+    if (acknowledgingId.value != null) return false;
+    acknowledgingId.value = id;
+    acknowledgeError.value = null;
     try {
       await _api.acknowledgeCircular(id);
-      await fetch();
+      final i = circulars.indexWhere((r) => (r as Map)['_id']?.toString() == id);
+      if (i >= 0) circulars[i] = {...Map<String, dynamic>.from(circulars[i] as Map), 'acknowledged': true};
+      return true;
     } on ApiException catch (e) {
-      ToastUtil.showToast(e.message);
+      acknowledgeError.value = e.message;
+      return false;
+    } finally {
+      acknowledgingId.value = null;
     }
   }
 }
