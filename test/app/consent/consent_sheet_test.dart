@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:eldermin_parent_app/app/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:eldermin_parent_app/app/components/rich_image.dart';
+import 'package:eldermin_parent_app/core/constants/media_hosts.dart';
+import '../../support/fake_images.dart';
 import '../../support/route_harness.dart';
 import 'consent_fixtures.dart';
 
@@ -26,6 +29,9 @@ Future<void> _done(WidgetTester t) async {
 }
 
 Finder _inSheet(Finder f) => find.descendant(of: find.byKey(const Key('detail_sheet')), matching: f);
+
+Future<void> _scrollTo(WidgetTester t, Finder f) =>
+    t.scrollUntilVisible(f, 200, scrollable: find.descendant(of: find.byKey(const Key('detail_sheet')), matching: find.byType(Scrollable)).first);
 
 final _grant = find.byKey(const Key('consent_grant'));
 final _decline = find.byKey(const Key('consent_decline'));
@@ -61,6 +67,75 @@ void main() {
     expect(find.textContaining('](', findRichText: true), findsNothing);
     expect(find.textContaining('[Image]', findRichText: true), findsNothing);
     await _done(t);
+  });
+
+  group('images in the body and attachments', () {
+    final host = 'https://${kConsentImageHosts.first}/school/consent-attachments';
+    // What the web editor (Chrome execCommand) stores: div lines, a list, a link, an uploaded image as a bare <img src>.
+    final realBody = '<div>Dear parents,</div><div>We visit the <b>museum</b> on <u>12 Nov</u>.</div><div><br></div>'
+        '<ul><li>Packed lunch</li><li>Water bottle</li></ul>'
+        '<div>Details: <a href="https://school.edu/trip">trip page</a></div><div><img src="$host/map.png"></div>';
+    List<dynamic> rows() => [
+          {
+            '_id': 'img1',
+            'title': 'Gallery visit',
+            'description': realBody,
+            'dueDate': '2026-10-30T00:00:00.000Z',
+            'attachments': ['$host/slip.png', '$host/rules.pdf', 'https://cdn.example/other.png', '$host/vector.svg', '$host/photo.heic'],
+            'response': null,
+          },
+        ];
+
+    testWidgets('the sheet renders a real-format body: text, styles, list, link and the image', (t) async {
+      final p = await loadedImage(t);
+      useFakeImages((_) => p);
+      await _open(t, consentApi(rows: rows()));
+      await _openRow(t, 'Gallery visit');
+      expect(_inSheet(find.textContaining('Dear parents,', findRichText: true)), findsOneWidget);
+      expect(_inSheet(find.textContaining('museum', findRichText: true)), findsOneWidget);
+      expect(_inSheet(find.textContaining('Packed lunch', findRichText: true)), findsOneWidget);
+      expect(_inSheet(find.textContaining('trip page', findRichText: true)), findsOneWidget);
+      expect(_inSheet(find.byKey(const Key('rich_text'))), findsOneWidget);
+      expect(find.descendant(of: find.byKey(const Key('rich_text')), matching: find.byType(RichImageView)), findsOneWidget);
+      expect(_inSheet(find.textContaining('<', findRichText: true)), findsNothing);
+      await _done(t);
+    });
+
+    testWidgets('allowlisted image attachments are a thumbnail row that opens the viewer; other attachments stay links', (t) async {
+      final p = await loadedImage(t);
+      useFakeImages((_) => p);
+      await _open(t, consentApi(rows: rows()));
+      await _openRow(t, 'Gallery visit');
+      final row = find.byKey(const Key('detail_image_attachments'));
+      await _scrollTo(t, row);
+      expect(find.descendant(of: row, matching: find.byType(RichImageView)), findsOneWidget); // only slip.png
+      // pdf, svg, heic and a foreign-host png keep the open-link row
+      await _scrollTo(t, find.byKey(ValueKey('detail_attachment_$host/photo.heic')));
+      for (final f in ['rules.pdf', 'vector.svg', 'photo.heic']) {
+        expect(find.byKey(ValueKey('detail_attachment_$host/$f')), findsOneWidget, reason: f);
+      }
+      expect(find.byKey(const ValueKey('detail_attachment_https://cdn.example/other.png')), findsOneWidget);
+      expect(find.byKey(ValueKey('detail_attachment_$host/slip.png')), findsNothing);
+
+      await t.tap(find.descendant(of: row, matching: find.byType(RichImageView)));
+      await t.pumpAndSettle();
+      expect(find.byKey(const Key('image_viewer')), findsOneWidget);
+      await t.tap(find.byKey(const Key('image_viewer_close')));
+      await t.pumpAndSettle();
+      expect(find.byKey(const Key('image_viewer')), findsNothing);
+      expect(find.byKey(const Key('detail_sheet')), findsOneWidget); // back on the sheet
+      await _done(t);
+    });
+
+    testWidgets('a failing attachment thumbnail shows the unavailable tile', (t) async {
+      useFakeImages((_) => FailingImage());
+      await _open(t, consentApi(rows: rows()));
+      await _openRow(t, 'Gallery visit');
+      await _scrollTo(t, find.byKey(const Key('detail_image_attachments')));
+      await t.pump();
+      expect(find.descendant(of: find.byKey(const Key('detail_image_attachments')), matching: find.byKey(const Key('image_unavailable'))), findsOneWidget);
+      await _done(t);
+    });
   });
 
   testWidgets('tapping a pending row opens the sheet with every field and the actions', (t) async {
