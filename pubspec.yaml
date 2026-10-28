@@ -1,7 +1,7 @@
 name: eldermin_parent_app
 description: "Eldermin Parent App — Stay connected, stay informed."
 publish_to: 'none'
-version: 1.0.7+9
+version: 1.0.8+11
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
