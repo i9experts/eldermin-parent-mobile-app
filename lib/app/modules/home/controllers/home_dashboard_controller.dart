@@ -44,6 +44,7 @@ class HomeDashboardController extends GetxController {
     refresh(student.id);
   }
 
+  @override
   Future<void> refresh([String? studentId]) async {
     final id = studentId ?? _students.selectedStudent?.id;
     if (id == null) return;
