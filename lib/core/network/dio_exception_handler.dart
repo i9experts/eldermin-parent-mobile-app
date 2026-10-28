@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import '../utils/app_log.dart';
 import 'api_exception.dart';
 
 /// Maps a [DioException] to the [ApiException] every controller already
@@ -8,9 +8,9 @@ class DioExceptionHandler {
   DioExceptionHandler._();
 
   static ApiException handle(DioException e) {
-    debugPrint('Dio error status  --> ${e.response?.statusCode}');
-    debugPrint('Dio error type    --> ${e.type}');
-    debugPrint('Dio error data    --> ${e.response?.data}');
+    AppLog.d('Dio error status  --> ${e.response?.statusCode}');
+    AppLog.d('Dio error type    --> ${e.type}');
+    AppLog.d('Dio error data    --> ${e.response?.data}');
 
     final status = e.response?.statusCode;
 

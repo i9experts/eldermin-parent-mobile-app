@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import '../utils/app_log.dart';
 import '../constants/api_constants.dart';
 import '../services/app_preferences.dart';
 
@@ -38,11 +38,11 @@ class DioService {
               options.headers['Authorization'] = 'Bearer $token';
             }
           }
-          debugPrint('➡️ ${options.method} ${options.path}');
+          AppLog.d('➡️ ${options.method} ${options.path}');
           handler.next(options);
         },
         onError: (error, handler) {
-          debugPrint('❌ Dio error ${error.response?.statusCode}: ${error.requestOptions.path}');
+          AppLog.d('❌ Dio error ${error.response?.statusCode}: ${error.requestOptions.path}');
 
           // Only a 401 on a request that actually sent a token means the
           // session itself died — an unauthenticated call (e.g. OTP

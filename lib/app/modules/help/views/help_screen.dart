@@ -46,6 +46,10 @@ class HelpScreen extends StatelessWidget {
       'These have their own quick-access tiles on the Home screen, and '
           'are also listed under More → All services.',
     ),
+    (
+      'How do I get my data deleted?',
+      'To have your data deleted, please contact your school.',
+    ),
   ];
 
   @override
