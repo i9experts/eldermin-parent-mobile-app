@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import '../utils/app_log.dart';
 import 'dio_service.dart';
 
 /// Thin wrapper over the shared [Dio] instance — every [ParentApiService]
@@ -12,7 +12,7 @@ class BaseClient {
     bool requiresAuth = true,
   }) async {
     final dio = DioService.getDio();
-    debugPrint('GET → $url');
+    AppLog.d('GET → $url');
 
     return dio.get(
       url,
@@ -23,7 +23,7 @@ class BaseClient {
 
   Future<Response<List<int>>> getBytes(String url) async {
     final dio = DioService.getDio();
-    debugPrint('GET (bytes) → $url');
+    AppLog.d('GET (bytes) → $url');
 
     return dio.get<List<int>>(
       url,
@@ -38,7 +38,7 @@ class BaseClient {
     bool requiresAuth = true,
   }) async {
     final dio = DioService.getDio();
-    debugPrint('POST → $url');
+    AppLog.d('POST → $url');
 
     return dio.post(
       url,
@@ -55,7 +55,7 @@ class BaseClient {
     bool requiresAuth = true,
   }) async {
     final dio = DioService.getDio();
-    debugPrint('PATCH → $url');
+    AppLog.d('PATCH → $url');
 
     return dio.patch(
       url,
