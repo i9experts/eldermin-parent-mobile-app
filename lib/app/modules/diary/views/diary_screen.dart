@@ -5,6 +5,7 @@ import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/locked_feature_view.dart';
 import '../../../../core/widgets/shimmer_widgets.dart';
 import '../../../components/custom_text.dart';
+import '../../../components/rich_text_view.dart';
 import '../controllers/diary_controller.dart';
 
 const _months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -152,6 +153,12 @@ class _PeriodBlock extends StatelessWidget {
     );
   }
 
+  // Classwork/homework/description are saved as HTML from the teacher web
+  // app's rich-text editor (bold, bullet/numbered lists, Urdu/RTL spans) -
+  // dumping that raw string into CustomText showed the literal <p><strong>
+  // tags to parents instead of formatted text. RichTextView (already used
+  // for Consent descriptions, same server-authored-HTML shape) parses and
+  // renders it properly instead.
   Widget _line(String? label, String text) => Padding(
         padding: const EdgeInsetsDirectional.only(top: EmSpacing.s4 + EmSpacing.s2),
         child: Column(
@@ -159,7 +166,7 @@ class _PeriodBlock extends StatelessWidget {
           children: [
             if (label != null)
               CustomText(text: label, fontSize: 11, fontWeight: FontWeight.w700, color: EmColors.textSecondary),
-            CustomText(text: text, fontSize: 13, color: EmColors.ink),
+            RichTextView(text),
           ],
         ),
       );
