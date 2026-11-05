@@ -154,6 +154,9 @@ class ParentApiService {
   Future<FeatureAccessResult<List<dynamic>>> getResults(String studentId) async =>
       _getListOrLocked(ApiConstants.results(studentId));
 
+  Future<FeatureAccessResult<List<dynamic>>> getTermReportCards(String studentId) async =>
+      _getListOrLocked(ApiConstants.termReportCards(studentId));
+
   Future<List<dynamic>> getDues(String studentId) async =>
       await _get(ApiConstants.dues(studentId)) as List<dynamic>;
 

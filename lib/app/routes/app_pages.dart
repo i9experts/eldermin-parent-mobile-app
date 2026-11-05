@@ -53,6 +53,8 @@ import '../modules/early_years/views/early_years_screen.dart';
 import '../modules/early_years/views/early_years_detail_screens.dart';
 import '../modules/timetable/bindings/timetable_binding.dart';
 import '../modules/timetable/views/timetable_screen.dart';
+import '../modules/term_report_card/bindings/term_report_card_binding.dart';
+import '../modules/term_report_card/views/term_report_card_screen.dart';
 import 'app_routes.dart';
 
 /// Every screen the app can push on top of the auth-gated root (login or
@@ -161,6 +163,10 @@ class AppPages {
         name: Routes.datesheet,
         page: () => const DatesheetScreen(),
         binding: DatesheetBinding()),
+    GetPage(
+        name: Routes.termReportCard,
+        page: () => const TermReportCardScreen(),
+        binding: TermReportCardBinding()),
     GetPage(
         name: Routes.ptm, page: () => const PtmScreen(), binding: PtmBinding()),
     GetPage(
