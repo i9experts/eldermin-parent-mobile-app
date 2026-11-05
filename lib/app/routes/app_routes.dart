@@ -26,6 +26,7 @@ abstract class Routes {
   static const diary = '/diary';
   static const learningResources = '/learning-resources';
   static const datesheet = '/datesheet';
+  static const termReportCard = '/term-report-card';
   static const ptm = '/ptm';
   static const feedback = '/feedback';
   static const messageThread = '/message-thread';
