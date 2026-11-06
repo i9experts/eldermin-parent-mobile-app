@@ -46,6 +46,8 @@ import '../modules/privacy/views/privacy_screen.dart';
 import '../modules/ptm/bindings/ptm_binding.dart';
 import '../modules/ptm/views/ptm_screen.dart';
 import '../modules/students/views/student_selector_screen.dart';
+import '../modules/quran_progress/bindings/quran_progress_binding.dart';
+import '../modules/quran_progress/views/quran_progress_screen.dart';
 import '../modules/tarbiyah/bindings/tarbiyah_binding.dart';
 import '../modules/tarbiyah/views/tarbiyah_screen.dart';
 import '../modules/early_years/bindings/early_years_binding.dart';
@@ -93,6 +95,10 @@ class AppPages {
         name: Routes.tarbiyah,
         page: () => const TarbiyahScreen(),
         binding: TarbiyahBinding()),
+    GetPage(
+        name: Routes.quranProgress,
+        page: () => const QuranProgressScreen(),
+        binding: QuranProgressBinding()),
     GetPage(
         name: Routes.earlyYears,
         page: () => const EarlyYearsScreen(),

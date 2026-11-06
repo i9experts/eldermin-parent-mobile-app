@@ -154,6 +154,37 @@ class ParentApiService {
   Future<FeatureAccessResult<List<dynamic>>> getResults(String studentId) async =>
       _getListOrLocked(ApiConstants.results(studentId));
 
+  /// One published assessment result as a PDF. A suspended feature answers
+  /// with JSON (HTTP 200) instead of PDF bytes - callers must check for the
+  /// `%PDF` magic before treating the bytes as a document.
+  Future<List<int>> downloadResultPdf(String studentId, String reportCardId) async {
+    try {
+      final res = await _client.getBytes(ApiConstants.resultPdf(studentId, reportCardId));
+      return res.data ?? const <int>[];
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    }
+  }
+
+  /// Qaida & Tajweed progress report. `{ recorded: false }` means no Qaida record exists for the child yet.
+  Future<FeatureAccessResult<Map<String, dynamic>>> getQaidaReport(String studentId) async =>
+      _getMapOrLocked(ApiConstants.qaida(studentId));
+
+  /// Nazra (Qur'an reading) progress. `{ recorded: false }` means the child has not reached Nazra yet.
+  Future<FeatureAccessResult<Map<String, dynamic>>> getNazraReport(String studentId) async =>
+      _getMapOrLocked(ApiConstants.nazra(studentId));
+
+  /// The same PDF the school's web Qaida tracker downloads. A suspended feature answers with JSON (HTTP 200), so callers check the
+  /// `%PDF` magic before treating the bytes as a document.
+  Future<List<int>> downloadQaidaPdf(String studentId) async {
+    try {
+      final res = await _client.getBytes(ApiConstants.qaidaPdf(studentId));
+      return res.data ?? const <int>[];
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    }
+  }
+
   Future<List<dynamic>> getDues(String studentId) async =>
       await _get(ApiConstants.dues(studentId)) as List<dynamic>;
 

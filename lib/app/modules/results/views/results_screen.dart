@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/design/design.dart';
 import '../../../../core/widgets/app_widgets.dart';
 import '../../../../core/widgets/chart_widgets.dart';
@@ -134,6 +135,26 @@ class ResultsScreen extends StatelessWidget {
               ),
             ),
           ],
+          if (subjects.length >= 2) ...[
+            const SizedBox(height: EmSpacing.s16),
+            AppCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Subject comparison', style: EmType.label.copyWith(color: EmColors.ink)),
+                  const SizedBox(height: EmSpacing.s4),
+                  Text('${latest['assessmentTitle'] ?? 'Latest assessment'} · percentage per subject',
+                      style: EmType.caption.copyWith(color: EmColors.textSecondary)),
+                  const SizedBox(height: EmSpacing.s12),
+                  AppBarChart(data: [
+                    for (final s in subjects)
+                      (_shortLabel((s['subject'] ?? '').toString()), ((s['percentage'] as num?) ?? 0).toDouble()),
+                  ]),
+                ],
+              ),
+            ),
+          ],
+          ..._subjectTrendCard(controller),
           const SizedBox(height: EmSpacing.s8),
           const SectionRow(title: 'Subject scores'),
           ...subjects.map((s) {
@@ -164,8 +185,107 @@ class ResultsScreen extends StatelessWidget {
               ]),
             );
           }),
+          const SizedBox(height: EmSpacing.s8),
+          SectionRow(title: 'All reports (${reportCards.length})'),
+          ...reportCards.map((rc) => _ReportTile(report: rc as Map<String, dynamic>, controller: controller)),
         ],
       );
     });
+  }
+}
+
+String _shortLabel(String subject) => subject.length <= 8 ? subject : '${subject.substring(0, 7)}…';
+
+/// Per-subject trend across assessments, with a chip row to pick the subject. Empty when no subject has 2+ results.
+List<Widget> _subjectTrendCard(ResultsController controller) {
+  final subjects = controller.trendSubjects;
+  if (subjects.isEmpty) return const [];
+  final selected = subjects.contains(controller.selectedSubject.value) ? controller.selectedSubject.value! : subjects.first;
+  return [
+    const SizedBox(height: EmSpacing.s16),
+    AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Subject trend', style: EmType.label.copyWith(color: EmColors.ink)),
+          const SizedBox(height: EmSpacing.s8),
+          Wrap(spacing: EmSpacing.s8, children: [
+            for (final name in subjects)
+              EmChip(label: name, selected: name == selected, onTap: () => controller.selectedSubject.value = name),
+          ]),
+          const SizedBox(height: EmSpacing.s12),
+          AppLineChart(points: controller.subjectTrend(selected)),
+        ],
+      ),
+    ),
+  ];
+}
+
+/// One published assessment result: headline numbers, expandable subject marks, and a PDF download.
+class _ReportTile extends StatelessWidget {
+  final Map<String, dynamic> report;
+  final ResultsController controller;
+  const _ReportTile({required this.report, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final id = (report['_id'] ?? '').toString();
+    final title = (report['assessmentTitle'] ?? report['term'] ?? 'Assessment').toString();
+    final pct = (report['overallPercentage'] as num?)?.round();
+    final grade = report['overallGrade']?.toString();
+    final passed = report['overallResult'] != 'fail';
+    final date = DateTime.tryParse((report['publishedAt'] ?? report['createdAt'] ?? '').toString())?.toLocal();
+    final subjects = (report['subjects'] as List<dynamic>? ?? const []);
+    final meta = [
+      if (report['term'] != null && report['term'].toString().isNotEmpty) report['term'].toString(),
+      if (date != null) DateFormat('d MMM yyyy').format(date),
+    ].join(' · ');
+
+    return AppCard(
+      padding: EdgeInsets.zero,
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsetsDirectional.symmetric(horizontal: EmSpacing.block),
+          childrenPadding: const EdgeInsetsDirectional.fromSTEB(EmSpacing.block, 0, EmSpacing.block, EmSpacing.block),
+          expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: EmType.body.copyWith(color: EmColors.ink)),
+          subtitle: Padding(
+            padding: const EdgeInsetsDirectional.only(top: EmSpacing.s4),
+            child: Row(children: [
+              EmChip.status(label: '${pct ?? '—'}%${grade != null ? ' · $grade' : ''}', tone: passed ? EmTone.success : EmTone.error),
+              if (meta.isNotEmpty) ...[
+                const SizedBox(width: EmSpacing.s8),
+                Flexible(child: Text(meta, maxLines: 1, overflow: TextOverflow.ellipsis, style: EmType.caption.copyWith(color: EmColors.textSecondary))),
+              ],
+            ]),
+          ),
+          trailing: Obx(() => controller.downloadingId.value == id
+              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+              : IconButton(
+                  tooltip: 'Download PDF',
+                  icon: const Icon(Icons.picture_as_pdf_outlined, color: EmColors.primary),
+                  onPressed: id.isEmpty ? null : () => controller.openPdf(id),
+                )),
+          children: [
+            for (final s in subjects)
+              Padding(
+                padding: const EdgeInsetsDirectional.only(top: EmSpacing.s8),
+                child: Row(children: [
+                  Expanded(child: Text('${s['subject'] ?? ''}', style: EmType.body.copyWith(color: EmColors.ink))),
+                  Text('${s['obtainedMarks'] ?? '—'} / ${s['totalMarks'] ?? '—'}', style: EmType.caption.copyWith(color: EmColors.textSecondary)),
+                  const SizedBox(width: EmSpacing.s12),
+                  SizedBox(width: 52, child: Text('${(s['percentage'] as num?)?.round() ?? '—'}% ${s['grade'] ?? ''}', textAlign: TextAlign.end, style: EmType.label.copyWith(color: EmColors.ink))),
+                ]),
+              ),
+            if ((report['classTeacherRemarks'] ?? '').toString().isNotEmpty) ...[
+              const SizedBox(height: EmSpacing.s12),
+              Text('Teacher remarks', style: EmType.caption.copyWith(color: EmColors.textSecondary)),
+              Text(report['classTeacherRemarks'].toString(), style: EmType.body.copyWith(color: EmColors.ink)),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }

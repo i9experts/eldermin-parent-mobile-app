@@ -9,6 +9,7 @@ abstract class Routes {
   static const homework = '/homework';
   static const timetable = '/timetable';
   static const tarbiyah = '/tarbiyah';
+  static const quranProgress = '/quran-progress';
   static const earlyYears = '/early-years';
   static const earlyYearsEntry = '/early-years/entry';
   static const earlyYearsObservation = '/early-years/observation';

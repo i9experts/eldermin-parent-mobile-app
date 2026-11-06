@@ -85,12 +85,17 @@ void main() {
       setUpRouteDeps(p3Api());
       await openTab(t, const ResultsScreen());
       expect(find.byType(EmHeroCard), findsOneWidget);
-      expect(find.text('Subject scores'), findsOneWidget);
-      for (final s in ['Mathematics', 'English', 'Science']) {
-        expect(find.text(s), findsOneWidget);
-      }
       expect(find.text('Mid-term 2026'), findsWidgets); // the chip and the trend chart's label
       expect(find.text('Performance trend'), findsOneWidget);
+      // the screen is longer than the viewport (subject comparison / trend charts, then the lists): scroll to each section
+      await t.scrollUntilVisible(find.text('Subject scores'), 300, scrollable: find.byType(Scrollable).first);
+      expect(find.text('Subject scores'), findsOneWidget);
+      for (final s in ['Mathematics', 'English', 'Science']) {
+        await t.scrollUntilVisible(find.text(s), 300, scrollable: find.byType(Scrollable).first);
+        expect(find.text(s), findsWidgets); // the score row, plus the comparison chart label when it is on screen
+      }
+      await t.scrollUntilVisible(find.textContaining('All reports'), 300, scrollable: find.byType(Scrollable).first);
+      expect(find.textContaining('All reports'), findsOneWidget);
       await disposeApp(t);
     });
 
