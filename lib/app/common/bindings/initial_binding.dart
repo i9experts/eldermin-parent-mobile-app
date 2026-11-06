@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import '../../../core/network/base_client.dart';
 import '../../../core/network/dio_service.dart';
+import '../../../core/services/app_update_service.dart';
 import '../../../core/services/device_activation_service.dart';
 import '../../../core/services/parent_api_service.dart';
 import '../../modules/auth/controllers/auth_controller.dart';
@@ -15,6 +16,7 @@ class InitialBinding extends Bindings {
   void dependencies() {
     final api = Get.put(ParentApiService(BaseClient()), permanent: true);
     Get.put(DeviceActivationService(api), permanent: true);
+    Get.put(AppUpdateService(BaseClient()), permanent: true);
 
     final auth = Get.put(AuthController(), permanent: true);
     DioService.onUnauthorized = auth.logout;
