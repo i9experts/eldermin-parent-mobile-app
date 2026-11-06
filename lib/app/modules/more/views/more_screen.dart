@@ -19,7 +19,7 @@ class MoreScreen extends StatelessWidget {
 
   /// Section title -> the services in it (titles as in the list below).
   static const _groups = <(String, List<String>)>[
-    ('Learning', ['Class diary', 'My courses', 'Online quizzes', 'Learning resources', 'Library', 'Datesheet']),
+    ('Learning', ['Class diary', 'My courses', 'Online quizzes', 'Learning resources', 'Library', 'Datesheet', 'Term Report Card']),
     // Early Years: its tile is added at the end of 'My child' while the selected child is eligible (see `showEarlyYears` in build).
     ('My child', ['Behaviour & Tarbiyah', "Qur'an progress", 'Student profile', 'Medical', 'Academic documents', 'Home tasks']),
     ('School & family', ['Consent', 'My leaves', 'Parent-teacher meetings', 'Circulars', 'Inbox', 'Feedback']),
@@ -102,6 +102,11 @@ class MoreScreen extends StatelessWidget {
         const SvgIcon(assetName: AppIcons.calenderIcon, size: 22, color: EmColors.primary),
         'Datesheet',
         () => Get.toNamed(Routes.datesheet)
+      ),
+      (
+        const Icon(Icons.fact_check_outlined, color: EmColors.primary),
+        'Term Report Card',
+        () => Get.toNamed(Routes.termReportCard)
       ),
       (
         const Icon(Icons.groups_outlined, color: EmColors.primary),
