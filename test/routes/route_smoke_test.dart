@@ -19,6 +19,8 @@ final routes = <String, Object?>{
   Routes.homework: null,
   Routes.timetable: null,
   Routes.tarbiyah: null,
+  Routes.quranProgress: null,
+  Routes.termReportCard: null,
   Routes.library: null,
   Routes.leaves: null,
   Routes.homeTasks: null,
@@ -49,10 +51,10 @@ void main() {
   setUpAll(loadAuthFonts);
   tearDown(Get.reset);
 
-  test('the smoke test covers every named route (31)', () {
+  test('the smoke test covers every named route (33)', () {
     final registered = AppPages.pages.map((p) => p.name).toSet();
     expect(routes.keys.toSet(), registered);
-    expect(routes.length, 31);
+    expect(routes.length, 33);
   });
 
   for (final entry in routes.entries) {

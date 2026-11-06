@@ -8,6 +8,7 @@ import 'app/modules/auth/controllers/auth_controller.dart';
 import 'app/modules/auth/views/phone_entry_screen.dart';
 import 'app/modules/home/views/home_shell.dart';
 import 'app/modules/splash/views/splash_screen.dart';
+import 'core/services/app_update_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +57,18 @@ class _AuthGateState extends State<AuthGate> {
     super.initState();
     final auth = Get.find<AuthController>();
     _splashActive = !_ready(auth);
+    // Update check runs once the first real screen is up (splash resolved), never before runApp. Fail-open service.
+    void startUpdateCheck() =>
+        Future.delayed(const Duration(milliseconds: 1500), () {
+          if (mounted && Get.isRegistered<AppUpdateService>()) {
+            Get.find<AppUpdateService>().checkForUpdate();
+          }
+        });
+    if (_ready(auth)) {
+      startUpdateCheck();
+    } else {
+      once(auth.status, (_) => startUpdateCheck());
+    }
     // Whenever auth status actually changes (login OR logout/401), clear
     // any pushed routes (e.g. the OTP screen, or some deep screen open
     // when a session expired) so the new root screen is what the user
